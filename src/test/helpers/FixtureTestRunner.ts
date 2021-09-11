@@ -2,7 +2,7 @@ import { resolve } from 'path';
 import * as glob from 'glob';
 import { readdir, readFile } from 'fs';
 import { promisify } from 'util';
-import { Suite } from 'mocha';
+import { Suite, Test } from 'mocha';
 import { expect } from 'chai';
 
 export type TestFunction = (fixture: string) => Thenable<string>;
@@ -27,32 +27,36 @@ export default class FixtureTestRunner {
   protected readonly fixtureFile: string;
   protected readonly expectFile: string;
 
-  public static async runSuites(suites: FixtureSuite[], context: Suite): Promise<void> {
+  public static suites(suites: FixtureSuite[], context: Suite): Suite[] {
     const self = this;
+    const result: Suite[] = [];
 
     for (const [title, runner] of suites) {
-      suite(title, function () {
-        if ('length' in runner) self.runSuites(runner, this);
-        else runner.run(context);
-      });
+      const suite = new Suite(title);
+      if ('length' in runner) for (const inner of self.suites(runner, suite)) suite.addSuite(inner);
+      else for (const test of runner.getTests(context)) suite.addTest(test);
+
+      result.push(suite);
     }
+
+    return result;
   }
 
-  public static suites(test: TestFunction): Promise<FixtureSuite[]> {
+  public static suiteRunners(test: TestFunction): Promise<FixtureSuite[]> {
     return new Promise((r, e) => {
       readdir(this.fixtureDir, async (err, langIds) => {
         if (err) return e(err);
 
         const runners: FixtureSuite[] = [];
         for (const langId of langIds)
-          runners.push([`Fixture tests for ${langId}`, await this.suitesForLanguage(langId, test)]);
+          runners.push([`Fixture tests for ${langId}`, await this.suiteRunnersForLanguage(langId, test)]);
 
         r(runners);
       });
     });
   }
 
-  public static suitesForLanguage(langId: string, test: TestFunction): Promise<FixtureSuite[]> {
+  public static suiteRunnersForLanguage(langId: string, test: TestFunction): Promise<FixtureSuite[]> {
     return new Promise((r, e) => {
       const ĺanguageDir = resolve(this.fixtureDir, langId);
       glob(`*.fixture.${langId}`, { cwd: ĺanguageDir }, (err, files) => {
@@ -89,16 +93,21 @@ export default class FixtureTestRunner {
     this.fixtures.push(...this.getFixtures(fixtureContent, expectContent));
   }
 
-  public run(context: Suite, forceStrict?: boolean) {
+  public getTests(context: Suite, forceStrict?: boolean): Test[] {
+    const tests: Test[] = [];
     for (const fixture of this.fixtures) {
       if (forceStrict) fixture.strict = forceStrict;
 
       const { fixtureId: suite, langId: language } = this;
 
-      test.bind(context)(`correctly handles ${fixture.id} on ${suite} (${language})`, async () => {
-        await this.runTest(fixture);
-      });
+      tests.push(
+        new Test(`correctly handles ${fixture.id} on ${suite} (${language})`, async () => {
+          await this.runTest(fixture);
+        })
+      );
     }
+
+    return tests;
   }
 
   public async runTest(fixture: Fixture, test?: TestFunction) {

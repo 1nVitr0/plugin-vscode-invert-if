@@ -62,7 +62,7 @@ suite('FixtureTestRunner unit tests', () => {
   });
 
   test('reads in fixtures from language', async () => {
-    const suites = await TestFixtureTestRunner.suitesForLanguage('js', passThroughText);
+    const suites = await TestFixtureTestRunner.suiteRunnersForLanguage('js', passThroughText);
     const testSuite = suites.find(([suite]) => suite === 'test');
     const tests = testSuite && (testSuite[1] as FixtureTestRunner).fixtures;
 
@@ -72,7 +72,7 @@ suite('FixtureTestRunner unit tests', () => {
   });
 
   test('reads in all fixture', async () => {
-    const suites = await TestFixtureTestRunner.suites(passThroughText);
+    const suites = await TestFixtureTestRunner.suiteRunners(passThroughText);
     const jsSuites = suites.find(([lang]) => lang === 'Fixture tests for js');
     const tsSuites = suites.find(([lang]) => lang === 'Fixture tests for ts');
     const jsTestSuite = jsSuites && 'length' in jsSuites[1] && jsSuites[1].find(([suite]) => suite === 'test');
