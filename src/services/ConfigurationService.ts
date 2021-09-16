@@ -1,14 +1,27 @@
+import { Options } from 'acorn';
 import { ConfigurationTarget, workspace, WorkspaceConfiguration } from 'vscode';
+
+export interface LanguageOptions {
+  useEcmaVersion: Options['ecmaVersion'];
+}
 
 export interface Configuration {
   formatAfterInversion: boolean;
   enableContextMenu: boolean;
+  inversionDepth: number;
+  languageOptions: Record<string, LanguageOptions> & { default: LanguageOptions };
 }
 
 export default class ConfigurationService implements Configuration {
   public static defaultConfiguration: Configuration = {
     formatAfterInversion: false,
     enableContextMenu: true,
+    inversionDepth: Infinity,
+    languageOptions: {
+      default: { useEcmaVersion: 'latest' },
+      js: { useEcmaVersion: 'latest' },
+      ts: { useEcmaVersion: 'latest' },
+    },
   };
 
   public configurationTarget: ConfigurationTarget = ConfigurationTarget.Global;
@@ -31,6 +44,27 @@ export default class ConfigurationService implements Configuration {
 
   public set enableContextMenu(value: boolean) {
     this.update('enableContextMenu', value);
+  }
+
+  public get inversionDepth(): number {
+    return this.get('inversionDepth');
+  }
+
+  public set inversionDepth(value: number) {
+    this.update('inversionDepth', value);
+  }
+
+  public get languageOptions(): Record<string, LanguageOptions> & { default: LanguageOptions } {
+    return this.get('languageOptions');
+  }
+
+  public updateLanguageOptions(language: string, value: LanguageOptions) {
+    const previous = this.configuration.get<LanguageOptions>(`languageOptions.${language}`) || {};
+    this.update(['languageOptions', language], { ...previous, value });
+  }
+
+  public replaceLanguageOptions(language: string, value: LanguageOptions) {
+    this.update(['languageOptions', language], value);
   }
 
   private get configuration(): WorkspaceConfiguration {

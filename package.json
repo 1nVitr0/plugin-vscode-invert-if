@@ -30,7 +30,8 @@
     "test-watch": "tsc -watch -p ./",
     "pretest": "npm run test-compile && npm run lint",
     "lint": "eslint src --ext ts",
-    "test": "nyc --reporter=text node ./out/test/runTest.js"
+    "test": "node ./out/test/runTest.js",
+    "coverage": "nyc --reporter=text npm run test"
   },
   "devDependencies": {
     "@istanbuljs/nyc-config-typescript": "^1.0.1",
@@ -57,6 +58,7 @@
   },
   "dependencies": {
     "acorn": "^8.5.0",
+    "astring": "^1.7.5",
     "strip-comments": "^2.0.1"
   }
 }

@@ -1,18 +1,18 @@
+import ConfigurationService from '../services/ConfigurationService';
 import ASTService from '../services/ASTService';
 import ConditionInversionService from '../services/ConditionInversionService';
-import ConfigurationService from '../services/ConfigurationService';
 import IfElseInversionService from '../services/IfElseInversionService';
 
 export default class InvertIfServiceProvider {
+  public configuration: ConfigurationService;
   public ast: ASTService;
   public conditionInversion: ConditionInversionService;
-  public configuration: ConfigurationService;
   public ifElseInversion: IfElseInversionService;
 
   public constructor() {
-    this.ast = new ASTService();
-    this.conditionInversion = new ConditionInversionService();
     this.configuration = new ConfigurationService();
-    this.ifElseInversion = new IfElseInversionService();
+    this.ast = new ASTService(this.configuration);
+    this.conditionInversion = new ConditionInversionService(this.configuration);
+    this.ifElseInversion = new IfElseInversionService(this.configuration, this.conditionInversion);
   }
 }
