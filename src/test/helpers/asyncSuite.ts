@@ -13,8 +13,13 @@ export default function asyncSuite(name: string, tests: (this: Suite) => Promise
       }
     });
 
-    test('Async tests loaded', async function () {
-      assert.ok(self.suites.length || self.tests.length > 1);
+    test(`${name} loaded`, function () {
+      assert.ok(self.suites.length || self.tests.length - 1);
+
+      // Regenerate description to dynamically reflect async test / suite counts
+      let description = (self.suites.length && ` ${self.suites.length} suite(s)`) || '';
+      if (self.tests.length > 1) description += (description && ' and') + ` ${self.tests.length - 1} test(s)`;
+      if (this.test) this.test.title += description;
     });
   });
 }

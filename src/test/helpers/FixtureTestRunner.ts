@@ -42,24 +42,33 @@ export default class FixtureTestRunner {
     return result;
   }
 
-  public static suiteRunners(test: TestFunction): Promise<FixtureSuite[]> {
+  /**
+   * @param type type of the test (`*` for all tests)
+   * @param test test function to transform the fixture string
+   */
+  public static suiteRunners(type: string, test: TestFunction): Promise<FixtureSuite[]> {
     return new Promise((r, e) => {
       readdir(this.fixtureDir, async (err, langIds) => {
         if (err) return e(err);
 
         const runners: FixtureSuite[] = [];
         for (const langId of langIds)
-          runners.push([`Fixture tests for ${langId}`, await this.suiteRunnersForLanguage(langId, test)]);
+          runners.push([`Fixture tests for ${langId}`, await this.suiteRunnersForLanguage(langId, type, test)]);
 
         r(runners);
       });
     });
   }
 
-  public static suiteRunnersForLanguage(langId: string, test: TestFunction): Promise<FixtureSuite[]> {
+  /**
+   * @param langId Language Id as specified by the file extension
+   * @param type type of the test (`*` for all tests)
+   * @param test test function to transform the fixture string
+   */
+  public static suiteRunnersForLanguage(langId: string, type: string, test: TestFunction): Promise<FixtureSuite[]> {
     return new Promise((r, e) => {
-      const ĺanguageDir = resolve(this.fixtureDir, langId);
-      glob(`*.fixture.${langId}`, { cwd: ĺanguageDir }, (err, files) => {
+      const languageDir = resolve(this.fixtureDir, langId);
+      glob(`${type}.fixture.${langId}`, { cwd: languageDir }, (err, files) => {
         if (err) return e(err);
 
         const runners = files.map(async (file) => {

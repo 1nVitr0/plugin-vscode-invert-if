@@ -22,6 +22,7 @@ function createEditReplace(regex: RegExp, replace: string): TestFunction {
 suite('FixtureTestRunner unit tests', () => {
   let testRunner: TestFixtureTestRunner;
   let fixtureIds = ['test-fixture-read', 'test-fixture-map', 'test-fixture-unmatched'];
+  let fixture2Ids = ['test-fixture-read2', 'test-fixture-map2', 'test-fixture-unmatched2'];
 
   suiteSetup(async () => {
     testRunner = new TestFixtureTestRunner('js', 'test', passThroughText);
@@ -61,33 +62,77 @@ suite('FixtureTestRunner unit tests', () => {
     await testRunner.runTest(fixture, createEditReplace(/CHANGE\-ME/, 'CHANGED'));
   });
 
-  test('reads in fixtures from language', async () => {
-    const suites = await TestFixtureTestRunner.suiteRunnersForLanguage('js', passThroughText);
+  test('reads in only single fixtures from language', async () => {
+    const suites = await TestFixtureTestRunner.suiteRunnersForLanguage('js', 'test', passThroughText);
     const testSuite = suites.find(([suite]) => suite === 'test');
+    const test2Suite = suites.find(([suite]) => suite === 'test2');
     const tests = testSuite && (testSuite[1] as FixtureTestRunner).fixtures;
 
     expect(testSuite).to.have.length(2);
+    expect(test2Suite).to.be.undefined;
     expect(tests).to.be.instanceOf(Array);
     expect(tests && tests.map(({ id }) => id)).to.deep.equal(fixtureIds);
   });
 
-  test('reads in all fixture', async () => {
-    const suites = await TestFixtureTestRunner.suiteRunners(passThroughText);
+  test('reads in all fixtures from language', async () => {
+    const suites = await TestFixtureTestRunner.suiteRunnersForLanguage('js', '*', passThroughText);
+    const testSuite = suites.find(([suite]) => suite === 'test');
+    const test2Suite = suites.find(([suite]) => suite === 'test2');
+    const tests = testSuite && (testSuite[1] as FixtureTestRunner).fixtures;
+    const tests2 = test2Suite && (test2Suite[1] as FixtureTestRunner).fixtures;
+
+    expect(testSuite).to.have.length(2);
+    expect(test2Suite).to.have.length(2);
+    expect(tests).to.be.instanceOf(Array);
+    expect(tests2).to.be.instanceOf(Array);
+    expect(tests && tests.map(({ id }) => id)).to.deep.equal(fixtureIds);
+    expect(tests2 && tests2.map(({ id }) => id)).to.deep.equal(fixture2Ids);
+  });
+
+  test('reads in only single fixture', async () => {
+    const suites = await TestFixtureTestRunner.suiteRunners('test', passThroughText);
     const jsSuites = suites.find(([lang]) => lang === 'Fixture tests for js');
     const tsSuites = suites.find(([lang]) => lang === 'Fixture tests for ts');
     const jsTestSuite = jsSuites && 'length' in jsSuites[1] && jsSuites[1].find(([suite]) => suite === 'test');
+    const jsTest2Suite = jsSuites && 'length' in jsSuites[1] && jsSuites[1].find(([suite]) => suite === 'test2');
     const tsTestSuite = tsSuites && 'length' in tsSuites[1] && tsSuites[1].find(([suite]) => suite === 'test');
     const jsTests = jsTestSuite && (jsTestSuite[1] as FixtureTestRunner).fixtures;
     const tsTests = tsTestSuite && (tsTestSuite[1] as FixtureTestRunner).fixtures;
 
     expect(jsSuites).to.have.length(2);
     expect(tsSuites).to.have.length(2);
+    expect(jsTest2Suite).to.be.undefined;
     expect(jsTestSuite).to.have.length(2);
     expect(tsTestSuite).to.have.length(2);
     expect(jsTests).to.be.instanceOf(Array);
     expect(tsTests).to.be.instanceOf(Array);
 
     expect(jsTests && jsTests.map(({ id }) => id)).to.deep.equal(fixtureIds);
+    expect(tsTests && tsTests.map(({ id }) => id)).to.deep.equal(fixtureIds);
+  });
+
+  test('reads in all fixture', async () => {
+    const suites = await TestFixtureTestRunner.suiteRunners('*', passThroughText);
+    const jsSuites = suites.find(([lang]) => lang === 'Fixture tests for js');
+    const tsSuites = suites.find(([lang]) => lang === 'Fixture tests for ts');
+    const jsTestSuite = jsSuites && 'length' in jsSuites[1] && jsSuites[1].find(([suite]) => suite === 'test');
+    const jsTest2Suite = jsSuites && 'length' in jsSuites[1] && jsSuites[1].find(([suite]) => suite === 'test2');
+    const tsTestSuite = tsSuites && 'length' in tsSuites[1] && tsSuites[1].find(([suite]) => suite === 'test');
+    const jsTests = jsTestSuite && (jsTestSuite[1] as FixtureTestRunner).fixtures;
+    const jsTests2 = jsTest2Suite && (jsTest2Suite[1] as FixtureTestRunner).fixtures;
+    const tsTests = tsTestSuite && (tsTestSuite[1] as FixtureTestRunner).fixtures;
+
+    expect(jsSuites).to.have.length(2);
+    expect(tsSuites).to.have.length(2);
+    expect(jsTestSuite).to.have.length(2);
+    expect(jsTest2Suite).to.have.length(2);
+    expect(tsTestSuite).to.have.length(2);
+    expect(jsTests).to.be.instanceOf(Array);
+    expect(jsTests2).to.be.instanceOf(Array);
+    expect(tsTests).to.be.instanceOf(Array);
+
+    expect(jsTests && jsTests.map(({ id }) => id)).to.deep.equal(fixtureIds);
+    expect(jsTests2 && jsTests2.map(({ id }) => id)).to.deep.equal(fixture2Ids);
     expect(tsTests && tsTests.map(({ id }) => id)).to.deep.equal(fixtureIds);
   });
 });
