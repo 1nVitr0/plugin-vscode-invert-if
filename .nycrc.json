@@ -1,0 +1,13 @@
+{
+  "extends": "@istanbuljs/nyc-config-typescript",
+  "exclude": [
+    ".vscode-test/*",
+    "src/test/suite/*",
+    "src/test/runTest.ts",
+    "src/test/helpers/asyncSuite.ts",
+    "src/**/*.d.ts"
+  ],
+  "include": ["src/**/*.ts", "src/test/helpers/FixtureTestRunner.ts"],
+  "require": ["source-map-support/register"],
+  "all": true
+}
