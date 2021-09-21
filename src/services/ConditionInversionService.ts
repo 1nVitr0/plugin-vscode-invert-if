@@ -3,7 +3,7 @@ import { visit } from 'ast-types';
 import { types } from 'recast';
 import ConfigurationService from './ConfigurationService';
 
-type ConditionalExpression = BinaryExpressionKind | UnaryExpressionKind | LogicalExpressionKind;
+export type ConditionalExpression = BinaryExpressionKind | UnaryExpressionKind | LogicalExpressionKind;
 
 type OperatorMap<
   K extends ExpressionKind & { operator: string },
