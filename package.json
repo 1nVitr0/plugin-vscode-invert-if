@@ -56,7 +56,10 @@
     "webpack-cli": "^4.7.0"
   },
   "dependencies": {
+    "@types/deep-equal": "^1.0.1",
     "ast-types": "^0.14.2",
+    "deep-equal": "^2.0.5",
+    "lines-and-columns": "^1.1.6",
     "recast": "^0.20.5",
     "strip-comments": "^2.0.1"
   }
