@@ -4,6 +4,7 @@ import { readdir, readFile } from 'fs';
 import { promisify } from 'util';
 import { Suite, Test } from 'mocha';
 import { expect } from 'chai';
+import LinesAndColumns from 'lines-and-columns';
 
 export type TestFunction = (fixture: string) => Thenable<string>;
 
@@ -26,6 +27,24 @@ export default class FixtureTestRunner {
 
   protected readonly fixtureFile: string;
   protected readonly expectFile: string;
+
+  public static mapRangeToOffset(
+    text: string,
+    start?: { line: number; column: number },
+    end?: { line: number; column: number }
+  ): [number, number] {
+    const position = new LinesAndColumns(text);
+    return [
+      position.indexForLocation({
+        line: (start?.line || 1) - 1,
+        column: start?.column || 0,
+      }) || 0,
+      position.indexForLocation({
+        line: (end?.line || 1) - 1,
+        column: end?.column || 0,
+      }) || 0,
+    ];
+  }
 
   public static suites(suites: FixtureSuite[], context: Suite): Suite[] {
     const self = this;
@@ -125,7 +144,7 @@ export default class FixtureTestRunner {
     const changed = test ? await test(fixtureContent) : await this.test(fixtureContent);
 
     if (strict) expect(changed).to.equal(expected);
-    else expect(changed.replace(/\r?\n/, '')).to.equal(expected.replace(/\r?\n/, ''));
+    else expect(changed.replace(/\r?\n|\s\s+/g, '')).to.equal(expected.replace(/\r?\n|\s\s+/g, ''));
   }
 
   protected getFixtures(fixtureContent: string, expectContent: string): Fixture[] {
@@ -149,14 +168,17 @@ export default class FixtureTestRunner {
       const fixtureId = line.match(/(?<=@fixture )[\w\d\-\_]+/)?.pop();
 
       if (fixtureId) {
-        if (currentFixture) fixtures.push(currentFixture);
+        if (currentFixture) {
+          currentFixture[type] = currentFixture[type]?.slice(0, -1);
+          fixtures.push(currentFixture);
+        }
         return { id: fixtureId, [type]: '' };
       }
 
       return (
         currentFixture && {
           ...currentFixture,
-          [type]: currentFixture[type] + line,
+          [type]: currentFixture[type] + line + '\n',
         }
       );
     }, null);
