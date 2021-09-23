@@ -144,7 +144,7 @@ export default class FixtureTestRunner {
     const changed = test ? await test(fixtureContent) : await this.test(fixtureContent);
 
     if (strict) expect(changed).to.equal(expected);
-    else expect(changed.replace(/\r?\n|\s\s+/g, '')).to.equal(expected.replace(/\r?\n|\s\s+/g, ''));
+    else expect(changed.replace(/\r?\n|\s+/g, '')).to.equal(expected.replace(/\r?\n|\s+/g, ''));
   }
 
   protected getFixtures(fixtureContent: string, expectContent: string): Fixture[] {

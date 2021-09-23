@@ -4,7 +4,6 @@ import ASTService from '../../../services/ASTService';
 import ConditionInversionService from '../../../services/ConditionInversionService';
 import ConfigurationService from '../../../services/ConfigurationService';
 import IfElseInversionService from '../../../services/IfElseInversionService';
-import { parse, types } from 'recast';
 
 suite('Unit tests for IfElseService', () => {
   const multiIfCode = 'if (a == b && c <= d) {} if (c) {} if (d) {}';
@@ -27,15 +26,14 @@ suite('Unit tests for IfElseService', () => {
     const node = astService.parse(multiIfCode, 'ts');
     const conditions = ifElseInversionService.extractIfBlocks(node, Infinity);
 
-    expect(conditions.length).to.equal(3);
-    expect(conditions.map(({ type }) => type)).to.be.all.members(['IfStatement']);
+    expect(conditions.map(({ type }) => type)).to.be.members(['IfStatement', 'IfStatement', 'IfStatement']);
   });
 
   test('inverses if statements', () => {
     const node = astService.parse(testCode, 'ts');
     const inverse = ifElseInversionService.inverse(node.program.body[0] as IfStatementKind);
-    const code = astService.stringify(inverse, 'js').replace(/\r?\n|\s\s+/g, '');
+    const code = astService.stringify(inverse, 'js').replace(/\r?\n|\s+/g, '');
 
-    expect(code).to.equal(inverseTestCode.replace(/\r?\n|\s\s+/g, ''));
+    expect(code).to.equal(inverseTestCode.replace(/\r?\n|\s+/g, ''));
   });
 });

@@ -37,20 +37,19 @@ else
   console.log('variable is true');
 
 // @fixture if-curly
-if (!variable) {
-  console.log('variable is false');
-} else console.log('variable is true');
-
-// @fixture else-curly
 if (!variable) console.log('variable is false');
 else {
   console.log('variable is true');
 }
 
-// @fixture multiline-curly-if
+// @fixture else-curly
 if (!variable) {
   console.log('variable is false');
-} else {
+} else console.log('variable is true');
+
+// @fixture multiline-curly-if
+if (!variable) console.log('variable is false');
+else {
   // Multiline if
   console.log('variable is true');
 }
@@ -59,15 +58,15 @@ if (!variable) {
 if (!variable) {
   // Multiline else
   console.log('variable is false');
-} else {
-  console.log('variable is true');
-}
+} else console.log('variable is true');
 
 // @fixture if-else-curly-newline
-if (!variable) {
+if (!variable)
+{
+  //Multiline else
   console.log('variable is false');
 }
-else {
-  //Multiline else
+else
+{
   console.log('variable is true');
 }

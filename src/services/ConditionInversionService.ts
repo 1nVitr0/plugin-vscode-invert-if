@@ -46,6 +46,7 @@ export default class ConditionInversionService {
     function addCondition(this: SharedContextMethods, path: NodePath<StatementKind & { test: any }>) {
       if (path.node.test) conditions.push(path.node.test);
       if (conditions.length < max) this.traverse(path);
+      else return false;
     }
 
     visit(node, {

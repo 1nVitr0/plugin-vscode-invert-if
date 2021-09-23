@@ -59,7 +59,7 @@ if (a / 10 == b * 10 + 3) doStuff();
 if (a / 10 >= b * 10 + 3) doStuff();
 
 // @fixture math-bitwise-simple-equal
-if (a & 0xf637 == b | 0b10010010) doStuff();
+if ((a & 0xf637) == (b | 0b10010010)) doStuff();
 
 // @fixture grouped-and-or-equal
 if ((a == b && c == d) || (e == f && g == h)) doStuff();

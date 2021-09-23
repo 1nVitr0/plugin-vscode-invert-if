@@ -56,28 +56,28 @@ if (a >= b && c < d) doStuff();
 if (a / 10 != b * 10 + 3) doStuff();
 
 // @fixture math-simple-comparison
-if (a / 10 > b * 10 + 3) doStuff();
+if (a / 10 < b * 10 + 3) doStuff();
 
 // @fixture math-bitwise-simple-equal
-if (a & 0xf637 != b | 0b10010010) doStuff();
+if ((a & 0xf637) != (b | 0b10010010)) doStuff();
 
 // @fixture grouped-and-or-equal
 if ((a != b || c != d) && (e != f || g != h)) doStuff();
 
 // @fixture grouped-or-and-equal
-if ((a != b && c != d) || (e != f && g != h)) doStuff();
+if (a != b && c != d || e != f && g != h) doStuff();
 
 // @fixture grouped-and-or-mixed
 if ((a >= b || c <= d) && (e > f || g < h)) doStuff();
 
 // @fixture grouped-or-and-mixed
-if ((a >= b && c <= d) || (e > f && g < h)) doStuff();
+if (a >= b && c <= d || e > f && g < h) doStuff();
 
 // @fixture grouped-and-or-equal-negated
 if ((a != b || c != d) && (e == f && g == h)) doStuff();
 
 // @fixture grouped-or-and-equal-negated
-if ((a != b && c != d) || (e == f || g == h)) doStuff();
+if (a != b && c != d || (e == f || g == h)) doStuff();
 
 // @fixture grouped-nested-mixed
-if ((a >= b || c <= d) && ((e > f && g < h) || i)) doStuff();
+if ((a >= b || c <= d) && (e > f && g < h || i)) doStuff();

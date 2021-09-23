@@ -35,18 +35,18 @@ if (!variable) console.log('doing stuff');
 
 
 // @fixture simple-elseif
-if (false) {
+if (!false) {
   // do stuff
 } else if (!variable) {
   // do other stuff
 }
 
 // @fixture simple-inline-elseif
-if (false) console.log('doing stuff');
+if (!false) console.log('doing stuff');
 else if (!variable) console.log('doing other stuff');
 
 // @fixture simple-curly-newline-elseif
-if (false) {
+if (!false) {
   // do stuff
 }
 else if (!variable) {
