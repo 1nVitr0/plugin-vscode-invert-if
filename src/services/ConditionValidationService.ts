@@ -1,28 +1,40 @@
 import ConfigurationService from './ConfigurationService';
 import { ConditionalExpression } from './ConditionInversionService';
-import { ExpressionKind } from 'ast-types/gen/kinds';
+import { ExpressionKind, BinaryExpressionKind, LogicalExpressionKind } from 'ast-types/gen/kinds';
 import { print, types } from 'recast';
 import ConditionInversionService from './ConditionInversionService';
 import deepEqual = require('deep-equal');
 
 export type TruthTable<V extends string> = { [key in V | 'result']: boolean }[];
 export default class ConditionValidationService {
+  protected static inverseOperatorSelection: (BinaryExpressionKind | LogicalExpressionKind)['operator'][] = [
+    '!=',
+    '!==',
+    '<=',
+    '>=',
+  ];
+
   public constructor(private configurationService: ConfigurationService) {}
 
-  public verifyEqual(condition: ConditionalExpression, compare: ConditionalExpression): boolean {
-    throw new Error('not implemented');
+  public verifyEqual(condition: ExpressionKind, compare: ExpressionKind): boolean {
+    const table = this.generateTruthTable(condition);
+    const compareTable = this.generateTruthTable(compare);
+    return this.compareTruthTables(table, compareTable);
   }
 
-  public verifyInverse(condition: ConditionalExpression, inverse: ConditionalExpression): boolean {
-    throw new Error('not implemented');
+  public verifyInverse(condition: ExpressionKind, inverse: ExpressionKind): boolean {
+    const table = this.generateTruthTable(condition);
+    const compareTable = this.generateTruthTable(inverse).map((row) => ({ ...row, result: !row.result }));
+    return this.compareTruthTables(table, compareTable);
   }
 
-  public generateTruthTable(condition: ConditionalExpression): TruthTable<string> {
+  public generateTruthTable(condition: ExpressionKind): TruthTable<string> {
     const evaluation = this.buildConditionEvaluation(condition);
     const parameters = [...new Set(evaluation.conditions)].sort();
+    const permutations = this.truthPermutations(parameters.length);
 
-    return this.truthPermutations(parameters.length).map((permutation) => {
-      const parameterValues = evaluation.conditions.map((parameter) => permutation[parameter.indexOf(parameter)]);
+    return permutations.map((permutation) => {
+      const parameterValues = evaluation.conditions.map((parameter) => permutation[parameters.indexOf(parameter)]);
       return {
         ...parameters.reduce((o, k, i) => ({ ...o, [k]: permutation[i] }), {}),
         result: evaluation.evaluate(...parameterValues),
@@ -31,7 +43,14 @@ export default class ConditionValidationService {
   }
 
   public compareTruthTables<V extends string>(table: TruthTable<V>, compare: TruthTable<V>): boolean {
-    return deepEqual(table, compare);
+    return deepEqual(this.sortTruthTable(table), this.sortTruthTable(compare));
+  }
+
+  private sortTruthTable<V extends string>(table: TruthTable<V>): TruthTable<V> {
+    const sorted = [...table].sort((a, b) =>
+      JSON.stringify({ ...a, result: 0 }) > JSON.stringify({ ...b, result: 0 }) ? 1 : -1
+    );
+    return sorted;
   }
 
   private buildConditionEvaluation(condition: ExpressionKind): {
@@ -56,7 +75,8 @@ export default class ConditionValidationService {
                     right.evaluate(...args.slice(right.conditions.length)),
             conditions: [...left.conditions, ...right.conditions],
           };
-        } else if (inverse) {
+        } else if (ConditionValidationService.inverseOperatorSelection.includes(condition.operator) && inverse) {
+          condition = { ...condition };
           condition.operator = inverse;
           condition = types.builders.unaryExpression('!', condition);
         }
@@ -78,8 +98,13 @@ export default class ConditionValidationService {
 
   private truthPermutations<N extends number>(variables: N): (boolean[] & { length: N })[] & { length: N } {
     const result: boolean[][] = [];
-    for (let binaryRow = 0; binaryRow < Math.pow(variables, 2); binaryRow++)
-      result.push(Array(variables).map((_, i) => !!(binaryRow & (0b1 << i))));
+    for (let binaryRow = 0; binaryRow < Math.pow(variables, 2); binaryRow++) {
+      result.push(
+        Array(variables)
+          .fill(false)
+          .map((_, i) => !!(binaryRow & (0b1 << i)))
+      );
+    }
 
     return result as (boolean[] & { length: N })[] & { length: N };
   }
