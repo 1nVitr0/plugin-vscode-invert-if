@@ -24,7 +24,7 @@ suite('Unit tests for IfElseService', () => {
 
   test('extracts if statements', () => {
     const node = astService.parse(multiIfCode, 'ts');
-    const conditions = ifElseInversionService.extractIfBlocks(node, Infinity);
+    const conditions = ifElseInversionService.extractIfBlocks(node);
 
     expect(conditions.map(({ type }) => type)).to.be.members(['IfStatement', 'IfStatement', 'IfStatement']);
   });

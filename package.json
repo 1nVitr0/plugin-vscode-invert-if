@@ -10,14 +10,14 @@
     "Other"
   ],
   "activationEvents": [
-    "onCommand:invert-if.helloWorld"
+    "onCommand:invertIf.invertIfElse"
   ],
   "main": "./dist/extension.js",
   "contributes": {
     "commands": [
       {
-        "command": "invert-if.helloWorld",
-        "title": "Hello World"
+        "command": "invertIf.invertIfElse",
+        "title": "Invert If Block"
       }
     ]
   },

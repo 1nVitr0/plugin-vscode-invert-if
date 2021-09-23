@@ -1,12 +1,27 @@
 import { PartialDeep } from 'type-fest';
-import { FileKind } from 'ast-types/gen/kinds';
+import { FileKind, NodeKind } from 'ast-types/gen/kinds';
 import { parse, types, print } from 'recast';
 import { Range, TextDocument } from 'vscode';
 import ConfigurationService from './ConfigurationService';
+import { ASTNode } from 'ast-types';
 
 export default class ASTService {
   private static isASTNode(node: any): node is types.ASTNode {
     return node && typeof node === 'object' && 'type' in node;
+  }
+
+  public static nodeRange(node: NodeKind): Range {
+    if (!node.loc) return new Range(0, 0, 0, 0);
+
+    const { start, end } = node.loc;
+    return new Range(start.line - 1, start.column, end.line - 1, end.column);
+  }
+
+  public static nodeIntersectsRange(node: NodeKind, range: Range): boolean {
+    if (!node.loc) return true;
+
+    const intersect = range.intersection(this.nodeRange(node));
+    return !intersect?.isEmpty;
   }
 
   public constructor(private configurationService: ConfigurationService) {}

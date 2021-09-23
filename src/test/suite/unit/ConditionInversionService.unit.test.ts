@@ -24,14 +24,14 @@ suite('Unit tests for ASTService', () => {
 
   test('extracts nested conditions', () => {
     const node = astService.parse('if (a) { if (b) { if (c) {} } }', 'js');
-    const conditions = inversionService.extractConditions(node, Infinity);
+    const conditions = inversionService.extractConditions(node);
 
     expect(conditions.length).to.equal(3);
   });
 
   test('extracts conditions respects max', () => {
     const node = astService.parse('if (a) { if (b) { if (c) {} } }', 'js');
-    const conditions = inversionService.extractConditions(node, 2);
+    const conditions = inversionService.extractConditions(node, null, 2);
 
     expect(conditions.length).to.equal(2);
   });
