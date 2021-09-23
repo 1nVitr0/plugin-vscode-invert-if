@@ -1,5 +1,4 @@
 import ConfigurationService from './ConfigurationService';
-import { ConditionalExpression } from './ConditionInversionService';
 import { ExpressionKind, BinaryExpressionKind, LogicalExpressionKind } from 'ast-types/gen/kinds';
 import { print, types } from 'recast';
 import ConditionInversionService from './ConditionInversionService';

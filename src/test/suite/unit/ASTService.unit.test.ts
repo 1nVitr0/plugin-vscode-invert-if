@@ -45,7 +45,7 @@ suite('Unit tests for ASTService', () => {
   test('parses valid js Code', () => {
     const node = astService.parse(testCode, 'js');
     const program: ProgramKind & { errors?: any[] } = node.program;
-    const stripped = astService.stripAttributes(program, ['original', 'loc', 'tokens']);
+    const stripped = astService.stripAttributes(program);
 
     expect(!!('errors' in stripped && stripped.errors?.length)).to.be.false;
     expect(stripped).to.deep.equal(testCodeNode);

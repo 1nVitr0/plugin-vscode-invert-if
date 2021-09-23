@@ -27,7 +27,10 @@ export default class ASTService {
     return this.parse(document.getText(range), document.languageId);
   }
 
-  public stripAttributes<N extends types.ASTNode>(node: N, attributes: (string | number | symbol)[]): PartialDeep<N> {
+  public stripAttributes<N extends types.ASTNode>(
+    node: N,
+    attributes: (string | number | symbol)[] = ['original', 'loc', 'tokens']
+  ): PartialDeep<N> {
     const clone: Partial<N> | PartialDeep<N> = {};
     for (const key of Object.keys(node) as (keyof N)[]) {
       if (attributes.includes(key)) continue;
