@@ -4,22 +4,21 @@ import {
   BinaryExpressionKind,
   LogicalExpressionKind,
   StatementKind,
+  ForStatementKind,
+  DoWhileStatementKind,
 } from 'ast-types/gen/kinds';
-import { visit } from 'ast-types';
+import { visit, Visitor } from 'ast-types';
 import { types } from 'recast';
 import ConfigurationService from './ConfigurationService';
-
-export type ConditionalExpression = BinaryExpressionKind | UnaryExpressionKind | LogicalExpressionKind;
+import { IfStatementKind, WhileStatementKind } from 'ast-types/gen/kinds';
+import { NodePath } from 'ast-types/lib/node-path';
+import { SharedContextMethods } from 'ast-types/lib/path-visitor';
 
 type OperatorMap<
   K extends ExpressionKind & { operator: string },
   V extends ExpressionKind & { operator: string } = K,
   A = never
 > = Record<K['operator'], V['operator'] | A>;
-
-export function isConditionalExpression(node: ExpressionKind): node is ConditionalExpression {
-  return ['BinaryExpression', 'LogicalExpression', 'UnaryExpression'].includes(node.type);
-}
 
 export default class ConditionInversionService {
   public static inverseOperator: Partial<OperatorMap<BinaryExpressionKind>> & OperatorMap<LogicalExpressionKind> = {
@@ -41,21 +40,26 @@ export default class ConditionInversionService {
 
   public constructor(private configurationService: ConfigurationService) {}
 
-  public extractConditions(node: types.ASTNode, depth = 1): ExpressionKind[] {
+  public extractConditions(node: types.ASTNode, max = Infinity): ExpressionKind[] {
     const conditions: ExpressionKind[] = [];
 
+    function addCondition(this: SharedContextMethods, path: NodePath<StatementKind & { test: any }>) {
+      if (path.node.test) conditions.push(path.node.test);
+      if (conditions.length < max) this.traverse(path);
+    }
+
     visit(node, {
-      visitIfStatement: ({ node }) => conditions.push(...this.extractConditionsDeep(node, depth)),
-      visitForStatement: ({ node }) => conditions.push(...this.extractConditionsDeep(node, depth)),
-      visitWhileStatement: ({ node }) => conditions.push(...this.extractConditionsDeep(node, depth)),
-      visitDoWhileStatement: ({ node }) => conditions.push(...this.extractConditionsDeep(node, depth)),
+      visitIfStatement: addCondition,
+      visitForStatement: addCondition,
+      visitWhileStatement: addCondition,
+      visitDoWhileStatement: addCondition,
     });
 
     return conditions;
   }
 
   public inverse(condition: ExpressionKind, depth = this.configurationService.inversionDepth): ExpressionKind {
-    if (!isConditionalExpression(condition) || depth == 0) return this.inverseGroup(condition);
+    if (depth == 0) return this.inverseGroup(condition);
 
     switch (condition.type) {
       case 'UnaryExpression':
@@ -71,6 +75,8 @@ export default class ConditionInversionService {
         const inverseBinary = ConditionInversionService.inverseOperator[(condition as BinaryExpressionKind).operator];
         if (!inverseBinary) return this.inverseGroup(condition);
         return types.builders.binaryExpression(inverseBinary, condition.left, condition.right);
+      default:
+        return this.inverseGroup(condition);
     }
   }
 
@@ -81,30 +87,5 @@ export default class ConditionInversionService {
     if (inverse) return types.builders.unaryExpression(inverse, condition.argument, condition.prefix);
     else if (inverse == null) return condition.argument;
     else return types.builders.unaryExpression('!', condition, true);
-  }
-
-  private extractConditionsDeep(statement: StatementKind, depth: number): ExpressionKind[] {
-    const conditions: ExpressionKind[] = [];
-    switch (statement.type) {
-      case 'IfStatement':
-        conditions.push(statement.test);
-        if (statement.alternate) conditions.push(...this.extractConditions(statement.alternate, depth));
-        if (depth > 0) conditions.push(...this.extractConditions(statement.consequent, depth - 1));
-        break;
-      case 'ForStatement':
-      case 'WhileStatement':
-      case 'DoWhileStatement':
-        if (statement.test) conditions.push(statement.test);
-        if (depth > 0) conditions.push(...this.extractConditions(statement.body, depth - 1));
-        break;
-      default:
-        if ('body' in statement && statement.body && depth > 0) {
-          if (statement.body instanceof Array)
-            for (const item of statement.body) conditions.push(...this.extractConditions(item, depth - 1));
-          else conditions.push(...this.extractConditions(statement.body, depth - 1));
-        }
-    }
-
-    return conditions;
   }
 }

@@ -1,8 +1,8 @@
+import { IfStatementKind } from 'ast-types/gen/kinds';
 import { expect } from 'chai';
 import ASTService from '../../../services/ASTService';
-import ConfigurationService from '../../../services/ConfigurationService';
 import ConditionInversionService from '../../../services/ConditionInversionService';
-import { IfStatementKind, ProgramKind } from 'ast-types/gen/kinds';
+import ConfigurationService from '../../../services/ConfigurationService';
 
 suite('Unit tests for ASTService', () => {
   let configurationService: ConfigurationService;
@@ -29,9 +29,9 @@ suite('Unit tests for ASTService', () => {
     expect(conditions.length).to.equal(3);
   });
 
-  test('extracts conditions respects depth', () => {
+  test('extracts conditions respects max', () => {
     const node = astService.parse('if (a) { if (b) { if (c) {} } }', 'js');
-    const conditions = inversionService.extractConditions(node, 1);
+    const conditions = inversionService.extractConditions(node, 2);
 
     expect(conditions.length).to.equal(2);
   });
