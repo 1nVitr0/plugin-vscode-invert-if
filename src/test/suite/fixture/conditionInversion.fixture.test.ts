@@ -1,5 +1,3 @@
-import { IfStatementKind } from 'ast-types/gen/kinds';
-import LinesAndColumns from 'lines-and-columns';
 import ASTService from '../../../services/ASTService';
 import ConditionInversionService from '../../../services/ConditionInversionService';
 import ConfigurationService from '../../../services/ConfigurationService';
@@ -13,7 +11,7 @@ asyncSuite('Fixture tests for condition inversion', async function () {
 
   const suites = await FixtureTestRunner.suiteRunners('condition-inversion', async (code) => {
     const node = astService.parse(code, 'js');
-    const condition = (node.program.body[0] as IfStatementKind).test;
+    const condition = conditionInversionService.extractConditions(node)[0];
     const inverse = conditionInversionService.inverse(condition);
     const inverseCode = astService.stringify(inverse, 'js');
     const [start, end] = FixtureTestRunner.mapRangeToOffset(code, condition.loc?.start, condition.loc?.end);
