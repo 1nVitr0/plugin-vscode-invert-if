@@ -1,5 +1,5 @@
 import { IfStatementKind } from 'ast-types/gen/kinds';
-import { types } from 'recast';
+import { types, visit } from 'recast';
 import ConditionInversionService from './ConditionInversionService';
 import ConfigurationService from './ConfigurationService';
 
@@ -9,8 +9,17 @@ export default class IfElseInversionService {
     protected conditionInversionService: ConditionInversionService
   ) {}
 
-  public extractIfBlocks(node: types.ASTNode): IfStatementKind[] {
-    throw new Error('not implemented');
+  public extractIfBlocks(node: types.ASTNode, max = Infinity): IfStatementKind[] {
+    const statements: IfStatementKind[] = [];
+
+    visit(node, {
+      visitIfStatement(path) {
+        statements.push(path.node);
+        if (statements.length < max) this.traverse(path);
+      },
+    });
+
+    return statements;
   }
 
   public inverse({ test, alternate, consequent }: IfStatementKind): IfStatementKind {
