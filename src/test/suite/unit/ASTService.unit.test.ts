@@ -1,13 +1,11 @@
+import { ProgramKind } from 'ast-types/gen/kinds';
 import { expect } from 'chai';
 import ASTService from '../../../services/ASTService';
 import ConfigurationService from '../../../services/ConfigurationService';
-import ConditionInversionService from '../../../services/ConditionInversionService';
-import { ProgramKind } from 'ast-types/gen/kinds';
 
 suite('Unit tests for ASTService', () => {
   let configurationService: ConfigurationService;
   let astService: ASTService;
-  let inversionService: ConditionInversionService;
 
   const testCode = 'if (a == b && c <= d) {}';
   const testCodeNode = {
@@ -42,7 +40,6 @@ suite('Unit tests for ASTService', () => {
   suiteSetup(() => {
     configurationService = new ConfigurationService();
     astService = new ASTService(configurationService);
-    inversionService = new ConditionInversionService(configurationService);
   });
 
   test('parses valid js Code', () => {
