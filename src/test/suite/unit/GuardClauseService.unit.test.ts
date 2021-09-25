@@ -5,7 +5,8 @@ import ConditionInversionService from '../../../services/ConditionInversionServi
 import GuardClauseService, { GuardClausePosition } from '../../../services/GuardClauseService';
 import { GuardClauseType } from '../../../services/GuardClauseService';
 import { IdentifierKind, IfStatementKind, WhileStatementKind } from 'ast-types/gen/kinds';
-import { visit } from 'ast-types';
+import { visit, NodePath } from 'ast-types';
+import { NodePath as NodePathType } from 'ast-types/lib/node-path';
 
 suite('Unit tests for GuardClauseService', () => {
   const forLoopCode = 'for (let i = 0; i < 10; i++) {}';
@@ -23,31 +24,31 @@ suite('Unit tests for GuardClauseService', () => {
     configurationService = new ConfigurationService();
     astService = new ASTService(configurationService);
     inversionService = new ConditionInversionService(configurationService);
-    guardClauseService = new GuardClauseService(configurationService, inversionService);
+    guardClauseService = new GuardClauseService(configurationService, astService, inversionService);
   });
 
   test('detects guard clause for loops', () => {
-    expect(guardClauseService.detectGuardClauseType(astService.parse(forLoopCode, 'js').program.body[0])).to.equal(
-      GuardClauseType.break
-    );
-    expect(guardClauseService.detectGuardClauseType(astService.parse(whileLoopCode, 'js').program.body[0])).to.equal(
-      GuardClauseType.break
-    );
-    expect(guardClauseService.detectGuardClauseType(astService.parse(doWhileLoopCode, 'js').program.body[0])).to.equal(
-      GuardClauseType.break
-    );
+    expect(
+      guardClauseService.detectGuardClauseType(new NodePath(astService.parse(forLoopCode, 'js').program.body[0]))
+    ).to.equal(GuardClauseType.break);
+    expect(
+      guardClauseService.detectGuardClauseType(new NodePath(astService.parse(whileLoopCode, 'js').program.body[0]))
+    ).to.equal(GuardClauseType.break);
+    expect(
+      guardClauseService.detectGuardClauseType(new NodePath(astService.parse(doWhileLoopCode, 'js').program.body[0]))
+    ).to.equal(GuardClauseType.break);
   });
 
   test('detects guard clause for functions', () => {
-    expect(guardClauseService.detectGuardClauseType(astService.parse(functionCode, 'js').program.body[0])).to.equal(
-      GuardClauseType.return
-    );
+    expect(
+      guardClauseService.detectGuardClauseType(new NodePath(astService.parse(functionCode, 'js').program.body[0]))
+    ).to.equal(GuardClauseType.return);
   });
 
   test('detects guard clause for other statements', () => {
-    expect(guardClauseService.detectGuardClauseType(astService.parse(ifCode, 'js').program.body[0])).to.equal(
-      GuardClauseType.return
-    );
+    expect(
+      guardClauseService.detectGuardClauseType(new NodePath(astService.parse(ifCode, 'js').program.body[0]))
+    ).to.equal(GuardClauseType.return);
   });
 
   test('generates break guard clause', () => {
@@ -79,16 +80,17 @@ suite('Unit tests for GuardClauseService', () => {
 
   test('generates guard clause for loops', () => {
     const node = astService.parse(whileLoopCode, 'js').program.body[0] as WhileStatementKind;
-    const condition = node.test;
+    const path = new NodePath(node);
+    const condition = path.get('test');
     const withGuardClause = guardClauseService.moveToGuardClause(
-      node,
+      path,
       condition,
       GuardClausePosition.append,
       GuardClauseType.break
     );
 
     let _guardClause: IfStatementKind | null = null;
-    visit(withGuardClause, { visitIfStatement: (path) => (_guardClause = path.node) });
+    visit(withGuardClause.node, { visitIfStatement: (path) => (_guardClause = path.node) });
 
     const guardClause = _guardClause as unknown as IfStatementKind | null;
 
@@ -97,17 +99,17 @@ suite('Unit tests for GuardClauseService', () => {
   });
 
   test('generates guard clause for other nodes', () => {
-    const node: any = astService.parse(functionCode, 'js').program.body[0];
-    const condition: IdentifierKind = node.body.body[0].test.left;
+    const path = new NodePath(astService.parse(functionCode, 'js').program.body[0]);
+    const condition = path.get('body', 'body', 0, 'test', 'left');
     const withGuardClause = guardClauseService.moveToGuardClause(
-      node,
+      path,
       condition,
       GuardClausePosition.append,
       GuardClauseType.break
     );
 
     let _guardClause: IfStatementKind | null = null;
-    visit(withGuardClause, { visitIfStatement: (path) => (_guardClause = path.node) });
+    visit(withGuardClause.node, { visitIfStatement: (path) => (_guardClause = path.node) });
 
     const guardClause = _guardClause as unknown as IfStatementKind | null;
 
@@ -116,11 +118,11 @@ suite('Unit tests for GuardClauseService', () => {
   });
 
   test('replaces empty loops with true', () => {
-    const node = astService.parse(whileLoopCode, 'js').program.body[0] as WhileStatementKind;
-    const condition = node.test;
-    const withGuardClause = guardClauseService.moveToGuardClause(node, condition);
+    const path = new NodePath(astService.parse(whileLoopCode, 'js').program.body[0]);
+    const condition = path.get('test');
+    const withGuardClause = guardClauseService.moveToGuardClause(path, condition);
 
-    expect(astService.stripAttributes(withGuardClause.test)).to.deep.equal({
+    expect(astService.stripAttributes(withGuardClause.node.test)).to.deep.equal({
       type: 'Literal',
       value: true,
       comments: null,
@@ -129,12 +131,12 @@ suite('Unit tests for GuardClauseService', () => {
   });
 
   test('removes condition from original expression', () => {
-    const node: any = astService.parse(functionCode, 'js').program.body[0];
-    const condition: IdentifierKind = node.body.body[0].test.left;
+    const node = new NodePath(astService.parse(functionCode, 'js').program.body[0]);
+    const condition = node.get('body', 'body', 0, 'test', 'left');
     const withGuardClause = guardClauseService.moveToGuardClause(node, condition, GuardClausePosition.append);
 
     expect(
-      astService.stripAttributes(withGuardClause.body.body[0].test, ['original', 'loc', 'tokens', 'right'])
+      astService.stripAttributes(withGuardClause.node.body.body[0].test, ['original', 'loc', 'tokens', 'right'])
     ).to.deep.equal({
       type: 'Identifier',
       name: 'b',
@@ -144,10 +146,10 @@ suite('Unit tests for GuardClauseService', () => {
   });
 
   test('removes empty if conditions', () => {
-    const node: any = astService.parse(functionCode, 'js').program.body[0];
-    const condition: IdentifierKind = node.body.body[0].test;
+    const node = new NodePath(astService.parse(functionCode, 'js').program.body[0]);
+    const condition = node.get('body', 'body', 0, 'test');
     const withGuardClause = guardClauseService.moveToGuardClause(node, condition);
 
-    expect(withGuardClause.body.body.pop().body?.length).to.equal(0);
+    expect(withGuardClause.node.body.body.pop().body?.length).to.equal(0);
   });
 });

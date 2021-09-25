@@ -1,5 +1,4 @@
 import { astNodesAreEquivalent, NodePath, visit } from 'ast-types';
-import { NodePath as NodePathType } from 'ast-types/lib/node-path';
 import {
   BreakStatementKind,
   ContinueStatementKind,
@@ -8,10 +7,12 @@ import {
   ReturnStatementKind,
   StatementKind,
 } from 'ast-types/gen/kinds';
+import { NodePath as NodePathType } from 'ast-types/lib/node-path';
 import { types } from 'recast';
 import ConditionInversionService from './ConditionInversionService';
 import ConfigurationService from './ConfigurationService';
-import { BinaryExpressionKind, LogicalExpressionKind } from 'ast-types/gen/kinds';
+import { NodeKind } from 'ast-types/gen/kinds';
+import ASTService from './ASTService';
 
 export enum GuardClauseType {
   break,
@@ -23,6 +24,7 @@ export enum GuardClauseType {
 export enum GuardClausePosition {
   prepend,
   append,
+  keep,
   auto,
 }
 
@@ -35,74 +37,77 @@ export default class GuardClauseService {
 
   public constructor(
     protected configurationService: ConfigurationService,
+    protected astService: ASTService,
     protected conditionInversionService: ConditionInversionService
   ) {}
 
-  public moveToGuardClause<S extends StatementKind>(
-    block: S,
-    condition: ExpressionKind,
+  public moveToGuardClause<S extends NodeKind>(
+    block: NodePathType<S>,
+    condition: NodePathType<ExpressionKind>,
     position: GuardClausePosition = GuardClausePosition.auto,
     type: GuardClauseType = GuardClauseType.auto
-  ): S {
+  ): NodePathType<S> {
     const detectedGuardType: Exclude<GuardClauseType, GuardClauseType.auto> =
       type == GuardClauseType.auto ? this.detectGuardClauseType(block) : type;
     const detectedPosition: Exclude<GuardClausePosition, GuardClausePosition.auto> =
-      position == GuardClausePosition.auto ? this.detectGuardClausePosition(block) : position;
-
-    block = this.removeExpression(block, condition);
+      position == GuardClausePosition.auto ? this.detectGuardClausePosition(block, condition) : position;
 
     const body = this.getBody(block);
-    const guardClause = this.toGuardClause(condition, detectedGuardType);
+    const guardClause = this.toGuardClause(condition.node, detectedGuardType);
 
     if (detectedPosition == GuardClausePosition.append) body.push(guardClause);
+    else if (detectedPosition == GuardClausePosition.keep) this.insertBeforeParent(body, condition, guardClause);
     else body.unshift(guardClause);
+
+    block = this.removeExpression(block, condition);
 
     return block;
   }
 
-  public removeExpression<S extends StatementKind>(block: S, condition: ExpressionKind): S {
-    return visit(block, {
-      visitExpression(path) {
-        if (!astNodesAreEquivalent(path.node, condition)) return this.traverse(path);
+  public removeExpression<S extends NodeKind>(
+    block: NodePathType<S>,
+    condition: NodePathType<ExpressionKind>
+  ): NodePathType<S> {
+    if (GuardClauseService.replaceTrueParentStatement.includes(condition.parent?.node?.type)) {
+      // Replace empty loop conditions with true
+      condition.replace(types.builders.literal(true));
+    } else if (condition.parent?.node?.type == 'IfStatement') {
+      // Remove empty if statements, but keep else if
+      const parent: NodePathType<IfStatementKind> = condition.parent;
+      const { alternate, consequent } = parent.node;
+      if (alternate) parent.insertAfter(alternate);
+      if (consequent.type == 'BlockStatement') for (const child of consequent.body) parent.insertBefore(child);
+      else parent.insertAfter(consequent);
+      parent.prune();
+    } else if (condition.name == 'left') {
+      // Replace empty binary expressions (left)
+      condition.parent.replace(condition.parent.node.right);
+    } else if (condition.name == 'right') {
+      // Replace empty binary expressions (right)
+      condition.parent.replace(condition.parent.node.left);
+    } else if (condition.name == 'argument') {
+      // Remove empty unary expressions
+      condition.parent.prune();
+    } else {
+      // Delete condition used as guard clause
+      condition.prune();
+    }
 
-        if (GuardClauseService.replaceTrueParentStatement.includes(path.parent?.node?.type)) {
-          // Replace empty loop conditions with true
-          path.replace(types.builders.literal(true));
-        } else if (path.parent?.node?.type == 'IfStatement') {
-          // Remove empty if statements, but keep else if
-          const parent: NodePathType<IfStatementKind> = path.parent;
-          if (parent.node.alternate) parent.insertAfter(parent.node.alternate);
-          parent.insertAfter(parent.node.consequent);
-          parent.prune();
-        } else if (path.name == 'left') {
-          // Replace empty binary expressions (left)
-          path.parent.replace(path.parent.node.right);
-        } else if (path.name == 'right') {
-          // Replace empty binary expressions (right)
-          path.parent.replace(path.parent.node.left);
-        } else if (path.name == 'argument') {
-          // Remove empty unary expressions
-          path.parent.prune();
-        } else {
-          // Delete condition used as guard clause
-          path.prune();
-        }
-
-        return false; // Stop traversing
-      },
-    });
+    return block;
   }
 
   public toGuardClause(
     condition: ExpressionKind,
-    type: Exclude<GuardClauseType, GuardClauseType.auto>
+    type: Exclude<GuardClauseType, GuardClauseType.auto>,
+    invert = true
   ): IfStatementKind {
     const statement = this.getGuardStatement(type);
+    if (invert) condition = this.conditionInversionService.inverse(condition);
     return types.builders.ifStatement(condition, statement);
   }
 
-  public detectGuardClauseType(block: StatementKind): Exclude<GuardClauseType, GuardClauseType.auto> {
-    switch (block.type) {
+  public detectGuardClauseType(block: NodePathType<NodeKind>): Exclude<GuardClauseType, GuardClauseType.auto> {
+    switch (block.node.type) {
       case 'WhileStatement':
       case 'DoWhileStatement':
       case 'ForStatement':
@@ -113,8 +118,13 @@ export default class GuardClauseService {
     }
   }
 
-  public detectGuardClausePosition(block: StatementKind): Exclude<GuardClausePosition, GuardClausePosition.auto> {
-    switch (block.type) {
+  public detectGuardClausePosition(
+    block: NodePathType<NodeKind>,
+    condition: NodePathType<ExpressionKind>
+  ): Exclude<GuardClausePosition, GuardClausePosition.auto> {
+    if (this.astService.getFirstParent(condition, ['IfStatement'])) return GuardClausePosition.keep;
+
+    switch (block.node.type) {
       case 'WhileStatement':
       case 'ForStatement':
         return GuardClausePosition.append;
@@ -126,12 +136,22 @@ export default class GuardClauseService {
     }
   }
 
-  private getBody<S extends StatementKind>(node: S): NodePathType<S> {
-    const path = new NodePath(node);
+  private getBody<S extends NodeKind>(path: NodePathType<S>): NodePathType<S> {
     let body = path.get('body');
-    while ('body' in body.value) body = body.get('body');
+    while (body.value && 'body' in body.value) body = body.get('body');
 
     return body;
+  }
+
+  private insertBeforeParent(
+    block: NodePathType<NodeKind>,
+    before: NodePathType<NodeKind>,
+    node: NodeKind
+  ): NodePathType<NodeKind> {
+    while (!astNodesAreEquivalent(before.parent.node, block.node)) before = before.parent;
+    before.insertBefore(node);
+
+    return block;
   }
 
   private getGuardStatement(
