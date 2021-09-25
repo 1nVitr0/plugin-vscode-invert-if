@@ -2,8 +2,14 @@
   "name": "invert-if",
   "displayName": "Invert If",
   "description": "Invert if blocks and other conditions",
-  "repository": "https://github.com/1nVitr0/plugin-vscode-invert-if.git",
+  "author": "1nVitr0",
+  "publisher": "1nVitr0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/1nVitr0/plugin-vscode-invert-if.git"
+  },
   "version": "0.0.1",
+  "preview": true,
   "engines": {
     "vscode": "^1.60.0"
   },
