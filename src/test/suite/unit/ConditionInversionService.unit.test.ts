@@ -17,21 +17,21 @@ suite('Unit tests for ASTService', () => {
 
   test('extracts conditions', () => {
     const node = astService.parse('if (a) {} else if (b) {} else if (c) {}', 'js');
-    const conditions = inversionService.extractConditions(node);
+    const conditions = astService.extractConditions(node);
 
     expect(conditions.length).to.equal(3);
   });
 
   test('extracts nested conditions', () => {
     const node = astService.parse('if (a) { if (b) { if (c) {} } }', 'js');
-    const conditions = inversionService.extractConditions(node);
+    const conditions = astService.extractConditions(node);
 
     expect(conditions.length).to.equal(3);
   });
 
   test('extracts conditions respects max', () => {
     const node = astService.parse('if (a) { if (b) { if (c) {} } }', 'js');
-    const conditions = inversionService.extractConditions(node, null, 2);
+    const conditions = astService.extractConditions(node, null, 2);
 
     expect(conditions.length).to.equal(2);
   });

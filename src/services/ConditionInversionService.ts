@@ -1,17 +1,6 @@
-import { visit } from 'ast-types';
-import {
-  BinaryExpressionKind,
-  ExpressionKind,
-  LogicalExpressionKind,
-  StatementKind,
-  UnaryExpressionKind,
-} from 'ast-types/gen/kinds';
-import { NodePath } from 'ast-types/lib/node-path';
-import { SharedContextMethods } from 'ast-types/lib/path-visitor';
+import { BinaryExpressionKind, ExpressionKind, LogicalExpressionKind, UnaryExpressionKind } from 'ast-types/gen/kinds';
 import { types } from 'recast';
-import { Range } from 'vscode';
 import ConfigurationService from './ConfigurationService';
-import ASTService from './ASTService';
 
 type OperatorMap<
   K extends ExpressionKind & { operator: string },
@@ -38,26 +27,6 @@ export default class ConditionInversionService {
   };
 
   public constructor(private configurationService: ConfigurationService) {}
-
-  public extractConditions(node: types.ASTNode, range: Range | null = null, max = Infinity): ExpressionKind[] {
-    const conditions: ExpressionKind[] = [];
-
-    function addCondition(this: SharedContextMethods, path: NodePath<StatementKind & { test: any }>) {
-      if (range && !ASTService.nodeIntersectsRange(path.node, range)) return this.traverse(path);
-      if (path.node.test) conditions.push(path.node.test);
-      if (conditions.length < max) this.traverse(path);
-      else return false;
-    }
-
-    visit(node, {
-      visitIfStatement: addCondition,
-      visitForStatement: addCondition,
-      visitWhileStatement: addCondition,
-      visitDoWhileStatement: addCondition,
-    });
-
-    return conditions;
-  }
 
   public inverse(condition: ExpressionKind, depth = this.configurationService.inversionDepth): ExpressionKind {
     if (depth == 0) return this.inverseGroup(condition);
