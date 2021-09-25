@@ -1,12 +1,11 @@
-import { ProgramKind } from 'ast-types/gen/kinds';
 import { expect } from 'chai';
-import ASTService from '../../../services/ASTService';
-import ConfigurationService from '../../../services/ConfigurationService';
 import InvertIfServiceProvider from '../../../providers/InvertIfServiceProvider';
+import ASTService from '../../../services/ASTService';
 import ConditionInversionService from '../../../services/ConditionInversionService';
+import ConditionValidationService from '../../../services/ConditionValidationService';
+import ConfigurationService from '../../../services/ConfigurationService';
 import GuardClauseService from '../../../services/GuardClauseService';
 import IfElseInversionService from '../../../services/IfElseInversionService';
-import ConditionValidationService from '../../../services/ConditionValidationService';
 
 suite('Unit tests for ASTService', () => {
   let serviceProvider: InvertIfServiceProvider;

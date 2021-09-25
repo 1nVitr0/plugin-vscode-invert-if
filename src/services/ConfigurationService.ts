@@ -1,5 +1,6 @@
 import { Options } from 'acorn';
 import { ConfigurationTarget, workspace, WorkspaceConfiguration } from 'vscode';
+import { NodeKind } from 'ast-types/gen/kinds';
 
 export interface LanguageOptions {
   useEcmaVersion: Options['ecmaVersion'];
@@ -25,6 +26,21 @@ export default class ConfigurationService implements Configuration {
   };
 
   public configurationTarget: ConfigurationTarget = ConfigurationTarget.Global;
+
+  // TODO: make configuration
+  public get guardClauseParentTypes(): NodeKind['type'][] {
+    return [
+      'WhileStatement',
+      'ForStatement',
+      'ForAwaitStatement',
+      'ForInStatement',
+      'ForOfStatement',
+      'DoWhileStatement',
+      'FunctionExpression',
+      'FunctionDeclaration',
+      'ArrowFunctionExpression',
+    ];
+  }
 
   public reset(path?: Path<Configuration>) {
     throw new Error('not implemented');

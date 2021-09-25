@@ -11,11 +11,11 @@ asyncSuite('Fixture tests for simple condition detection', async function () {
 
   const suites = await FixtureTestRunner.suiteRunners('simple-condition-detection', async (code) => {
     const node = astService.parse(code, 'js');
-    const conditions = conditionInversionService.extractConditions(node);
+    const conditions = astService.extractConditions(node);
 
-    const replace = conditions.map((condition) => {
-      const [start, end] = FixtureTestRunner.mapRangeToOffset(code, condition.loc?.start, condition.loc?.end);
-      const inverse = conditionInversionService.inverse(condition);
+    const replace = conditions.map(({ node }) => {
+      const [start, end] = FixtureTestRunner.mapRangeToOffset(code, node.loc?.start, node.loc?.end);
+      const inverse = conditionInversionService.inverse(node);
       const inverseCode = astService.stringify(inverse, 'js');
 
       return { start, end, code: inverseCode };

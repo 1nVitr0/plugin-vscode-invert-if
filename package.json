@@ -10,14 +10,27 @@
     "Other"
   ],
   "activationEvents": [
-    "onCommand:invertIf.invertIfElse"
+    "onCommand:invertIf.invertIfElse",
+    "onCommand:invertIf.createGuardClause",
+    "onCommand:invertIf.invertCondition"
   ],
   "main": "./dist/extension.js",
   "contributes": {
     "commands": [
       {
         "command": "invertIf.invertIfElse",
-        "title": "Invert If Block"
+        "title": "Invert If: Invert If Block",
+        "shortTitle": "Invert If Block"
+      },
+      {
+        "command": "invertIf.createGuardClause",
+        "title": "Invert If: Create Guard Clause from Condition",
+        "shortTitle": "Create Guard Clause"
+      },
+      {
+        "command": "invertIf.invertCondition",
+        "title": "Invert If: Invert Condition",
+        "shortTitle": "Invert Condition"
       }
     ]
   },
@@ -61,6 +74,7 @@
     "@types/deep-equal": "^1.0.1",
     "ast-types": "^0.14.2",
     "deep-equal": "^2.0.5",
+    "escape-string-regexp": "^5.0.0",
     "lines-and-columns": "^1.1.6",
     "recast": "^0.20.5",
     "strip-comments": "^2.0.1"

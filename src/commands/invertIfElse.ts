@@ -1,13 +1,35 @@
-import { Range, TextEditor, TextEditorEdit } from 'vscode';
+import { Range, TextEditor, TextEditorEdit, window } from 'vscode';
 import { service } from '../injections';
 import ASTService from '../services/ASTService';
+import { NodeKind } from 'ast-types/gen/kinds';
 
 export default function invertIfElse(editor: TextEditor, editBuilder: TextEditorEdit, selection?: Range) {
-  const program = service.ast.parseDocument(editor.document);
-  const ifBlock = service.ifElseInversion.extractIfBlocks(program, selection, 1).pop();
+  const selections = selection ? [selection] : editor.selections;
 
-  if (!ifBlock || !ifBlock.loc) return;
+  let program;
+  try {
+    program = service.ast.parseDocument(editor.document);
+  } catch (e: any) {
+    return window.showErrorMessage(service.lang.errorMessage('parseError', e.description));
+  }
 
-  const inverse = service.ifElseInversion.inverse(ifBlock);
-  editBuilder.replace(ASTService.nodeRange(ifBlock), service.ast.stringify(inverse, editor.document.languageId));
+  const changes: NodeKind[] = [];
+  let hasErrors = false;
+  for (const selection of selections) {
+    try {
+      const ifBlock = service.ast.extractIfBlocks(program, selection, 1).pop();
+
+      if (!ifBlock || !ifBlock.node.loc) return window.showErrorMessage(service.lang.errorMessage('noIfBlock'));
+
+      const inverse = service.ifElseInversion.inverse(ifBlock.node);
+      inverse.loc = ifBlock.node.loc; // Keep location of previous Block
+      changes.push(inverse);
+    } catch (e) {
+      window.showErrorMessage(service.lang.errorMessage('genericError', (e as Error).message));
+      hasErrors = true;
+    }
+  }
+
+  const hasChanges = service.ast.applyASTChanges(editor.document, editBuilder, ...changes);
+  if (!hasChanges && !hasErrors) window.showInformationMessage(service.lang.infoMessage('noChanges'));
 }
