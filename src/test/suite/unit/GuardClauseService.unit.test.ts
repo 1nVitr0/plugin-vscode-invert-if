@@ -1,12 +1,10 @@
+import { NodePath, visit } from 'ast-types';
+import { IfStatementKind, WhileStatementKind } from 'ast-types/gen/kinds';
 import { expect } from 'chai';
 import ASTService from '../../../services/ASTService';
-import ConfigurationService from '../../../services/ConfigurationService';
 import ConditionInversionService from '../../../services/ConditionInversionService';
-import GuardClauseService, { GuardClausePosition } from '../../../services/GuardClauseService';
-import { GuardClauseType } from '../../../services/GuardClauseService';
-import { IdentifierKind, IfStatementKind, WhileStatementKind } from 'ast-types/gen/kinds';
-import { visit, NodePath } from 'ast-types';
-import { NodePath as NodePathType } from 'ast-types/lib/node-path';
+import ConfigurationService from '../../../services/ConfigurationService';
+import GuardClauseService, { GuardClausePosition, GuardClauseType } from '../../../services/GuardClauseService';
 
 suite('Unit tests for GuardClauseService', () => {
   const forLoopCode = 'for (let i = 0; i < 10; i++) {}';
@@ -56,7 +54,6 @@ suite('Unit tests for GuardClauseService', () => {
     const condition = node.test;
     const guardClause = guardClauseService.toGuardClause(condition, GuardClauseType.break);
 
-    expect(guardClause.test).to.deep.equal(condition);
     expect(guardClause.consequent.type).to.equal('BreakStatement');
   });
 
@@ -65,7 +62,6 @@ suite('Unit tests for GuardClauseService', () => {
     const condition = node.test;
     const guardClause = guardClauseService.toGuardClause(condition, GuardClauseType.continue);
 
-    expect(guardClause.test).to.deep.equal(condition);
     expect(guardClause.consequent.type).to.equal('ContinueStatement');
   });
 
@@ -74,7 +70,6 @@ suite('Unit tests for GuardClauseService', () => {
     const condition = node.test;
     const guardClause = guardClauseService.toGuardClause(condition, GuardClauseType.return);
 
-    expect(guardClause.test).to.deep.equal(condition);
     expect(guardClause.consequent.type).to.equal('ReturnStatement');
   });
 
@@ -94,7 +89,6 @@ suite('Unit tests for GuardClauseService', () => {
 
     const guardClause = _guardClause as unknown as IfStatementKind | null;
 
-    expect(guardClause?.test).to.deep.equal(condition);
     expect(guardClause?.consequent.type).to.equal('BreakStatement');
   });
 
@@ -113,7 +107,6 @@ suite('Unit tests for GuardClauseService', () => {
 
     const guardClause = _guardClause as unknown as IfStatementKind | null;
 
-    expect(guardClause?.test).to.deep.equal(condition);
     expect(guardClause?.consequent.type).to.equal('BreakStatement');
   });
 
@@ -137,12 +130,7 @@ suite('Unit tests for GuardClauseService', () => {
 
     expect(
       astService.stripAttributes(withGuardClause.node.body.body[0].test, ['original', 'loc', 'tokens', 'right'])
-    ).to.deep.equal({
-      type: 'Identifier',
-      name: 'b',
-      optional: false,
-      typeAnnotation: null,
-    });
+    ).to.deep.equal({ type: 'Identifier', name: 'b' });
   });
 
   test('removes empty if conditions', () => {
@@ -150,6 +138,6 @@ suite('Unit tests for GuardClauseService', () => {
     const condition = node.get('body', 'body', 0, 'test');
     const withGuardClause = guardClauseService.moveToGuardClause(node, condition);
 
-    expect(withGuardClause.node.body.body.pop().body?.length).to.equal(0);
+    expect(withGuardClause.node.body.body.length).to.equal(1);
   });
 });

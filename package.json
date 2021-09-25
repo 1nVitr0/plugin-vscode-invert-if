@@ -44,7 +44,7 @@
     "pretest": "npm run test-compile && npm run lint",
     "lint": "eslint src --ext ts",
     "test": "node ./out/test/runTest.js",
-    "test:coverage": "node ./out/test/runTest.js",
+    "test:coverage": "export COVERAGE=true && node ./out/test/runTest.js",
     "coverage": "nyc report --reporter=text"
   },
   "devDependencies": {

@@ -9,19 +9,21 @@ import IfElseInversionService from '../../../services/IfElseInversionService';
 import LanguageService from '../../../services/LanguageService';
 
 suite('Unit tests for ASTService', () => {
-  let serviceProvider: InvertIfServiceProvider;
+  let configurationService: ConfigurationService;
+  let languageService: LanguageService;
 
   suiteSetup(() => {
-    serviceProvider = new InvertIfServiceProvider();
+    configurationService = new ConfigurationService();
+    languageService = new LanguageService(configurationService);
   });
 
-  test('provides all services', () => {
-    expect(serviceProvider.ast).to.be.instanceOf(ASTService);
-    expect(serviceProvider.conditionInversion).to.be.instanceOf(ConditionInversionService);
-    expect(serviceProvider.configuration).to.be.instanceOf(ConfigurationService);
-    expect(serviceProvider.guardClause).to.be.instanceOf(GuardClauseService);
-    expect(serviceProvider.ifElseInversion).to.be.instanceOf(IfElseInversionService);
-    expect(serviceProvider.lang).to.be.instanceOf(LanguageService);
-    expect(serviceProvider.validation).to.be.instanceOf(ConditionValidationService);
+  test('provides error messages with parameter', () => {
+    const errorMessage = languageService.errorMessage('genericError', 'parameter');
+    expect(errorMessage.indexOf('parameter')).to.be.at.least(0);
+  });
+
+  test('provides info messages with parameter', () => {
+    const errorMessage = languageService.infoMessage('noChanges', 'parameter');
+    expect(errorMessage.indexOf('parameter')).to.be.at.least(0);
   });
 });
