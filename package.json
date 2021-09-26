@@ -55,6 +55,7 @@
   "activationEvents": [
     "onCommand:invertIf.invertIfElse",
     "onCommand:invertIf.createGuardClause",
+    "onCommand:invertIf.createCustomGuardClause",
     "onCommand:invertIf.invertCondition"
   ],
   "contributes": {
@@ -68,6 +69,11 @@
         "command": "invertIf.createGuardClause",
         "title": "Invert If: Create Guard Clause from Condition",
         "shortTitle": "Create Guard Clause"
+      },
+      {
+        "command": "invertIf.createCustomGuardClause",
+        "title": "Invert If: Create Custom Guard Clause",
+        "shortTitle": "Custom Guard Clause"
       },
       {
         "command": "invertIf.invertCondition",
