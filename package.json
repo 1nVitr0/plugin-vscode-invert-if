@@ -1,27 +1,62 @@
 {
   "name": "invert-if",
+  "version": "1.0.0",
+  "preview": true,
   "displayName": "Invert If",
-  "description": "Invert if blocks and other conditions",
+  "description": "Invert if blocks & conditions and create guard clauses on the fly",
   "author": "1nVitr0",
   "publisher": "1nVitr0",
   "repository": {
     "type": "git",
     "url": "https://github.com/1nVitr0/plugin-vscode-invert-if.git"
   },
-  "version": "0.0.1",
-  "preview": true,
+  "main": "./dist/extension.js",
   "engines": {
     "vscode": "^1.60.0"
   },
+  "extensionKind": [
+    "workspace",
+    "ui"
+  ],
   "categories": [
+    "Formatters",
+    "Programming Languages",
     "Other"
   ],
+  "keywords": [
+    "refactor",
+    "invert if",
+    "invert condition",
+    "negate if condition",
+    "swap if"
+  ],
+  "icon": "resources/icon.png",
+  "badges": [
+    {
+      "url": "https://img.shields.io/badge/%20%20%F0%9F%93%A6%F0%9F%9A%80-semantic--release-e10079.svg",
+      "href": "https://github.com/semantic-release/semantic-release",
+      "description": "Powered by Semantic Release"
+    },
+    {
+      "url": "https://img.shields.io/github/workflow/status/1nVitr0/plugin-vscode-invert-if/Tests?label=tests&logo=visualstudiocode",
+      "href": "https://github.com/1nVitr0/plugin-vscode-invert-if/actions/workflows/test.yml",
+      "description": "Main Test Status"
+    },
+    {
+      "url": "https://img.shields.io/github/workflow/status/1nVitr0/plugin-vscode-invert-if/Release?logo=visualstudiocode",
+      "href": "https://github.com/1nVitr0/plugin-vscode-invert-if/actions/workflows/release.yml",
+      "description": "Build Status"
+    }
+  ],
+  "galleryBanner": {
+    "color": "#06362d",
+    "theme": "dark"
+  },
   "activationEvents": [
     "onCommand:invertIf.invertIfElse",
     "onCommand:invertIf.createGuardClause",
     "onCommand:invertIf.invertCondition"
   ],
-  "main": "./dist/extension.js",
   "contributes": {
     "commands": [
       {
