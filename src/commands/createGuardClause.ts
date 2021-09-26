@@ -1,4 +1,4 @@
-import { Range, TextEditor, TextEditorEdit, window } from 'vscode';
+import { Range, TextEditor, TextEditorEdit, window, commands } from 'vscode';
 import { service } from '../injections';
 import { NodePath } from 'ast-types/lib/node-path';
 import { NodeKind } from 'ast-types/gen/kinds';
@@ -43,4 +43,20 @@ export default function createGuardClause(
 
   const hasChanges = service.ast.applyASTChanges(editor.document, editBuilder, ...changes.map(({ node }) => node));
   if (!hasChanges && !hasErrors) window.showInformationMessage(service.lang.infoMessage('noChanges'));
+}
+
+export async function createCustomGuardClause(editor: TextEditor) {
+  const typeOptions: (keyof typeof GuardClauseType)[] = ['auto', 'break', 'continue', 'return'];
+  const positionOptions: (keyof typeof GuardClausePosition)[] = ['auto', 'keep', 'prepend', 'append'];
+
+  const type = ((await window.showQuickPick(typeOptions, {
+    title: 'Guard clause type',
+    placeHolder: 'type',
+  })) || 'auto') as keyof typeof GuardClauseType;
+  const position = ((await window.showQuickPick(positionOptions, {
+    title: 'Guard clause position',
+    placeHolder: 'position',
+  })) || 'auto') as keyof typeof GuardClausePosition;
+
+  commands.executeCommand('invertIf.createGuardClause', null, GuardClausePosition[position], GuardClauseType[type]);
 }
