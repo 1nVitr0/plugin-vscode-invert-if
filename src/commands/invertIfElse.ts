@@ -1,8 +1,12 @@
 import { Range, TextEditor, TextEditorEdit, window } from 'vscode';
 import { service } from '../injections';
-import ASTService from '../services/ASTService';
 import { NodeKind } from 'ast-types/gen/kinds';
 
+/**
+ * @title Invert If: Invert If / Else Block
+ * @shortTitle Invert If / Else Block
+ * @command invertIf.invertIfElse
+ */
 export default function invertIfElse(editor: TextEditor, editBuilder: TextEditorEdit, selection?: Range) {
   const selections = selection ? [selection] : editor.selections;
 
