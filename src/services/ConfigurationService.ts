@@ -1,6 +1,6 @@
 import { Options } from 'acorn';
-import { ConfigurationTarget, workspace, WorkspaceConfiguration } from 'vscode';
 import { NodeKind } from 'ast-types/gen/kinds';
+import { ConfigurationTarget, workspace, WorkspaceConfiguration } from 'vscode';
 
 export interface LanguageOptions {
   useEcmaVersion: Options['ecmaVersion'];

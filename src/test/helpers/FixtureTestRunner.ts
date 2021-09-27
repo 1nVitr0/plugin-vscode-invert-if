@@ -1,10 +1,10 @@
-import { resolve } from 'path';
-import * as glob from 'glob';
-import { readdir, readFile } from 'fs';
-import { promisify } from 'util';
-import { Suite, Test } from 'mocha';
 import { expect } from 'chai';
+import { readdir, readFile } from 'fs';
+import * as glob from 'glob';
 import LinesAndColumns from 'lines-and-columns';
+import { Suite, Test } from 'mocha';
+import { resolve } from 'path';
+import { promisify } from 'util';
 
 export type TestFunction = (fixture: string) => Thenable<string>;
 

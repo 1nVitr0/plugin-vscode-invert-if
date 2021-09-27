@@ -1,8 +1,7 @@
-import ConfigurationService from './ConfigurationService';
-import { ExpressionKind, BinaryExpressionKind, LogicalExpressionKind } from 'ast-types/gen/kinds';
+import { BinaryExpressionKind, ExpressionKind, LogicalExpressionKind } from 'ast-types/gen/kinds';
 import { print, types } from 'recast';
 import ConditionInversionService from './ConditionInversionService';
-import deepEqual = require('deep-equal');
+import ConfigurationService from './ConfigurationService';
 
 export type TruthTable<V extends string> = { [key in V | 'result']: boolean }[];
 export default class ConditionValidationService {
@@ -42,7 +41,13 @@ export default class ConditionValidationService {
   }
 
   public compareTruthTables<V extends string>(table: TruthTable<V>, compare: TruthTable<V>): boolean {
-    return deepEqual(this.sortTruthTable(table), this.sortTruthTable(compare));
+    if (table.length !== compare.length) return false;
+    const zip = table.map((row, i) => [row, compare[i]]);
+
+    for (const [row, compareRow] of zip)
+      for (const key of Object.keys(row) as V[]) if (row[key] !== compareRow[key]) return false;
+
+    return true;
   }
 
   private sortTruthTable<V extends string>(table: TruthTable<V>): TruthTable<V> {

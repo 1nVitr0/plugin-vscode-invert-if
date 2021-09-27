@@ -1,18 +1,18 @@
-import { astNodesAreEquivalent, NodePath, visit } from 'ast-types';
+import { astNodesAreEquivalent } from 'ast-types';
 import {
   BreakStatementKind,
   ContinueStatementKind,
   ExpressionKind,
   IfStatementKind,
+  NodeKind,
   ReturnStatementKind,
   StatementKind,
 } from 'ast-types/gen/kinds';
 import { NodePath as NodePathType } from 'ast-types/lib/node-path';
 import { types } from 'recast';
+import ASTService from './ASTService';
 import ConditionInversionService from './ConditionInversionService';
 import ConfigurationService from './ConfigurationService';
-import { NodeKind } from 'ast-types/gen/kinds';
-import ASTService from './ASTService';
 
 export enum GuardClauseType {
   break,
