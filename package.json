@@ -25,10 +25,10 @@
   ],
   "keywords": [
     "refactor",
-    "invert if",
-    "invert condition",
-    "negate if condition",
-    "swap if"
+    "invert if condition",
+    "negate condition",
+    "swap if else",
+    "guard clause"
   ],
   "icon": "resources/icon.png",
   "badges": [
@@ -53,10 +53,10 @@
     "theme": "dark"
   },
   "activationEvents": [
-    "onCommand:invertIf.invertIfElse",
     "onCommand:invertIf.createGuardClause",
     "onCommand:invertIf.createCustomGuardClause",
-    "onCommand:invertIf.invertCondition"
+    "onCommand:invertIf.invertCondition",
+    "onCommand:invertIf.invertIfElse"
   ],
   "contributes": {
     "configuration": {},

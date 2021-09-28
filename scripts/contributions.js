@@ -7,7 +7,7 @@ const { resolve, join } = require('path');
 const root = resolve(__dirname, '../src');
 const packageFile = resolve(__dirname, '..', 'package.json');
 const contributions = [
-  { type: 'commands', files: 'commands/**/**.ts' }
+  { type: 'commands', files: 'commands/**/**.ts', activation: { type: 'onCommand', key: 'command' } }
 ]
 
 /** 
@@ -36,8 +36,17 @@ function getDocObject (node) {
   return result;
 }
 
+function addActivationEvent(data, options) {
+  const value = `${options.type}:${data[options.key]}`;
+  
+  package.activationEvents.push(`${options.type}:${data[options.key]}`);
+}
+
 const package = readJsonFile(packageFile);
 const parser = new TSDocParser();
+
+// Reset activation events
+package.activationEvents = [];
 
 for (const contribution of contributions) {
   const files = glob.sync(contribution.files, { cwd: root })
@@ -52,6 +61,7 @@ for (const contribution of contributions) {
     const descriptor = summary.nodes.length && getDocObject(summary.nodes[0]);
 
     if (descriptor) contributionEntry.push(descriptor);
+    if(descriptor && contribution.activation) addActivationEvent(descriptor, contribution.activation);
   }
 
   package.contributes[contribution.type] = contributionEntry;
