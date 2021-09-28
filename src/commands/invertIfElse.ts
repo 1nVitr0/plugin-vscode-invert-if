@@ -25,7 +25,7 @@ export default function invertIfElse(editor: TextEditor, editBuilder: TextEditor
 
       if (!ifBlock || !ifBlock.node.loc) return window.showErrorMessage(service.lang.errorMessage('noIfBlock'));
 
-      const inverse = service.ifElseInversion.inverse(ifBlock.node);
+      const inverse = service.ifElse.inverse(ifBlock.node);
       inverse.loc = ifBlock.node.loc; // Keep location of previous Block
       changes.push(inverse);
     } catch (e) {

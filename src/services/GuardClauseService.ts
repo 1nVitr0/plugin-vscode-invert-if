@@ -11,7 +11,7 @@ import {
 import { NodePath as NodePathType } from 'ast-types/lib/node-path';
 import { types } from 'recast';
 import ASTService from './ASTService';
-import ConditionInversionService from './ConditionInversionService';
+import ConditionService from './ConditionService';
 import ConfigurationService from './ConfigurationService';
 
 export enum GuardClauseType {
@@ -38,7 +38,7 @@ export default class GuardClauseService {
   public constructor(
     protected configurationService: ConfigurationService,
     protected astService: ASTService,
-    protected conditionInversionService: ConditionInversionService
+    protected conditionService: ConditionService
   ) {}
 
   public moveToGuardClause<S extends NodeKind>(
@@ -102,7 +102,7 @@ export default class GuardClauseService {
     invert = true
   ): IfStatementKind {
     const statement = this.getGuardStatement(type);
-    if (invert) condition = this.conditionInversionService.inverse(condition);
+    if (invert) condition = this.conditionService.inverse(condition);
     return types.builders.ifStatement(condition, statement);
   }
 

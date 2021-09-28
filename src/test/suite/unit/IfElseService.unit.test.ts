@@ -1,9 +1,9 @@
 import { IfStatementKind } from 'ast-types/gen/kinds';
 import { expect } from 'chai';
 import ASTService from '../../../services/ASTService';
-import ConditionInversionService from '../../../services/ConditionInversionService';
+import ConditionService from '../../../services/ConditionService';
 import ConfigurationService from '../../../services/ConfigurationService';
-import IfElseInversionService from '../../../services/IfElseInversionService';
+import IfElseService from '../../../services/IfElseService';
 
 suite('Unit tests for IfElseService', () => {
   const multiIfCode = 'if (a == b && c <= d) {} if (c) {} if (d) {}';
@@ -12,14 +12,14 @@ suite('Unit tests for IfElseService', () => {
 
   let configurationService: ConfigurationService;
   let astService: ASTService;
-  let inversionService: ConditionInversionService;
-  let ifElseInversionService: IfElseInversionService;
+  let conditionService: ConditionService;
+  let ifElseService: IfElseService;
 
   suiteSetup(() => {
     configurationService = new ConfigurationService();
     astService = new ASTService(configurationService);
-    inversionService = new ConditionInversionService(configurationService);
-    ifElseInversionService = new IfElseInversionService(configurationService, inversionService);
+    conditionService = new ConditionService(configurationService);
+    ifElseService = new IfElseService(configurationService, conditionService);
   });
 
   test('extracts if statements', () => {
@@ -31,7 +31,7 @@ suite('Unit tests for IfElseService', () => {
 
   test('inverses if statements', () => {
     const node = astService.parse(testCode, 'ts');
-    const inverse = ifElseInversionService.inverse(node.program.body[0] as IfStatementKind);
+    const inverse = ifElseService.inverse(node.program.body[0] as IfStatementKind);
     const code = astService.stringify(inverse, 'js').replace(/\r?\n|\s+/g, '');
 
     expect(code).to.equal(inverseTestCode.replace(/\r?\n|\s+/g, ''));

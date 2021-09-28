@@ -2,7 +2,7 @@ import { NodePath, visit } from 'ast-types';
 import { IfStatementKind, WhileStatementKind } from 'ast-types/gen/kinds';
 import { expect } from 'chai';
 import ASTService from '../../../services/ASTService';
-import ConditionInversionService from '../../../services/ConditionInversionService';
+import ConditionService from '../../../services/ConditionService';
 import ConfigurationService from '../../../services/ConfigurationService';
 import GuardClauseService, { GuardClausePosition, GuardClauseType } from '../../../services/GuardClauseService';
 
@@ -15,14 +15,14 @@ suite('Unit tests for GuardClauseService', () => {
 
   let configurationService: ConfigurationService;
   let astService: ASTService;
-  let inversionService: ConditionInversionService;
+  let conditionService: ConditionService;
   let guardClauseService: GuardClauseService;
 
   suiteSetup(() => {
     configurationService = new ConfigurationService();
     astService = new ASTService(configurationService);
-    inversionService = new ConditionInversionService(configurationService);
-    guardClauseService = new GuardClauseService(configurationService, astService, inversionService);
+    conditionService = new ConditionService(configurationService);
+    guardClauseService = new GuardClauseService(configurationService, astService, conditionService);
   });
 
   test('detects guard clause for loops', () => {

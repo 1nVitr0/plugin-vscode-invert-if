@@ -26,7 +26,7 @@ export default function invertCondition(editor: TextEditor, editBuilder: TextEdi
       if (!condition || !condition.node.loc)
         return window.showErrorMessage(service.lang.errorMessage('conditionNotFound'));
 
-      const inverse = service.conditionInversion.inverse(condition.node);
+      const inverse = service.condition.inverse(condition.node);
       inverse.loc = condition.node.loc; // Keep location of previous Block
       changes.push(inverse);
     } catch (e) {
