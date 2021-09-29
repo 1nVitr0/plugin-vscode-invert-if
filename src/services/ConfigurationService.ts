@@ -19,9 +19,9 @@ export default class ConfigurationService implements Configuration {
     enableContextMenu: true,
     inversionDepth: Infinity,
     languageOptions: {
-      default: { useEcmaVersion: 'latest' },
-      js: { useEcmaVersion: 'latest' },
-      ts: { useEcmaVersion: 'latest' },
+      default: { useEcmaVersion: 2020 },
+      js: { useEcmaVersion: 2020 },
+      ts: { useEcmaVersion: 2020 },
     },
   };
 
