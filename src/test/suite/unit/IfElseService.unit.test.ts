@@ -41,13 +41,13 @@ suite('Unit tests for IfElseService', () => {
     expect(code).to.equal(inverseTestCode.replace(/\r?\n|\s+/g, ''));
   });
 
-  test.only('merges if statements', () => {
+  test('merges if statements', () => {
     const node = astService.parse(chainTestCode, 'ts');
     const conditions = astService.extractIfBlocks(node).map(({ node }) => node);
     const parent = conditions.shift() || conditions[0];
 
     const merged = ifElseService.combine(parent, ...conditions);
     const code = astService.stringify(merged, 'js').replace(/\r?\n|\s+/g, '');
-    expect(code).to.equal(inverseTestCode.replace(/\r?\n|\s+/g, ''));
+    expect(code).to.equal(chainExpectCode.replace(/\r?\n|\s+/g, ''));
   });
 });
