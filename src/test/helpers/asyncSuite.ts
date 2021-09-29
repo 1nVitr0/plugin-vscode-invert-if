@@ -1,5 +1,5 @@
-import { Suite, Test } from 'mocha';
 import * as assert from 'assert';
+import { Suite, Test } from 'mocha';
 
 export default function asyncSuite(name: string, tests: (this: Suite) => Promise<(Suite | Test)[] | Suite | Test>) {
   suite(name, function () {

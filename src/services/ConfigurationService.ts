@@ -1,6 +1,6 @@
 import { Options } from 'acorn';
-import { ConfigurationTarget, workspace, WorkspaceConfiguration } from 'vscode';
 import { NodeKind } from 'ast-types/gen/kinds';
+import { ConfigurationTarget, workspace, WorkspaceConfiguration } from 'vscode';
 
 export interface LanguageOptions {
   useEcmaVersion: Options['ecmaVersion'];
@@ -19,9 +19,9 @@ export default class ConfigurationService implements Configuration {
     enableContextMenu: true,
     inversionDepth: Infinity,
     languageOptions: {
-      default: { useEcmaVersion: 'latest' },
-      js: { useEcmaVersion: 'latest' },
-      ts: { useEcmaVersion: 'latest' },
+      default: { useEcmaVersion: 2020 },
+      js: { useEcmaVersion: 2020 },
+      ts: { useEcmaVersion: 2020 },
     },
   };
 

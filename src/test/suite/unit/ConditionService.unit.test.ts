@@ -1,18 +1,18 @@
 import { IfStatementKind } from 'ast-types/gen/kinds';
 import { expect } from 'chai';
 import ASTService from '../../../services/ASTService';
-import ConditionInversionService from '../../../services/ConditionInversionService';
+import ConditionService from '../../../services/ConditionService';
 import ConfigurationService from '../../../services/ConfigurationService';
 
-suite('Unit tests for ASTService', () => {
+suite('Unit tests for ConditionService', () => {
   let configurationService: ConfigurationService;
   let astService: ASTService;
-  let inversionService: ConditionInversionService;
+  let conditionService: ConditionService;
 
   suiteSetup(() => {
     configurationService = new ConfigurationService();
     astService = new ASTService(configurationService);
-    inversionService = new ConditionInversionService(configurationService);
+    conditionService = new ConditionService(configurationService);
   });
 
   test('extracts conditions', () => {
@@ -39,7 +39,7 @@ suite('Unit tests for ASTService', () => {
   test('inverses conditions', () => {
     const node = astService.parse('if (a == b) {}', 'js');
     const statement: IfStatementKind = node.program.body[0] as IfStatementKind;
-    const inverse = inversionService.inverse(statement.test);
+    const inverse = conditionService.inverse(statement.test);
 
     expect(astService.stringify(inverse, 'js')).to.equal('a != b');
   });
@@ -47,7 +47,7 @@ suite('Unit tests for ASTService', () => {
   test('inverses groups', () => {
     const node = astService.parse('if (a == b && c == d && e == f) {}', 'js');
     const statement: IfStatementKind = node.program.body[0] as IfStatementKind;
-    const inverse = inversionService.inverseGroup(statement.test);
+    const inverse = conditionService.inverseGroup(statement.test);
 
     expect(astService.stringify(inverse, 'js')).to.equal('!(a == b && c == d && e == f)');
   });
@@ -55,7 +55,7 @@ suite('Unit tests for ASTService', () => {
   test('inverse respects depth', () => {
     const node = astService.parse('if (a == b && c == d && e == f) {}', 'js');
     const statement: IfStatementKind = node.program.body[0] as IfStatementKind;
-    const inverse = inversionService.inverse(statement.test, 1);
+    const inverse = conditionService.inverse(statement.test, 1);
 
     expect(astService.stringify(inverse, 'js')).to.equal('!(a == b && c == d) || !(e == f)');
   });

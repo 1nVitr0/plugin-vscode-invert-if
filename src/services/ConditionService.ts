@@ -8,7 +8,7 @@ type OperatorMap<
   A = never
 > = Record<K['operator'], V['operator'] | A>;
 
-export default class ConditionInversionService {
+export default class ConditionService {
   public static inverseOperator: Partial<OperatorMap<BinaryExpressionKind>> & OperatorMap<LogicalExpressionKind> = {
     '==': '!=',
     '===': '!==',
@@ -35,14 +35,14 @@ export default class ConditionInversionService {
       case 'UnaryExpression':
         return this.inverseGroup(condition as types.namedTypes.UnaryExpression);
       case 'LogicalExpression':
-        const inverseLogical = ConditionInversionService.inverseOperator[(condition as LogicalExpressionKind).operator];
+        const inverseLogical = ConditionService.inverseOperator[(condition as LogicalExpressionKind).operator];
         return types.builders.logicalExpression(
           inverseLogical,
           this.inverse(condition.left, depth - 1),
           this.inverse(condition.right, depth - 1)
         );
       case 'BinaryExpression':
-        const inverseBinary = ConditionInversionService.inverseOperator[(condition as BinaryExpressionKind).operator];
+        const inverseBinary = ConditionService.inverseOperator[(condition as BinaryExpressionKind).operator];
         if (!inverseBinary) return this.inverseGroup(condition);
         return types.builders.binaryExpression(inverseBinary, condition.left, condition.right);
       default:
@@ -53,7 +53,7 @@ export default class ConditionInversionService {
   public inverseGroup(condition: ExpressionKind): ExpressionKind {
     if (condition.type !== 'UnaryExpression') return types.builders.unaryExpression('!', condition, true);
 
-    const inverse = ConditionInversionService.inverseUnaryOperator[condition.operator];
+    const inverse = ConditionService.inverseUnaryOperator[condition.operator];
     if (inverse) return types.builders.unaryExpression(inverse, condition.argument, condition.prefix);
     else if (inverse == null) return condition.argument;
     else return types.builders.unaryExpression('!', condition, true);

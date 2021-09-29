@@ -1,11 +1,10 @@
-import ConfigurationService from './ConfigurationService';
-import { ExpressionKind, BinaryExpressionKind, LogicalExpressionKind } from 'ast-types/gen/kinds';
+import { BinaryExpressionKind, ExpressionKind, LogicalExpressionKind } from 'ast-types/gen/kinds';
 import { print, types } from 'recast';
-import ConditionInversionService from './ConditionInversionService';
-import deepEqual = require('deep-equal');
+import ConfigurationService from './ConfigurationService';
+import ConditionService from './ConditionService';
 
 export type TruthTable<V extends string> = { [key in V | 'result']: boolean }[];
-export default class ConditionValidationService {
+export default class ValidationService {
   protected static inverseOperatorSelection: (BinaryExpressionKind | LogicalExpressionKind)['operator'][] = [
     '!=',
     '!==',
@@ -42,14 +41,13 @@ export default class ConditionValidationService {
   }
 
   public compareTruthTables<V extends string>(table: TruthTable<V>, compare: TruthTable<V>): boolean {
-    return deepEqual(this.sortTruthTable(table), this.sortTruthTable(compare));
-  }
+    if (table.length !== compare.length) return false;
+    const zip = table.map((row, i) => [row, compare[i]]);
 
-  private sortTruthTable<V extends string>(table: TruthTable<V>): TruthTable<V> {
-    const sorted = [...table].sort((a, b) =>
-      JSON.stringify({ ...a, result: 0 }) > JSON.stringify({ ...b, result: 0 }) ? 1 : -1
-    );
-    return sorted;
+    for (const [row, compareRow] of zip)
+      for (const key of Object.keys(row) as V[]) if (row[key] !== compareRow[key]) return false;
+
+    return true;
   }
 
   private buildConditionEvaluation(condition: ExpressionKind): {
@@ -59,7 +57,7 @@ export default class ConditionValidationService {
     switch (condition.type) {
       case 'BinaryExpression':
       case 'LogicalExpression':
-        const inverse = ConditionInversionService.inverseOperator[condition.operator];
+        const inverse = ConditionService.inverseOperator[condition.operator];
         if (condition.operator == '&&' || condition.operator == '||') {
           const left = this.buildConditionEvaluation(condition.left);
           const right = this.buildConditionEvaluation(condition.right);
@@ -74,7 +72,7 @@ export default class ConditionValidationService {
                     right.evaluate(...args.slice(right.conditions.length)),
             conditions: [...left.conditions, ...right.conditions],
           };
-        } else if (ConditionValidationService.inverseOperatorSelection.includes(condition.operator) && inverse) {
+        } else if (ValidationService.inverseOperatorSelection.includes(condition.operator) && inverse) {
           condition = { ...condition };
           condition.operator = inverse;
           condition = types.builders.unaryExpression('!', condition);

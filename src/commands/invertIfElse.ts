@@ -1,8 +1,12 @@
 import { Range, TextEditor, TextEditorEdit, window } from 'vscode';
 import { service } from '../injections';
-import ASTService from '../services/ASTService';
 import { NodeKind } from 'ast-types/gen/kinds';
 
+/**
+ * @title Invert If: Invert If / Else Block
+ * @shortTitle Invert If / Else Block
+ * @command invertIf.invertIfElse
+ */
 export default function invertIfElse(editor: TextEditor, editBuilder: TextEditorEdit, selection?: Range) {
   const selections = selection ? [selection] : editor.selections;
 
@@ -21,7 +25,7 @@ export default function invertIfElse(editor: TextEditor, editBuilder: TextEditor
 
       if (!ifBlock || !ifBlock.node.loc) return window.showErrorMessage(service.lang.errorMessage('noIfBlock'));
 
-      const inverse = service.ifElseInversion.inverse(ifBlock.node);
+      const inverse = service.ifElse.inverse(ifBlock.node);
       inverse.loc = ifBlock.node.loc; // Keep location of previous Block
       changes.push(inverse);
     } catch (e) {

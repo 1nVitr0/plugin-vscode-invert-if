@@ -25,10 +25,10 @@
   ],
   "keywords": [
     "refactor",
-    "invert if",
-    "invert condition",
-    "negate if condition",
-    "swap if"
+    "invert if condition",
+    "negate condition",
+    "swap if else",
+    "guard clause"
   ],
   "icon": "resources/icon.png",
   "badges": [
@@ -53,50 +53,59 @@
     "theme": "dark"
   },
   "activationEvents": [
-    "onCommand:invertIf.invertIfElse",
     "onCommand:invertIf.createGuardClause",
     "onCommand:invertIf.createCustomGuardClause",
-    "onCommand:invertIf.invertCondition"
+    "onCommand:invertIf.invertCondition",
+    "onCommand:invertIf.invertIfElse",
+    "onCommand:invertIf.mergeNestedIfs"
   ],
   "contributes": {
+    "configuration": {},
     "commands": [
       {
-        "command": "invertIf.invertIfElse",
-        "title": "Invert If: Invert If Block",
-        "shortTitle": "Invert If Block"
-      },
-      {
-        "command": "invertIf.createGuardClause",
         "title": "Invert If: Create Guard Clause from Condition",
-        "shortTitle": "Create Guard Clause"
+        "shortTitle": "Create Guard Clause",
+        "command": "invertIf.createGuardClause"
       },
       {
-        "command": "invertIf.createCustomGuardClause",
         "title": "Invert If: Create Custom Guard Clause",
-        "shortTitle": "Custom Guard Clause"
+        "shortTitle": "Custom Guard Clause",
+        "command": "invertIf.createCustomGuardClause"
       },
       {
-        "command": "invertIf.invertCondition",
         "title": "Invert If: Invert Condition",
-        "shortTitle": "Invert Condition"
+        "shortTitle": "Invert Condition",
+        "command": "invertIf.invertCondition"
+      },
+      {
+        "title": "Invert If: Invert If / Else Block",
+        "shortTitle": "Invert If / Else Block",
+        "command": "invertIf.invertIfElse"
+      },
+      {
+        "title": "Invert If: Merge selected if blocks",
+        "shortTitle": "Merge if blocks",
+        "command": "invertIf.mergeNestedIfs"
       }
     ]
   },
   "scripts": {
     "vscode:prepublish": "npm run package",
-    "compile": "webpack",
+    "build": "webpack",
     "watch": "webpack --watch",
     "package": "webpack --mode production --devtool hidden-source-map",
-    "test-compile": "tsc -p ./",
+    "test-build": "tsc -p ./",
     "test-watch": "tsc -watch -p ./",
-    "pretest": "npm run test-compile && npm run lint",
+    "pretest": "npm run test-build && npm run lint",
     "lint": "eslint src --ext ts",
     "test": "node ./out/test/runTest.js",
     "test:coverage": "export COVERAGE=true && node ./out/test/runTest.js",
-    "coverage": "nyc report --reporter=text"
+    "coverage": "nyc report --reporter=text",
+    "contributions": "node scripts/contributions.js"
   },
   "devDependencies": {
     "@istanbuljs/nyc-config-typescript": "^1.0.1",
+    "@microsoft/tsdoc": "^0.13.2",
     "@semantic-release/changelog": "^6.0.0",
     "@semantic-release/git": "^10.0.0",
     "@types/chai": "^4.2.21",
@@ -111,6 +120,7 @@
     "eslint": "^7.27.0",
     "eslint-config-prettier": "^8.3.0",
     "glob": "^7.1.7",
+    "jsonfile": "^6.1.0",
     "mocha": "^8.4.0",
     "nyc": "^15.1.0",
     "semantic-release": "^18.0.0",
@@ -123,9 +133,7 @@
     "webpack-cli": "^4.7.0"
   },
   "dependencies": {
-    "@types/deep-equal": "^1.0.1",
     "ast-types": "^0.14.2",
-    "deep-equal": "^2.0.5",
     "escape-string-regexp": "^5.0.0",
     "lines-and-columns": "^1.1.6",
     "recast": "^0.20.5",

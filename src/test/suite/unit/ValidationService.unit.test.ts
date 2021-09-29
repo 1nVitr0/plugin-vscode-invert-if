@@ -1,13 +1,13 @@
 import { ExpressionKind, IfStatementKind } from 'ast-types/gen/kinds';
 import { expect } from 'chai';
 import ASTService from '../../../services/ASTService';
-import ConditionValidationService from '../../../services/ConditionValidationService';
+import ValidationService from '../../../services/ValidationService';
 import ConfigurationService from '../../../services/ConfigurationService';
 
-suite('Unit tests for ConditionValidationService', () => {
+suite('Unit tests for ConditionService', () => {
   let configurationService: ConfigurationService;
   let astService: ASTService;
-  let validationService: ConditionValidationService;
+  let validationService: ValidationService;
 
   const testCode = 'if (a == b && c <= d) {}';
   const inverseTestCode = 'if (a != b || c > d) {}';
@@ -15,7 +15,7 @@ suite('Unit tests for ConditionValidationService', () => {
   suiteSetup(() => {
     configurationService = new ConfigurationService();
     astService = new ASTService(configurationService);
-    validationService = new ConditionValidationService(configurationService);
+    validationService = new ValidationService(configurationService);
   });
 
   test('generates truth table', () => {

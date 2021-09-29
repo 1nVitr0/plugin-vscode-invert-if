@@ -4,6 +4,11 @@ import { NodePath } from 'ast-types/lib/node-path';
 import { NodeKind } from 'ast-types/gen/kinds';
 import { GuardClausePosition, GuardClauseType } from '../services/GuardClauseService';
 
+/**
+ * @title Invert If: Create Guard Clause from Condition
+ * @shortTitle Create Guard Clause
+ * @command invertIf.createGuardClause
+ */
 export default function createGuardClause(
   editor: TextEditor,
   editBuilder: TextEditorEdit,
@@ -45,6 +50,11 @@ export default function createGuardClause(
   if (!hasChanges && !hasErrors) window.showInformationMessage(service.lang.infoMessage('noChanges'));
 }
 
+/**
+ * @title Invert If: Create Custom Guard Clause
+ * @shortTitle Custom Guard Clause
+ * @command invertIf.createCustomGuardClause
+ */
 export async function createCustomGuardClause(editor: TextEditor) {
   const typeOptions: (keyof typeof GuardClauseType)[] = ['auto', 'break', 'continue', 'return'];
   const positionOptions: (keyof typeof GuardClausePosition)[] = ['auto', 'keep', 'prepend', 'append'];

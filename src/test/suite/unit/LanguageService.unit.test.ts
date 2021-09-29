@@ -1,11 +1,5 @@
 import { expect } from 'chai';
-import InvertIfServiceProvider from '../../../providers/InvertIfServiceProvider';
-import ASTService from '../../../services/ASTService';
-import ConditionInversionService from '../../../services/ConditionInversionService';
-import ConditionValidationService from '../../../services/ConditionValidationService';
 import ConfigurationService from '../../../services/ConfigurationService';
-import GuardClauseService from '../../../services/GuardClauseService';
-import IfElseInversionService from '../../../services/IfElseInversionService';
 import LanguageService from '../../../services/LanguageService';
 
 suite('Unit tests for ASTService', () => {

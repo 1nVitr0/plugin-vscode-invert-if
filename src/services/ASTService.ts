@@ -1,8 +1,15 @@
 import { visit } from 'ast-types';
-import { ExpressionKind, FileKind, IfStatementKind, NodeKind, StatementKind } from 'ast-types/gen/kinds';
+import {
+  ExpressionKind,
+  FileKind,
+  IfStatementKind,
+  NodeKind,
+  StatementKind,
+  LogicalExpressionKind,
+} from 'ast-types/gen/kinds';
 import { NodePath } from 'ast-types/lib/node-path';
 import { SharedContextMethods } from 'ast-types/lib/path-visitor';
-import { parse, print } from 'recast';
+import { parse, print, types } from 'recast';
 import { PartialDeep } from 'type-fest';
 import { Range, TextDocument, TextEditorEdit } from 'vscode';
 import ConfigurationService from './ConfigurationService';
@@ -106,6 +113,16 @@ export default class ASTService {
     });
 
     return statements;
+  }
+
+  public chainConditions(operator: LogicalExpressionKind['operator'], ...conditions: ExpressionKind[]): ExpressionKind {
+    let result = conditions.shift();
+    if (!result) return types.builders.literal(true);
+
+    let previous: ExpressionKind | undefined;
+    while ((previous = conditions.shift())) result = types.builders.logicalExpression(operator, result, previous);
+
+    return result;
   }
 
   public getFirstParent<N extends NodeKind, P extends NodeKind>(

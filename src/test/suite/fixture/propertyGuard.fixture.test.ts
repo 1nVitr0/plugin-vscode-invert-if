@@ -2,15 +2,15 @@ import FixtureTestRunner from '../../helpers/FixtureTestRunner';
 import asyncSuite from '../../helpers/asyncSuite';
 import ConfigurationService from '../../../services/ConfigurationService';
 import ASTService from '../../../services/ASTService';
-import ConditionInversionService from '../../../services/ConditionInversionService';
+import ConditionService from '../../../services/ConditionService';
 import GuardClauseService from '../../../services/GuardClauseService';
 import { NodePath } from 'ast-types';
 
 asyncSuite('Fixture tests for property guards', async function () {
   const configurationService = new ConfigurationService();
   const astService = new ASTService(configurationService);
-  const conditionInversionService = new ConditionInversionService(configurationService);
-  const guardClauseService = new GuardClauseService(configurationService, astService, conditionInversionService);
+  const conditionService = new ConditionService(configurationService);
+  const guardClauseService = new GuardClauseService(configurationService, astService, conditionService);
 
   const suites = await FixtureTestRunner.suiteRunners('property-guard', async (code) => {
     const node = astService.parse(code, 'js').program.body[0];

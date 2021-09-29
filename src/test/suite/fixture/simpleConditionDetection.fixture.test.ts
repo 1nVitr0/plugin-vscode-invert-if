@@ -1,13 +1,13 @@
 import FixtureTestRunner from '../../helpers/FixtureTestRunner';
 import asyncSuite from '../../helpers/asyncSuite';
 import ASTService from '../../../services/ASTService';
-import ConditionInversionService from '../../../services/ConditionInversionService';
+import ConditionService from '../../../services/ConditionService';
 import ConfigurationService from '../../../services/ConfigurationService';
 
 asyncSuite('Fixture tests for simple condition detection', async function () {
   const configurationService = new ConfigurationService();
   const astService = new ASTService(configurationService);
-  const conditionInversionService = new ConditionInversionService(configurationService);
+  const conditionService = new ConditionService(configurationService);
 
   const suites = await FixtureTestRunner.suiteRunners('simple-condition-detection', async (code) => {
     const node = astService.parse(code, 'js');
@@ -15,7 +15,7 @@ asyncSuite('Fixture tests for simple condition detection', async function () {
 
     const replace = conditions.map(({ node }) => {
       const [start, end] = FixtureTestRunner.mapRangeToOffset(code, node.loc?.start, node.loc?.end);
-      const inverse = conditionInversionService.inverse(node);
+      const inverse = conditionService.inverse(node);
       const inverseCode = astService.stringify(inverse, 'js');
 
       return { start, end, code: inverseCode };
