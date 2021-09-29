@@ -20,7 +20,7 @@ export default class InvertIfServiceProvider {
     this.lang = new LanguageService(this.configuration);
     this.ast = new ASTService(this.configuration);
     this.condition = new ConditionService(this.configuration);
-    this.ifElse = new IfElseService(this.configuration, this.condition);
+    this.ifElse = new IfElseService(this.configuration, this.ast, this.condition);
     this.guardClause = new GuardClauseService(this.configuration, this.ast, this.condition);
     this.validation = new ValidationService(this.configuration);
   }
