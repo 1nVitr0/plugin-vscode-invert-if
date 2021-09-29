@@ -10,7 +10,7 @@
 
 ![Demo of Extension](resources/demo.gif)
 
-This is a preview for the `invert-if` Extension that allows you to quickly and easily **invert if blocks**, **invert conditions** and **create guard clauses**. 
+This is a preview for the `invert-if` Extension that allows you to quickly and easily **invert if blocks**, **merge nested if blocks**, **invert conditions** and **create guard clauses**. 
 
 - [Features](#features)
   - [Commands](#commands)
@@ -26,6 +26,7 @@ While still in active development, the following features are already available:
 ### Commands
 
 - `Invert If: Invert If Block` Inverts if / else blocks
+- `Invert If: Merge selected if blocks` Merge selected if / else blocks into a single if block (concatenating the conditions using `&&`)
 - `Invert If: Create Guard Clause from Condition` Creates guard clause for the selected Condition
 - `Invert If: Create Custom Guard Clause from Condition` Creates guard clause for the selected Condition with custom options
 - `Invert If: Invert Condition` Invert selected edition

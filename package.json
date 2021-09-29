@@ -56,7 +56,8 @@
     "onCommand:invertIf.createGuardClause",
     "onCommand:invertIf.createCustomGuardClause",
     "onCommand:invertIf.invertCondition",
-    "onCommand:invertIf.invertIfElse"
+    "onCommand:invertIf.invertIfElse",
+    "onCommand:invertIf.mergeNestedIfs"
   ],
   "contributes": {
     "configuration": {},
@@ -80,6 +81,11 @@
         "title": "Invert If: Invert If / Else Block",
         "shortTitle": "Invert If / Else Block",
         "command": "invertIf.invertIfElse"
+      },
+      {
+        "title": "Invert If: Merge selected if blocks",
+        "shortTitle": "Merge if blocks",
+        "command": "invertIf.mergeNestedIfs"
       }
     ]
   },
