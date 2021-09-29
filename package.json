@@ -96,7 +96,7 @@
     "package": "webpack --mode production --devtool hidden-source-map",
     "test-build": "tsc -p ./",
     "test-watch": "tsc -watch -p ./",
-    "pretest": "npm run test-compile && npm run lint",
+    "pretest": "npm run test-build && npm run lint",
     "lint": "eslint src --ext ts",
     "test": "node ./out/test/runTest.js",
     "test:coverage": "export COVERAGE=true && node ./out/test/runTest.js",
