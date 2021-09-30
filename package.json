@@ -55,6 +55,8 @@
   "activationEvents": [
     "onCommand:invertIf.createGuardClause",
     "onCommand:invertIf.createCustomGuardClause",
+    "onCommand:invertIf.generateTruthTable",
+    "onCommand:invertIf.compareWithInvertedCondition",
     "onCommand:invertIf.invertCondition",
     "onCommand:invertIf.invertIfElse",
     "onCommand:invertIf.mergeNestedIfs"
@@ -71,6 +73,16 @@
         "title": "Invert If: Create Custom Guard Clause",
         "shortTitle": "Custom Guard Clause",
         "command": "invertIf.createCustomGuardClause"
+      },
+      {
+        "title": "Invert If: Generate truth table",
+        "shortTitle": "Generate truth table",
+        "command": "invertIf.generateTruthTable"
+      },
+      {
+        "title": "Invert If: Invert Condition and compare truth tables",
+        "shortTitle": "Compare with inverted condition",
+        "command": "invertIf.compareWithInvertedCondition"
       },
       {
         "title": "Invert If: Invert Condition",
@@ -136,6 +148,7 @@
     "ast-types": "^0.14.2",
     "escape-string-regexp": "^5.0.0",
     "lines-and-columns": "^1.1.6",
+    "markdown-table": "^3.0.1",
     "recast": "^0.20.5",
     "strip-comments": "^2.0.1"
   },

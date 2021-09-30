@@ -56,7 +56,7 @@ suite('Unit tests for ConditionService', () => {
     const node = astService.parse(testCode, 'js');
     const statement: IfStatementKind = node.program.body[0] as IfStatementKind;
 
-    expect(validationService.verifyEqual(statement.test, statement.test)).to.be.true;
+    expect(validationService.validateEqual(statement.test, statement.test)).to.be.true;
   });
 
   test('validate inverse tables', () => {
@@ -65,6 +65,6 @@ suite('Unit tests for ConditionService', () => {
     const inverseNode = astService.parse(inverseTestCode, 'js');
     const inverseStatement: IfStatementKind = inverseNode.program.body[0] as IfStatementKind;
 
-    expect(validationService.verifyInverse(statement.test, inverseStatement.test)).to.be.true;
+    expect(validationService.validateInverse(statement.test, inverseStatement.test)).to.be.true;
   });
 });
