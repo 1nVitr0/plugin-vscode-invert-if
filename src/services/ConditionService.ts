@@ -55,7 +55,7 @@ export default class ConditionService {
 
     const inverse = ConditionService.inverseUnaryOperator[condition.operator];
     if (inverse) return types.builders.unaryExpression(inverse, condition.argument, condition.prefix);
-    else if (inverse == null) return condition.argument;
+    else if (inverse === null) return condition.argument;
     else return types.builders.unaryExpression('!', condition, true);
   }
 }
