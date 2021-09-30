@@ -4,7 +4,7 @@ import ASTService from '../../../services/ASTService';
 import ValidationService from '../../../services/ValidationService';
 import ConfigurationService from '../../../services/ConfigurationService';
 
-suite('Unit tests for ConditionService', () => {
+suite('Unit tests for ValidationService', () => {
   let configurationService: ConfigurationService;
   let astService: ASTService;
   let validationService: ValidationService;

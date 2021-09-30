@@ -136,7 +136,7 @@ export default class ValidationService {
 
   private truthPermutations<N extends number>(variables: N): (boolean[] & { length: N })[] & { length: N } {
     const result: boolean[][] = [];
-    for (let binaryRow = 0; binaryRow < Math.pow(variables, 2) - 1; binaryRow++) {
+    for (let binaryRow = 0; binaryRow < 1 << variables; binaryRow++) {
       result.push(
         Array(variables)
           .fill(false)
