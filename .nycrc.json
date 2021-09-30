@@ -9,5 +9,9 @@
   ],
   "include": ["src/**/*.ts", "src/test/helpers/FixtureTestRunner.ts"],
   "require": ["source-map-support/register"],
-  "all": true
+  "all": true,
+  "branches": 85,
+  "lines": 95,
+  "statements": 95,
+  "functions": 100
 }

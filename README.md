@@ -1,7 +1,8 @@
 # Invert If
 
 [![Build Status](https://img.shields.io/github/workflow/status/1nVitr0/plugin-vscode-invert-if/Release)](https://github.com/1nVitr0/plugin-vscode-invert-if/actions/workflows/release.yml)
-[![Main Test Status](https://img.shields.io/github/workflow/status/1nVitr0/plugin-vscode-invert-if/Tests?label=tests)](https://github.com/1nVitr0/plugin-vscode-invert-if/actions/workflows/test.yml)
+[![Test Status](https://img.shields.io/github/workflow/status/1nVitr0/plugin-vscode-invert-if/Tests?label=tests)](https://github.com/1nVitr0/plugin-vscode-invert-if/actions/workflows/test.yml)
+[![Minimum Coverage](https://img.shields.io/nycrc/1nVitr0/plugin-vscode-invert-if?config=.nycrc.json&preferredThreshold=lines)](https://github.com/1nVitr0/plugin-vscode-invert-if/blob/main/.nycrc.json)
 [![semantic-release](https://img.shields.io/badge/%20%20%F0%9F%93%A6%F0%9F%9A%80-semantic--release-e10079.svg)](https://github.com/semantic-release/semantic-release)<br>
 [![Visual Studio Code extension 1nVitr0.invert-if](https://vsmarketplacebadge.apphb.com/version/1nVitr0.invert-if.svg)](https://marketplace.visualstudio.com/items?itemName=1nVitr0.invert-if)
 [![Installs for Visual Studio Code extension 1nVitr0.invert-if](https://vsmarketplacebadge.apphb.com/installs/1nVitr0.invert-if.svg)](https://marketplace.visualstudio.com/items?itemName=1nVitr0.invert-if)
