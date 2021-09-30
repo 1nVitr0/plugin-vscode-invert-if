@@ -67,4 +67,43 @@ suite('Unit tests for ValidationService', () => {
 
     expect(validationService.validateInverse(statement.test, inverseStatement.test)).to.be.true;
   });
+
+  test('detect parameters', () => {
+    const node = astService.parse(testCode, 'js');
+    const statement: IfStatementKind = node.program.body[0] as IfStatementKind;
+
+    expect(validationService.parameters(statement.test)).to.all.members(['a == b', 'c > d']);
+  });
+
+  test('group conditions', () => {
+    const node = astService.parse(testCode, 'js');
+    const inverseNode = astService.parse(inverseTestCode, 'js');
+    const statement: IfStatementKind = node.program.body[0] as IfStatementKind;
+    const inverseStatement: IfStatementKind = inverseNode.program.body[0] as IfStatementKind;
+
+    expect(validationService.groupConditions([statement.test, inverseStatement.test]).length).to.equal(1);
+  });
+
+  test('group conditions', () => {
+    const node = astService.parse(testCode, 'js');
+    const inverseNode = astService.parse(inverseTestCode, 'js');
+    const statement: IfStatementKind = node.program.body[0] as IfStatementKind;
+    const inverseStatement: IfStatementKind = inverseNode.program.body[0] as IfStatementKind;
+    const table = validationService.generateTruthTable(statement.test);
+    const inverseTable = validationService.generateTruthTable(inverseStatement.test);
+
+    expect(validationService.groupTruthTables([table, inverseTable]).length).to.equal(1);
+  });
+
+  test('combine truth tables', () => {
+    const node = astService.parse(testCode, 'js');
+    const inverseNode = astService.parse(inverseTestCode, 'js');
+    const statement: IfStatementKind = node.program.body[0] as IfStatementKind;
+    const inverseStatement: IfStatementKind = inverseNode.program.body[0] as IfStatementKind;
+    const table = validationService.generateTruthTable(statement.test);
+    const inverseTable = validationService.generateTruthTable(inverseStatement.test);
+
+    const combined = validationService.combineTruthTables(table, inverseTable);
+    expect(combined[0].result.length).to.equal(2);
+  });
 });

@@ -7,6 +7,7 @@ function setupCoverage() {
   const NYC = require('nyc');
   const nyc = new NYC({
     cwd: join(__dirname, '..', '..', '..'),
+    exclude: ['dist/', '**/**.test.ts', '**/**.test.js'],
     reporter: ['text', 'lcov'],
     instrument: true,
     hookRequire: true,

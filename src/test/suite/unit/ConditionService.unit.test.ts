@@ -59,4 +59,28 @@ suite('Unit tests for ConditionService', () => {
 
     expect(astService.stringify(inverse, 'js')).to.equal('!(a == b && c == d) || !(e == f)');
   });
+
+  test('inverses binary expression as group', () => {
+    const node = astService.parse('if (a +b) {}', 'js');
+    const statement: IfStatementKind = node.program.body[0] as IfStatementKind;
+    const inverse = conditionService.inverse(statement.test, 1);
+
+    expect(astService.stringify(inverse, 'js')).to.equal('!(a + b)');
+  });
+
+  test('inverses unary expression', () => {
+    const node = astService.parse('if (+a) {}', 'js');
+    const statement: IfStatementKind = node.program.body[0] as IfStatementKind;
+    const inverse = conditionService.inverse(statement.test, 1);
+
+    expect(astService.stringify(inverse, 'js')).to.equal('!+a');
+  });
+
+  test('removes unary ! expression', () => {
+    const node = astService.parse('if (!a) {}', 'js');
+    const statement: IfStatementKind = node.program.body[0] as IfStatementKind;
+    const inverse = conditionService.inverse(statement.test, 1);
+
+    expect(astService.stringify(inverse, 'js')).to.equal('a');
+  });
 });

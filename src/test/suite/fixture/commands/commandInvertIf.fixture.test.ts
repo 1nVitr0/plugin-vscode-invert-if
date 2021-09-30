@@ -8,7 +8,7 @@ asyncSuite('Fixture tests for simple if else inversion', async function () {
     await window.showTextDocument(document);
     await commands.executeCommand('invertIf.invertIfElse');
 
-    // CLose document
+    // Close document
     await window.showTextDocument(document).then(() => {
       return commands.executeCommand('workbench.action.closeActiveEditor');
     });

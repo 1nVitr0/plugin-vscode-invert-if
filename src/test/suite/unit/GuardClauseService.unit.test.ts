@@ -11,6 +11,9 @@ suite('Unit tests for GuardClauseService', () => {
   const whileLoopCode = 'while (i < 10) { i++; }';
   const doWhileLoopCode = 'do { i++; } while (i < 10)';
   const functionCode = 'function test() { if (a && b) {} }';
+  const functionIfElseCode = 'function test() { if (a && b) { c } else { d } }';
+  const functionIfElseSimpleCode = 'function test() { if (a && b) c; else d }';
+  const functionMultiConditionCode = 'function test() { if (a && b && c) {} }';
   const ifCode = 'if (a) {}';
 
   let configurationService: ConfigurationService;
@@ -47,6 +50,12 @@ suite('Unit tests for GuardClauseService', () => {
     expect(
       guardClauseService.detectGuardClauseType(new NodePath(astService.parse(ifCode, 'js').program.body[0]))
     ).to.equal(GuardClauseType.return);
+  });
+
+  test('detects guard clause position', () => {
+    const block = new NodePath(astService.parse(functionCode, 'js').program.body[0]);
+    const condition = astService.extractConditions(block.node, null, 1)[0];
+    expect(guardClauseService.detectGuardClausePosition(block, condition)).to.equal(GuardClausePosition.keep);
   });
 
   test('generates break guard clause', () => {
@@ -139,5 +148,29 @@ suite('Unit tests for GuardClauseService', () => {
     const withGuardClause = guardClauseService.moveToGuardClause(node, condition);
 
     expect(withGuardClause.node.body.body.length).to.equal(1);
+  });
+
+  test('keeps else if if is removed', () => {
+    const node = new NodePath(astService.parse(functionIfElseCode, 'js').program.body[0]);
+    const condition = node.get('body', 'body', 0, 'test');
+    const withGuardClause = guardClauseService.moveToGuardClause(node, condition);
+
+    expect(withGuardClause.node.body.body.length).to.equal(3);
+  });
+
+  test('keeps else if if is removed (no block)', () => {
+    const node = new NodePath(astService.parse(functionIfElseSimpleCode, 'js').program.body[0]);
+    const condition = node.get('body', 'body', 0, 'test');
+    const withGuardClause = guardClauseService.moveToGuardClause(node, condition);
+
+    expect(withGuardClause.node.body.body.length).to.equal(3);
+  });
+
+  test('keeps else if if is removed', () => {
+    const node = new NodePath(astService.parse(functionMultiConditionCode, 'js').program.body[0]);
+    const condition = node.get('body', 'body', 0, 'test', 'right');
+    const withGuardClause = guardClauseService.moveToGuardClause(node, condition);
+
+    expect(withGuardClause.node.body.body.length).to.equal(2);
   });
 });
