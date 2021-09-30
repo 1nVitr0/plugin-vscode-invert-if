@@ -117,7 +117,7 @@ export default class ASTService {
 
   public chainConditions(operator: LogicalExpressionKind['operator'], ...conditions: ExpressionKind[]): ExpressionKind {
     let result = conditions.shift();
-    if (!result) return types.builders.literal(true);
+    if (!result) return types.builders.literal(false);
 
     let previous: ExpressionKind | undefined;
     while ((previous = conditions.shift())) result = types.builders.logicalExpression(operator, result, previous);

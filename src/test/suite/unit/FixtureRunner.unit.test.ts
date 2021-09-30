@@ -1,6 +1,7 @@
 import { expect } from 'chai';
 import { resolve } from 'path';
 import FixtureTestRunner, { TestFunction } from '../../helpers/FixtureTestRunner';
+import { Fixture } from '../../helpers/FixtureTestRunner';
 
 class TestFixtureTestRunner extends FixtureTestRunner {
   protected static fixtureDir = resolve(__dirname, '../../../../test/fixtureTests');
@@ -60,6 +61,23 @@ suite('FixtureTestRunner unit tests', () => {
     if (!fixture) throw new Error('fixture "test-fixture-map" not found');
 
     await testRunner.runTest(fixture, createEditReplace(/CHANGE\-ME/, 'CHANGED'));
+  });
+
+  test('fails on space mismatch in strict mode', async () => {
+    const fixture = {
+      ...testRunner.fixtures.find((fixture) => fixture.id === 'test-fixture-map'),
+      strict: true,
+    } as Fixture;
+    if (!fixture) throw new Error('fixture "test-fixture-map" not found');
+
+    let err;
+    try {
+      await testRunner.runTest(fixture, createEditReplace(/CHANGE\-ME/, '  CHANGED  '));
+    } catch (e) {
+      err = e;
+    }
+
+    expect(err).to.not.be.undefined;
   });
 
   test('reads in only single fixtures from language', async () => {
@@ -134,5 +152,30 @@ suite('FixtureTestRunner unit tests', () => {
     expect(jsTests && jsTests.map(({ id }) => id)).to.deep.equal(fixtureIds);
     expect(jsTests2 && jsTests2.map(({ id }) => id)).to.deep.equal(fixture2Ids);
     expect(tsTests && tsTests.map(({ id }) => id)).to.deep.equal(fixtureIds);
+  });
+
+  test('get tests respects strict mode', async function () {
+    const tests = testRunner.getTests(true);
+
+    expect(tests.length).to.equal(3);
+  });
+
+  test('throws error when fixture dir does not exist', async () => {
+    // @ts-expect-error
+    const previousDir = TestFixtureTestRunner.fixtureDir;
+    // @ts-expect-error
+    TestFixtureTestRunner.fixtureDir = '__missing';
+
+    let err;
+    try {
+      await TestFixtureTestRunner.suiteRunners('*{', passThroughText);
+    } catch (e) {
+      err = e;
+    } finally {
+      // @ts-expect-error
+      TestFixtureTestRunner.fixtureDir = previousDir;
+    }
+
+    expect(err).to.not.be.undefined;
   });
 });

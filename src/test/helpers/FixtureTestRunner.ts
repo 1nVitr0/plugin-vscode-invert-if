@@ -53,7 +53,7 @@ export default class FixtureTestRunner {
     for (const [title, runner] of suites) {
       const suite = new Suite(title);
       if ('length' in runner) for (const inner of self.suites(runner, suite)) suite.addSuite(inner);
-      else for (const test of runner.getTests(context)) suite.addTest(test);
+      else for (const test of runner.getTests()) suite.addTest(test);
 
       result.push(suite);
     }
@@ -88,8 +88,6 @@ export default class FixtureTestRunner {
     return new Promise((r, e) => {
       const languageDir = resolve(this.fixtureDir, langId);
       glob(`${type}.fixture.${langId}`, { cwd: languageDir }, (err, files) => {
-        if (err) return e(err);
-
         const runners = files.map(async (file) => {
           const name = file.replace(`.fixture.${langId}`, '');
           const runner = new this(langId, name, test);
@@ -121,7 +119,7 @@ export default class FixtureTestRunner {
     this.fixtures.push(...this.getFixtures(fixtureContent, expectContent));
   }
 
-  public getTests(context: Suite, forceStrict?: boolean): Test[] {
+  public getTests(forceStrict?: boolean): Test[] {
     const tests: Test[] = [];
     for (const fixture of this.fixtures) {
       if (forceStrict) fixture.strict = forceStrict;
