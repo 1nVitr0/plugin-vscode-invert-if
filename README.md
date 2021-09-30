@@ -10,10 +10,11 @@
 
 ![Demo of Extension](resources/demo.gif)
 
-This is a preview for the `invert-if` Extension that allows you to quickly and easily **invert if blocks**, **merge nested if blocks**, **invert conditions** and **create guard clauses**. 
+This is a preview for the `invert-if` Extension that allows you to quickly and easily **invert if blocks**, **merge nested if blocks**, **invert conditions** and **create guard clauses**.  It also provides the option to **generate truth tables** to verify update if conditions.
 
 - [Features](#features)
   - [Commands](#commands)
+    - [Truth Tables](#truth-tables)
 - [Language Support](#language-support)
 - [Extension Settings](#extension-settings)
 - [Known Issues](#known-issues)
@@ -30,8 +31,32 @@ While still in active development, the following features are already available:
 - `Invert If: Create Guard Clause from Condition` Creates guard clause for the selected Condition
 - `Invert If: Create Custom Guard Clause from Condition` Creates guard clause for the selected Condition with custom options
 - `Invert If: Invert Condition` Invert selected edition
+- `Invert If: Generate truth table` Generate truth tables for the selected conditions
+- `Invert If: Invert Condition and compare truth tables` Invert selected editions and show their truth tables
 
 The selection is currently only the condition under the active cursors, but more fine grained control will be available. The commands take into account **all** cursors, so **multiple selections** are possible.
+
+#### Truth Tables
+
+Truth tables can be used to compare or analyze if conditions as well as verify the inversion process of the extension. They are currently provided using a temporary `markdown` document:
+
+```markdown
+(1) `a > b || c == d && e !== f`
+(2) `a <= b && (c != d || e === f)`
+
+| a > b | c == d | e === f | (1)   | (2)   |
+| ----- | ------ | ------- | ----- | ----- |
+| false | false  | false   | false | true  |
+| false | false  | true    | true  | false |
+| false | true   | false   | false | true  |
+| false | true   | true    | true  | false |
+| true  | false  | false   | true  | false |
+| true  | false  | true    | true  | false |
+| true  | true   | false   | true  | false |
+| true  | true   | true    | true  | false |
+```
+
+To make it possible for tables to be compared, some operators are flipped to their simplest version, e.g. `!==` to `==` or `<=` to `>`.
 
 ## Language Support
 
