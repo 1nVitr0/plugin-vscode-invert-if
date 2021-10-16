@@ -178,4 +178,11 @@ suite('FixtureTestRunner unit tests', () => {
 
     expect(err).to.not.be.undefined;
   });
+
+  test('undefined ranges map to 0', async function () {
+    const ranges = FixtureTestRunner.mapRangeToOffset('');
+
+    expect(ranges[0]).to.equal(0);
+    expect(ranges[1]).to.equal(0);
+  });
 });
