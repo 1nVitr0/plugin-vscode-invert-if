@@ -1,19 +1,13 @@
 import * as path from 'path';
 import * as Mocha from 'mocha';
 import * as glob from 'glob';
-import { join } from 'path';
+import { join, resolve } from 'path';
 
-function setupCoverage() {
+async function setupCoverage() {
+  const { loadNycConfig } = require('@istanbuljs/load-nyc-config');
   const NYC = require('nyc');
-  const nyc = new NYC({
-    cwd: join(__dirname, '..', '..', '..'),
-    exclude: ['dist/', '**/**.test.ts', '**/**.test.js'],
-    reporter: ['text', 'lcov'],
-    instrument: true,
-    hookRequire: true,
-    hookRunInContext: true,
-    hookRunInThisContext: true,
-  });
+  const options = await loadNycConfig({ cwd: join(__dirname, '..', '..', '..') });
+  const nyc = new NYC(options);
 
   nyc.reset();
   nyc.wrap();
@@ -22,7 +16,7 @@ function setupCoverage() {
 }
 
 export async function run(): Promise<void> {
-  const nyc = process.env.COVERAGE ? setupCoverage() : null;
+  const nyc = process.env.COVERAGE ? await setupCoverage() : null;
   // Create the mocha test
   const mocha = new Mocha({
     ui: 'tdd',

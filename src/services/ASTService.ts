@@ -136,9 +136,25 @@ export default class ASTService {
   }
 
   public parse(code: string, language: string): FileKind {
-    const languageOptions =
-      this.configurationService.languageOptions[language] || this.configurationService.languageOptions.default;
-    return parse(code);
+    let parser: any;
+    switch (language) {
+      case 'typescript':
+      case 'ts':
+        parser = require('recast/parsers/typescript');
+        break;
+      case 'flow':
+        parser = require('recast/parsers/flow');
+        break;
+      case 'babylon':
+        parser = require('recast/parsers/babylon');
+        break;
+      case 'javascript':
+      case 'js':
+      default:
+        parser = require('recast/parsers/esprima');
+        break;
+    }
+    return parse(code, { parser });
   }
 
   public stringify(node: NodeKind, language: string): string {

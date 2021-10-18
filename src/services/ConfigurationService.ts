@@ -1,10 +1,7 @@
-import { Options } from 'acorn';
 import { NodeKind } from 'ast-types/gen/kinds';
 import { ConfigurationTarget, workspace, WorkspaceConfiguration } from 'vscode';
 
-export interface LanguageOptions {
-  useEcmaVersion: Options['ecmaVersion'];
-}
+export interface LanguageOptions {}
 
 export interface Configuration {
   inversionDepth: number;
@@ -15,9 +12,9 @@ export default class ConfigurationService implements Configuration {
   public static defaultConfiguration: Configuration = {
     inversionDepth: Infinity,
     languageOptions: {
-      default: { useEcmaVersion: 2020 },
-      js: { useEcmaVersion: 2020 },
-      ts: { useEcmaVersion: 2020 },
+      default: {},
+      js: {},
+      ts: {},
     },
   };
 

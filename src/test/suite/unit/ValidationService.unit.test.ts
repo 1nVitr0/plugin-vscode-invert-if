@@ -84,7 +84,7 @@ suite('Unit tests for ValidationService', () => {
     expect(validationService.groupConditions([statement.test, inverseStatement.test]).length).to.equal(1);
   });
 
-  test('group conditions', () => {
+  test('group truth tables', () => {
     const node = astService.parse(testCode, 'js');
     const inverseNode = astService.parse(inverseTestCode, 'js');
     const statement: IfStatementKind = node.program.body[0] as IfStatementKind;
