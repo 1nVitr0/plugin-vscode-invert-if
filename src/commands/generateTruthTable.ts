@@ -1,5 +1,5 @@
 import { ExpressionKind, FileKind } from 'ast-types/gen/kinds';
-import { markdownTable } from 'markdown-table';
+import generateMdTable from 'json-md-table';
 import { Range, TextEditor, TextEditorEdit, window, workspace } from 'vscode';
 import { service } from '../injections';
 
@@ -15,12 +15,8 @@ function showTruthTable(conditions: ExpressionKind[]) {
       for (let i = 0; i < result.length; i++) permutations[`(${i + 1})`] = result[i];
       return permutations;
     });
-    const csv = [
-      Object.keys(comparison[0]),
-      ...comparison.map((row) => Object.values(row).map((v) => v.toString())).sort(),
-    ];
 
-    return `${title}\n\n${markdownTable(csv)}`;
+    return `${title}\n\n${generateMdTable(comparison.sort(), true)}`;
   });
 
   workspace.openTextDocument({ language: 'markdown', content: mdTables.join('\n\n\n') }).then(window.showTextDocument);

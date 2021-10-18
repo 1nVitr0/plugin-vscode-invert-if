@@ -145,8 +145,8 @@
   "dependencies": {
     "ast-types": "^0.14.2",
     "escape-string-regexp": "^5.0.0",
+    "json-md-table": "^1.1.1",
     "lines-and-columns": "^1.1.6",
-    "markdown-table": "^3.0.1",
     "recast": "^0.20.5",
     "strip-comments": "^2.0.1"
   },
