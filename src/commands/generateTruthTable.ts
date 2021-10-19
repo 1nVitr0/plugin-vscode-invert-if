@@ -9,14 +9,20 @@ function showTruthTable(conditions: ExpressionKind[]) {
   const mdTables = groups.map((group) => {
     const title = group.map((condition, i) => `(${i + 1}) \`${service.ast.stringify(condition, 'js')}\``).join('\n');
 
+    let variableCount: number = 0;
+    let resultCount: number = 0;
     const tables = group.map((condition) => service.validation.generateTruthTable(condition));
     const comparison = service.validation.combineTruthTables(...tables).map((row) => {
       const { result, ...permutations } = row;
+      (variableCount = Object.keys(permutations).length), (resultCount = result.length);
       for (let i = 0; i < result.length; i++) permutations[`(${i + 1})`] = result[i];
       return permutations;
     });
 
-    return `${title}\n\n${generateMdTable(comparison.sort(), true)}`;
+    const alignment = [...new Array(variableCount).fill('right'), ...new Array(resultCount).fill('left')];
+    const md = generateMdTable(comparison.sort(), { alignment, pretty: true });
+
+    return `${title}\n\n${md}`;
   });
 
   workspace.openTextDocument({ language: 'markdown', content: mdTables.join('\n\n\n') }).then(window.showTextDocument);
