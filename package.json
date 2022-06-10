@@ -136,7 +136,7 @@
     "jsonfile": "^6.1.0",
     "mocha": "^8.4.0",
     "nyc": "^15.1.0",
-    "semantic-release": "^18.0.0",
+    "semantic-release": "^19.0.3",
     "semantic-release-vsce": "^3.5.0",
     "ts-loader": "^9.2.6",
     "type-fest": "^2.3.4",
