@@ -62,7 +62,29 @@
     "onCommand:invertIf.mergeNestedIfs"
   ],
   "contributes": {
-    "configuration": {},
+    "configuration": {
+      "properties": {
+        "invertIf.truthTableBooleanText": {
+          "type": "object",
+          "default": {
+            "true": "true",
+            "false": "false"
+          },
+          "description": "The text to use for the boolean values in the truth table",
+          "required": [
+            "true",
+            "false"
+          ]
+        },
+        "invertIf.truthTableConditionIndex": {
+          "type": "string",
+          "default": "(#A)",
+          "description": "The index text for evaluated conditions in the truth tables. Use `#1` for numeric indexes, `#a` for alphabetic indexes, or `#I` for roman numerals",
+          "format": "regexp",
+          "pattern": "#\\d|#[a-z]|#[A-Z]"
+        }
+      }
+    },
     "commands": [
       {
         "title": "Invert If: Create Guard Clause from Condition",
