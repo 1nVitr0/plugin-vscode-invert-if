@@ -1,40 +1,36 @@
-import { NodeKind } from 'ast-types/gen/kinds';
-import { Range, TextEditor, TextEditorEdit, window } from 'vscode';
-import { service } from '../injections';
+import { Range, TextEditor, TextEditorEdit, window } from "vscode";
+import { service } from "../globals";
 
 /**
  * @title Invert If: Invert Condition
  * @shortTitle Invert Condition
  * @command invertIf.invertCondition
  */
-export default function invertCondition(editor: TextEditor, editBuilder: TextEditorEdit, selection?: Range) {
+export default async function invertCondition(editor: TextEditor, editBuilder: TextEditorEdit, selection?: Range) {
   const selections = selection ? [selection] : editor.selections;
+  const provider = service.plugins.getInvertConditionProvider(editor.document);
 
-  let program;
-  try {
-    program = service.ast.parseDocument(editor.document);
-  } catch (e: any) {
-    return window.showErrorMessage(service.lang.errorMessage('parseError', e.description));
+  if (!provider) {
+    window.showErrorMessage("No invert condition provider found for this file type");
+    return;
   }
 
-  let hasErrors = false;
-  const changes: NodeKind[] = [];
-  for (const selection of selections) {
-    try {
-      const condition = service.ast.extractConditions(program, selection, 1).pop();
+  const selectionConditions = await Promise.all(
+    selections.map((selection) => provider.provideConditions(editor.document, selection))
+  );
 
-      if (!condition || !condition.node.loc)
-        return window.showErrorMessage(service.lang.errorMessage('conditionNotFound'));
+  for (let i = 0; i < selections.length; i++) {
+    const range = selections[i];
+    const conditions = selectionConditions[i] ?? [];
+    const condition = service.condition.sortConditionsByRangeMatch(conditions, range).shift();
 
-      const inverse = service.condition.inverse(condition.node);
-      inverse.loc = condition.node.loc; // Keep location of previous Block
-      changes.push(inverse);
-    } catch (e) {
-      window.showErrorMessage(service.lang.errorMessage('genericError', (e as Error).message));
-      hasErrors = true;
-    }
+    if (!condition) continue;
+
+    const resolvedCondition = {
+      ...condition,
+      ...(await provider.resolveCondition?.(condition)),
+    };
+
+    service.condition.inverseCondition(editor, provider, resolvedCondition);
   }
-
-  const hasChanges = service.ast.applyASTChanges(editor.document, editBuilder, ...changes);
-  if (!hasChanges && !hasErrors) window.showInformationMessage(service.lang.infoMessage('noChanges'));
 }

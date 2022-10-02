@@ -1,13 +1,20 @@
-import { ExpressionKind, FileKind } from 'ast-types/gen/kinds';
-import generateMdTable from 'json-md-table';
-import { Range, TextEditor, TextEditorEdit, window, workspace } from 'vscode';
-import { service } from '../injections';
+import generateMdTable from "json-md-table";
+import { Range, TextDocument, TextEditor, TextEditorEdit, window, workspace } from "vscode";
+import { RefSyntaxNode, UpdatedSyntaxNode } from "../api/nodes/SyntaxNode";
+import { InvertConditionProvider } from "../api/providers/InvertConditionProvider";
+import { service } from "../globals";
 
-function showTruthTable(conditions: ExpressionKind[]) {
-  const groups = service.validation.groupConditions(conditions);
+function showTruthTable(...conditionGroups: UpdatedSyntaxNode<any>[][]) {
+  const { truthTableConditionIndex: conditionIndex } = service.config;
 
-  const mdTables = groups.map((group) => {
-    const title = group.map((condition, i) => `(${i + 1}) \`${service.ast.stringify(condition, 'js')}\``).join('\n');
+  const mdTables = conditionGroups.map((group) => {
+    const title = group
+      .map((condition, i) => {
+        return `${service.lang.translateIndex(i + 1, conditionIndex)} \`${service.condition.getConditionName(
+          condition
+        )}\``;
+      })
+      .join("\n");
 
     let variableCount: number = 0;
     let resultCount: number = 0;
@@ -19,13 +26,40 @@ function showTruthTable(conditions: ExpressionKind[]) {
       return permutations;
     });
 
-    const alignment = [...new Array(variableCount).fill('right'), ...new Array(resultCount).fill('left')];
-    const md = generateMdTable(comparison.sort(), { alignment, pretty: true });
+    const alignment = [...new Array(variableCount).fill("right"), ...new Array(resultCount).fill("left")];
+    const md = generateMdTable(indexConditions(comparison).sort(), { alignment, pretty: true });
 
     return `${title}\n\n${md}`;
   });
 
-  workspace.openTextDocument({ language: 'markdown', content: mdTables.join('\n\n\n') }).then(window.showTextDocument);
+  workspace.openTextDocument({ language: "markdown", content: mdTables.join("\n\n\n") }).then(window.showTextDocument);
+}
+
+function indexConditions(conditions: Record<string, boolean>[]) {
+  const { truthTableBooleanText, truthTableConditionIndex } = service.config;
+  return conditions.map((row) =>
+    Object.entries(row).reduce((row, [key, value]) => {
+      const index = +(/\(\d+\)/.test(key) ? key.match(/\d+/)?.[0] ?? "0" : "0");
+      const indexText = index ? service.lang.translateIndex(index, truthTableConditionIndex) : key;
+      const booleanText = value ? truthTableBooleanText.true : truthTableBooleanText.false;
+
+      return { ...row, [indexText]: booleanText };
+    }, {})
+  );
+}
+
+async function mapConditions<T>(document: TextDocument, provider: InvertConditionProvider<T>, selections: Range[]) {
+  return (
+    await Promise.all(
+      selections.map(async (selection) => {
+        const conditions = (await provider.provideConditions(document, selection)) ?? [];
+        const condition = service.condition.sortConditionsByRangeMatch(conditions, selection).shift();
+        return provider.resolveCondition && condition
+          ? (await provider.resolveCondition(condition)) ?? condition
+          : condition;
+      })
+    )
+  ).filter((c) => !!c) as RefSyntaxNode<any>[];
 }
 
 /**
@@ -33,19 +67,17 @@ function showTruthTable(conditions: ExpressionKind[]) {
  * @shortTitle Generate truth table
  * @command invertIf.generateTruthTable
  */
-export default function generateTruthTable(editor: TextEditor, editBuilder: TextEditorEdit, selection?: Range) {
+export default async function generateTruthTable(editor: TextEditor, _: TextEditorEdit, selection?: Range) {
   const selections = selection ? [selection] : editor.selections;
 
-  let program: FileKind;
-  try {
-    program = service.ast.parseDocument(editor.document);
-  } catch (e: any) {
-    return window.showErrorMessage(service.lang.errorMessage('parseError', e.description));
+  const provider = service.plugins.getInvertConditionProvider(editor.document);
+
+  if (!provider) {
+    window.showErrorMessage("No invert condition provider found for this file type");
+    return;
   }
 
-  const conditions = selections
-    .map((selection) => service.ast.extractConditions(program, selection, 1).pop()?.node)
-    .filter((c) => !!c) as ExpressionKind[];
+  const conditions = await mapConditions(editor.document, provider, selections);
 
   showTruthTable(conditions);
 }
@@ -55,20 +87,18 @@ export default function generateTruthTable(editor: TextEditor, editBuilder: Text
  * @shortTitle Compare with inverted condition
  * @command invertIf.compareWithInvertedCondition
  */
-export function compareWithInvertedCondition(editor: TextEditor, editBuilder: TextEditorEdit, selection?: Range) {
+export async function compareWithInvertedCondition(editor: TextEditor, _: TextEditorEdit, selection?: Range) {
   const selections = selection ? [selection] : editor.selections;
 
-  let program: FileKind;
-  try {
-    program = service.ast.parseDocument(editor.document);
-  } catch (e: any) {
-    return window.showErrorMessage(service.lang.errorMessage('parseError', e.description));
+  const provider = service.plugins.getInvertConditionProvider(editor.document);
+
+  if (!provider) {
+    window.showErrorMessage("No invert condition provider found for this file type");
+    return;
   }
 
-  const conditions = selections
-    .map((selection) => service.ast.extractConditions(program, selection, 1).pop()?.node)
-    .filter((c) => !!c) as ExpressionKind[];
-  const inverted = conditions.map((condition) => service.condition.inverse(condition));
+  const conditions = await mapConditions(editor.document, provider, selections);
+  const inverted = conditions.map((condition) => [condition, service.condition.getInverseCondition(condition)]);
 
-  showTruthTable([...conditions, ...inverted]);
+  showTruthTable(...inverted);
 }

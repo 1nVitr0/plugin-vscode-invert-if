@@ -1,53 +1,46 @@
-import { Range, TextEditor, TextEditorEdit, window, commands } from 'vscode';
-import { service } from '../injections';
-import { NodePath } from 'ast-types/lib/node-path';
-import { NodeKind } from 'ast-types/gen/kinds';
-import { GuardClausePosition, GuardClauseType } from '../services/GuardClauseService';
+import { commands, Range, TextEditor, TextEditorEdit, window } from "vscode";
+import { GuardClausePosition, GuardClauseType } from "../api/context/GuardClauseContext";
+import { service } from "../globals";
 
 /**
  * @title Invert If: Create Guard Clause from Condition
  * @shortTitle Create Guard Clause
  * @command invertIf.createGuardClause
  */
-export default function createGuardClause(
+export default async function createGuardClause(
   editor: TextEditor,
-  editBuilder: TextEditorEdit,
+  _: TextEditorEdit,
   selection?: Range | null,
-  position: GuardClausePosition = GuardClausePosition.auto,
-  type: GuardClauseType = GuardClauseType.auto
+  position: GuardClausePosition = GuardClausePosition.Auto,
+  type: GuardClauseType = GuardClauseType.Auto
 ) {
   const selections = selection ? [selection] : editor.selections;
 
-  let program;
-  try {
-    program = service.ast.parseDocument(editor.document);
-  } catch (e: any) {
-    return window.showErrorMessage(service.lang.errorMessage('parseError', e.description));
+  const provider = service.plugins.getGuardClauseProvider(editor.document);
+
+  if (!provider) {
+    window.showErrorMessage("No guard clause provider found for this file type");
+    return;
   }
 
-  let hasErrors = false;
-  const changes: NodePath<NodeKind>[] = [];
-  for (const selection of selections) {
-    try {
-      const condition = service.ast.extractConditions(program, selection, 1).pop();
-      if (!condition?.node || !condition.node.loc)
-        return window.showErrorMessage(service.lang.errorMessage('conditionNotFound'));
+  const selectionConditions = await Promise.all(
+    selections.map((selection) => provider.provideConditions(editor.document, selection))
+  );
 
-      const block = service.ast.getFirstParent(condition, service.configuration.guardClauseParentTypes);
+  for (let i = 0; i < selections.length; i++) {
+    const range = selections[i];
+    const conditions = selectionConditions[i] ?? [];
+    const condition = service.condition.sortConditionsByRangeMatch(conditions, range).shift();
 
-      if (!block?.node || !block.node.loc)
-        return window.showErrorMessage(service.lang.errorMessage('invalidParentStatement'));
+    if (!condition) continue;
 
-      const guardClause = service.guardClause.moveToGuardClause(block, condition, position, type);
-      changes.push(guardClause);
-    } catch (e) {
-      window.showErrorMessage(service.lang.errorMessage('genericError', (e as Error).message));
-      hasErrors = true;
-    }
+    const resolvedCondition = {
+      ...condition,
+      ...(await provider.resolveCondition?.(condition)),
+    };
+
+    service.guardClause.moveToGuardClause(editor, provider, resolvedCondition, position, type);
   }
-
-  const hasChanges = service.ast.applyASTChanges(editor.document, editBuilder, ...changes.map(({ node }) => node));
-  if (!hasChanges && !hasErrors) window.showInformationMessage(service.lang.infoMessage('noChanges'));
 }
 
 /**
@@ -56,17 +49,17 @@ export default function createGuardClause(
  * @command invertIf.createCustomGuardClause
  */
 export async function createCustomGuardClause(editor: TextEditor) {
-  const typeOptions: (keyof typeof GuardClauseType)[] = ['auto', 'break', 'continue', 'return'];
-  const positionOptions: (keyof typeof GuardClausePosition)[] = ['auto', 'keep', 'prepend', 'append'];
+  const typeOptions: (keyof typeof GuardClauseType)[] = ["Auto", "Break", "Continue", "Return"];
+  const positionOptions: (keyof typeof GuardClausePosition)[] = ["Auto", "Prepend", "Append", "Keep"];
 
   const type = ((await window.showQuickPick(typeOptions, {
-    title: 'Guard clause type',
-    placeHolder: 'type',
-  })) || 'auto') as keyof typeof GuardClauseType;
+    title: "Guard clause type",
+    placeHolder: "type",
+  })) || "Auto") as keyof typeof GuardClauseType;
   const position = ((await window.showQuickPick(positionOptions, {
-    title: 'Guard clause position',
-    placeHolder: 'position',
-  })) || 'auto') as keyof typeof GuardClausePosition;
+    title: "Guard clause position",
+    placeHolder: "position",
+  })) || "Auto") as keyof typeof GuardClausePosition;
 
-  commands.executeCommand('invertIf.createGuardClause', null, GuardClausePosition[position], GuardClauseType[type]);
+  commands.executeCommand("invertIf.createGuardClause", null, GuardClausePosition[position], GuardClauseType[type]);
 }

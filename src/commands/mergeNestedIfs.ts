@@ -1,35 +1,31 @@
-import { Range, TextEditor, TextEditorEdit, window } from 'vscode';
-import { service } from '../injections';
-import { IfStatementKind, FileKind } from 'ast-types/gen/kinds';
-import { NodePath } from 'ast-types/lib/node-path';
+import { Range, TextEditor, TextEditorEdit, window } from "vscode";
+import { service } from "../globals";
+import { IfStatementKind, FileKind } from "ast-types/gen/kinds";
+import { NodePath } from "ast-types/lib/node-path";
+import { IfStatementRefNode } from "../api/nodes/IfStatementNode";
 
 /**
  * @title Invert If: Merge selected if blocks
  * @shortTitle Merge if blocks
  * @command invertIf.mergeNestedIfs
  */
-export default function mergeNestedIfs(editor: TextEditor, editBuilder: TextEditorEdit, selection?: Range) {
+export default async function mergeNestedIfs(editor: TextEditor, _: TextEditorEdit, selection?: Range) {
   const selections = selection ? [selection] : editor.selections;
+  const provider = service.plugins.getInvertIfElseProvider(editor.document);
 
-  let program: FileKind;
-  try {
-    program = service.ast.parseDocument(editor.document);
-  } catch (e: any) {
-    return window.showErrorMessage(service.lang.errorMessage('parseError', e.description));
+  if (!provider) {
+    window.showErrorMessage("No invert if/else provider found for this file type");
+    return;
   }
 
-  const ifBlocks = selections
-    .reduce<NodePath<IfStatementKind>[]>(
-      (blocks, selection) => [...blocks, ...service.ast.extractIfBlocks(program, selection, 1)],
-      []
-    )
-    .map(({ node }) => node)
-    .sort((a, b) => (service.ast.isParentOf(a, b) ? -1 : 1));
+  const selectionStatements = (
+    await Promise.all(selections.map((selection) => provider.provideIfStatements(editor.document, selection)))
+  ).reduce((acc: IfStatementRefNode<any>[], statements) => (statements ? acc.concat(statements) : acc), []);
 
-  const parent = ifBlocks.shift();
-  if (!parent) return window.showErrorMessage(service.lang.errorMessage('noIfBlock'));
+  const groups = service.ifElse.groupIfStatementsByParent(selectionStatements);
 
-  const merged = service.ifElse.combine(parent, ...ifBlocks);
-
-  service.ast.applyASTChanges(editor.document, editBuilder, merged);
+  for (const group of groups) {
+    const parent = group.shift();
+    if (parent) service.ifElse.mergeNestedIfs(editor, provider, parent, ...group);
+  }
 }
