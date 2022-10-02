@@ -58,26 +58,26 @@ suite('Unit tests for GuardClauseService', () => {
     expect(guardClauseService.detectGuardClausePosition(block, condition)).to.equal(GuardClausePosition.keep);
   });
 
-  test('generates break guard clause', () => {
-    const node = astService.parse(ifCode, 'js').program.body[0] as IfStatementKind;
+  test("generates break guard clause", () => {
+    const node = astService.parse(ifCode, "js").program.body[0] as IfStatementKind;
     const condition = node.test;
-    const guardClause = guardClauseService.toGuardClause(condition, GuardClauseType.break);
+    const guardClause = guardClauseService.getGuardClauseCondition(condition, GuardClauseType.break);
 
-    expect(guardClause.consequent.type).to.equal('BreakStatement');
+    expect(guardClause.consequent.type).to.equal("BreakStatement");
   });
 
-  test('generates continue guard clause', () => {
-    const node = astService.parse(ifCode, 'js').program.body[0] as IfStatementKind;
+  test("generates continue guard clause", () => {
+    const node = astService.parse(ifCode, "js").program.body[0] as IfStatementKind;
     const condition = node.test;
-    const guardClause = guardClauseService.toGuardClause(condition, GuardClauseType.continue);
+    const guardClause = guardClauseService.getGuardClauseCondition(condition, GuardClauseType.continue);
 
-    expect(guardClause.consequent.type).to.equal('ContinueStatement');
+    expect(guardClause.consequent.type).to.equal("ContinueStatement");
   });
 
   test('generates return guard clause', () => {
     const node = astService.parse(ifCode, 'js').program.body[0] as IfStatementKind;
     const condition = node.test;
-    const guardClause = guardClauseService.toGuardClause(condition, GuardClauseType.return);
+    const guardClause = guardClauseService.getGuardClauseCondition(condition, GuardClauseType.return);
 
     expect(guardClause.consequent.type).to.equal('ReturnStatement');
   });

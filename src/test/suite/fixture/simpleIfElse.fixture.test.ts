@@ -14,7 +14,7 @@ asyncSuite('Fixture tests for simple if else inversion', async function () {
 
   const suites = await FixtureTestRunner.suiteRunners('simple-if-else', async (code) => {
     const node = astService.parse(code, 'js');
-    const inverse = ifElseService.inverse(node.program.body[0] as IfStatementKind);
+    const inverse = ifElseService.getInverseIfElse(node.program.body[0] as IfStatementKind);
 
     return astService.stringify(inverse, 'js');
   });

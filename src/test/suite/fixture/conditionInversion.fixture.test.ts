@@ -12,7 +12,7 @@ asyncSuite('Fixture tests for condition inversion', async function () {
   const suites = await FixtureTestRunner.suiteRunners('condition-inversion', async (code) => {
     const node = astService.parse(code, 'js');
     const condition = astService.extractConditions(node)[0];
-    const inverse = conditionService.inverse(condition.node);
+    const inverse = conditionService.getInverseCondition(condition.node);
     const inverseCode = astService.stringify(inverse, 'js');
     const [start, end] = FixtureTestRunner.mapRangeToOffset(code, condition.node.loc?.start, condition.node.loc?.end);
 

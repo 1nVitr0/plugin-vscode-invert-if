@@ -15,10 +15,9 @@ suite('Unit tests for ASTService', () => {
     serviceProvider = new InvertIfServiceProvider();
   });
 
-  test('provides all services', () => {
-    expect(serviceProvider.ast).to.be.instanceOf(ASTService);
+  test("provides all services", () => {
     expect(serviceProvider.condition).to.be.instanceOf(ConditionService);
-    expect(serviceProvider.configuration).to.be.instanceOf(ConfigurationService);
+    expect(serviceProvider.config).to.be.instanceOf(ConfigurationService);
     expect(serviceProvider.guardClause).to.be.instanceOf(GuardClauseService);
     expect(serviceProvider.ifElse).to.be.instanceOf(IfElseService);
     expect(serviceProvider.lang).to.be.instanceOf(LanguageService);

@@ -36,51 +36,51 @@ suite('Unit tests for ConditionService', () => {
     expect(conditions.length).to.equal(2);
   });
 
-  test('inverses conditions', () => {
-    const node = astService.parse('if (a == b) {}', 'js');
+  test("inverses conditions", () => {
+    const node = astService.parse("if (a == b) {}", "js");
     const statement: IfStatementKind = node.program.body[0] as IfStatementKind;
-    const inverse = conditionService.inverse(statement.test);
+    const inverse = conditionService.getInverseCondition(statement.test);
 
-    expect(astService.stringify(inverse, 'js')).to.equal('a != b');
+    expect(astService.stringify(inverse, "js")).to.equal("a != b");
   });
 
-  test('inverses groups', () => {
-    const node = astService.parse('if (a == b && c == d && e == f) {}', 'js');
+  test("inverses groups", () => {
+    const node = astService.parse("if (a == b && c == d && e == f) {}", "js");
     const statement: IfStatementKind = node.program.body[0] as IfStatementKind;
-    const inverse = conditionService.inverseGroup(statement.test);
+    const inverse = conditionService.getInverseGroup(statement.test);
 
-    expect(astService.stringify(inverse, 'js')).to.equal('!(a == b && c == d && e == f)');
+    expect(astService.stringify(inverse, "js")).to.equal("!(a == b && c == d && e == f)");
   });
 
-  test('inverse respects depth', () => {
-    const node = astService.parse('if (a == b && c == d && e == f) {}', 'js');
+  test("inverse respects depth", () => {
+    const node = astService.parse("if (a == b && c == d && e == f) {}", "js");
     const statement: IfStatementKind = node.program.body[0] as IfStatementKind;
-    const inverse = conditionService.inverse(statement.test, 1);
+    const inverse = conditionService.getInverseCondition(statement.test, 1);
 
-    expect(astService.stringify(inverse, 'js')).to.equal('!(a == b && c == d) || !(e == f)');
+    expect(astService.stringify(inverse, "js")).to.equal("!(a == b && c == d) || !(e == f)");
   });
 
-  test('inverses binary expression as group', () => {
-    const node = astService.parse('if (a +b) {}', 'js');
+  test("inverses binary expression as group", () => {
+    const node = astService.parse("if (a +b) {}", "js");
     const statement: IfStatementKind = node.program.body[0] as IfStatementKind;
-    const inverse = conditionService.inverse(statement.test, 1);
+    const inverse = conditionService.getInverseCondition(statement.test, 1);
 
-    expect(astService.stringify(inverse, 'js')).to.equal('!(a + b)');
+    expect(astService.stringify(inverse, "js")).to.equal("!(a + b)");
   });
 
-  test('inverses unary expression', () => {
-    const node = astService.parse('if (+a) {}', 'js');
+  test("inverses unary expression", () => {
+    const node = astService.parse("if (+a) {}", "js");
     const statement: IfStatementKind = node.program.body[0] as IfStatementKind;
-    const inverse = conditionService.inverse(statement.test, 1);
+    const inverse = conditionService.getInverseCondition(statement.test, 1);
 
-    expect(astService.stringify(inverse, 'js')).to.equal('!+a');
+    expect(astService.stringify(inverse, "js")).to.equal("!+a");
   });
 
-  test('removes unary ! expression', () => {
-    const node = astService.parse('if (!a) {}', 'js');
+  test("removes unary ! expression", () => {
+    const node = astService.parse("if (!a) {}", "js");
     const statement: IfStatementKind = node.program.body[0] as IfStatementKind;
-    const inverse = conditionService.inverse(statement.test, 1);
+    const inverse = conditionService.getInverseCondition(statement.test, 1);
 
-    expect(astService.stringify(inverse, 'js')).to.equal('a');
+    expect(astService.stringify(inverse, "js")).to.equal("a");
   });
 });

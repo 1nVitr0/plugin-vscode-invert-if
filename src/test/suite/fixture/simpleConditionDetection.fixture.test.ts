@@ -15,7 +15,7 @@ asyncSuite('Fixture tests for simple condition detection', async function () {
 
     const replace = conditions.map(({ node }) => {
       const [start, end] = FixtureTestRunner.mapRangeToOffset(code, node.loc?.start, node.loc?.end);
-      const inverse = conditionService.inverse(node);
+      const inverse = conditionService.getInverseCondition(node);
       const inverseCode = astService.stringify(inverse, 'js');
 
       return { start, end, code: inverseCode };
