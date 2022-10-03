@@ -7,6 +7,7 @@
     "url": "git+https://github.com/1nVitr0/plugin-vscode-invert-if.git"
   },
   "author": "Aram Becker",
+  "publisher": "1nVitr0",
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/1nVitr0/plugin-vscode-invert-if/issues"
