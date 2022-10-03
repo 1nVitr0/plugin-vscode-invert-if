@@ -1,0 +1,151 @@
+{
+  "name": "invert-if",
+  "version": "1.0.0",
+  "preview": true,
+  "displayName": "Invert If",
+  "description": "Invert if blocks & conditions and create guard clauses on the fly",
+  "author": "1nVitr0",
+  "publisher": "1nVitr0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/1nVitr0/plugin-vscode-invert-if.git"
+  },
+  "bugs": {
+    "url": "https://github.com/1nVitr0/plugin-vscode-invert-if/issues"
+  },
+  "homepage": "https://github.com/1nVitr0/plugin-vscode-invert-if#readme",
+  "main": "./dist/extension.js",
+  "engines": {
+    "vscode": "^1.60.0"
+  },
+  "extensionKind": [
+    "workspace",
+    "ui"
+  ],
+  "categories": [
+    "Formatters",
+    "Programming Languages",
+    "Other"
+  ],
+  "keywords": [
+    "refactor",
+    "invert if condition",
+    "negate condition",
+    "swap if else",
+    "guard clause"
+  ],
+  "icon": "resources/icon.png",
+  "badges": [
+    {
+      "url": "https://img.shields.io/badge/%20%20%F0%9F%93%A6%F0%9F%9A%80-semantic--release-e10079.svg",
+      "href": "https://github.com/semantic-release/semantic-release",
+      "description": "Powered by Semantic Release"
+    },
+    {
+      "url": "https://img.shields.io/github/workflow/status/1nVitr0/plugin-vscode-invert-if/Tests?label=tests&logo=visualstudiocode",
+      "href": "https://github.com/1nVitr0/plugin-vscode-invert-if/actions/workflows/test.yml",
+      "description": "Main Test Status"
+    },
+    {
+      "url": "https://img.shields.io/github/workflow/status/1nVitr0/plugin-vscode-invert-if/Release?logo=visualstudiocode",
+      "href": "https://github.com/1nVitr0/plugin-vscode-invert-if/actions/workflows/release.yml",
+      "description": "Build Status"
+    }
+  ],
+  "galleryBanner": {
+    "color": "#06362d",
+    "theme": "dark"
+  },
+  "activationEvents": [
+    "onCommand:invertIf.createGuardClause",
+    "onCommand:invertIf.createCustomGuardClause",
+    "onCommand:invertIf.generateTruthTable",
+    "onCommand:invertIf.compareWithInvertedCondition",
+    "onCommand:invertIf.invertCondition",
+    "onCommand:invertIf.invertIfElse",
+    "onCommand:invertIf.mergeNestedIfs"
+  ],
+  "contributes": {
+    "configuration": {
+      "properties": {
+        "invertIf.truthTableBooleanText": {
+          "type": "object",
+          "default": {
+            "true": "true",
+            "false": "false"
+          },
+          "description": "The text to use for the boolean values in the truth table",
+          "required": [
+            "true",
+            "false"
+          ]
+        },
+        "invertIf.truthTableConditionIndex": {
+          "type": "string",
+          "default": "(#A)",
+          "description": "The index text for evaluated conditions in the truth tables. Use `#1` for numeric indexes, `#a` for alphabetic indexes, or `#I` for roman numerals",
+          "format": "regexp",
+          "pattern": "#\\d|#[a-z]|#[A-Z]"
+        }
+      }
+    },
+    "commands": [
+      {
+        "title": "Invert If: Create Guard Clause from Condition",
+        "shortTitle": "Create Guard Clause",
+        "command": "invertIf.createGuardClause"
+      },
+      {
+        "title": "Invert If: Create Custom Guard Clause",
+        "shortTitle": "Custom Guard Clause",
+        "command": "invertIf.createCustomGuardClause"
+      },
+      {
+        "title": "Invert If: Generate truth table",
+        "shortTitle": "Generate truth table",
+        "command": "invertIf.generateTruthTable"
+      },
+      {
+        "title": "Invert If: Invert Condition and compare truth tables",
+        "shortTitle": "Compare with inverted condition",
+        "command": "invertIf.compareWithInvertedCondition"
+      },
+      {
+        "title": "Invert If: Invert Condition",
+        "shortTitle": "Invert Condition",
+        "command": "invertIf.invertCondition"
+      },
+      {
+        "title": "Invert If: Invert If / Else Block",
+        "shortTitle": "Invert If / Else Block",
+        "command": "invertIf.invertIfElse"
+      },
+      {
+        "title": "Invert If: Merge selected if blocks",
+        "shortTitle": "Merge if blocks",
+        "command": "invertIf.mergeNestedIfs"
+      }
+    ]
+  },
+  "scripts": {
+    "vscode:prepublish": " npm run build && npm run build:production",
+    "build": "tsc --build",
+    "build:webpack": "webpack --mode development",
+    "build:production": "webpack --mode production",
+    "watch": "tsc --build --watch",
+    "watch:webpack": "webpack --mode development --watch",
+    "pretest": "npm run build && npm run lint",
+    "lint": "eslint src --ext ts",
+    "test": "node ./out/test/runTest.js",
+    "test:coverage": "export COVERAGE=true && node ./out/test/runTest.js",
+    "coverage": "npm run test:coverage && nyc report --reporter=text",
+    "contributions": "node scripts/contributions.js"
+  },
+  "devDependencies": {
+    "@microsoft/tsdoc": "^0.13.2",
+    "jsonfile": "^6.1.0"
+  },
+  "dependencies": {
+    "json-md-table": "^1.2.0"
+  }
+}

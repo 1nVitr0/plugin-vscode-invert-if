@@ -19,13 +19,14 @@ jobs:
         uses: actions/setup-node@v2
 
       - name: Install dependencies
-        run: npm ci
+        run: npm ci && nmp i --workspaces
 
       - name: Publish release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           VSCE_PAT: ${{ secrets.VSCE_PAT }}
-        run: npx semantic-release
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: npx multi-semantic-release
 
   update_develop:
     name: Update develop Branch
