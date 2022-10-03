@@ -126,9 +126,11 @@
   "scripts": {
     "vscode:prepublish": "npm run build:production",
     "build": "tsc -p ./",
+    "build:api": "tsc -p tsconfig.api.json",
     "build:webpack": "webpack --mode development",
     "build:production": "webpack --mode production",
     "watch": "tsc -watch -p ./",
+    "watch:api": "tsc -watch -p tsconfig.api.json",
     "watch:webpack": "webpack --mode development --watch",
     "pretest": "npm run build && npm run lint",
     "lint": "eslint src --ext ts",
@@ -175,38 +177,5 @@
     "lines-and-columns": "^1.1.6",
     "recast": "^0.20.5",
     "strip-comments": "^2.0.1"
-  },
-  "release": {
-    "branches": [
-      "main",
-      "develop"
-    ],
-    "verifyConditions": [
-      "semantic-release-vsce",
-      "@semantic-release/github"
-    ],
-    "prepare": {
-      "path": "semantic-release-vsce",
-      "packageVsix": true
-    },
-    "publish": [
-      "semantic-release-vsce",
-      {
-        "path": "@semantic-release/github",
-        "assets": "*.vsix"
-      }
-    ],
-    "plugins": [
-      "@semantic-release/commit-analyzer",
-      "@semantic-release/release-notes-generator",
-      "@semantic-release/changelog",
-      [
-        "@semantic-release/git",
-        {
-          "message": "chore(release): ${nextRelease.version}\n\n${nextRelease.notes}"
-        }
-      ],
-      "@semantic-release/github"
-    ]
   }
 }

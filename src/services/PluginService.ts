@@ -4,24 +4,7 @@ import { InvertIfElseProvider } from "../api/providers/InvertIfElseProvider";
 import { DocumentFilter, DocumentSelector, TextDocument, languages, EventEmitter, Disposable, window } from "vscode";
 import ConfigurationService from "./ConfigurationService";
 import { InvertIfBaseProvider } from "../api/providers/InvertIfBaseProvider";
-
-export interface Plugin<
-  T,
-  P extends InvertConditionProvider<T> | InvertIfElseProvider<T> | GuardClauseProvider<T> =
-    | InvertConditionProvider<T>
-    | InvertIfElseProvider<T>
-    | GuardClauseProvider<T>
-> {
-  documentSelector: DocumentSelector;
-  capabilities: {
-    invertCondition?: boolean;
-    invertIfElse?: boolean;
-    guardClause?: boolean;
-  } & (P extends InvertConditionProvider<T> ? { invertCondition: true } : {}) &
-    (P extends InvertIfElseProvider<T> ? { invertIfelse: true } : {}) &
-    (P extends GuardClauseProvider<T> ? { guardClause: true } : {});
-  provider: P;
-}
+import { Plugin } from "../api";
 
 export default class PluginService implements InvertIfBaseProvider, Disposable {
   private plugins: Plugin<any, any>[] = [];
@@ -113,7 +96,7 @@ export default class PluginService implements InvertIfBaseProvider, Disposable {
     return newPlugin;
   }
 
-  private compareDocumentSelectors(a: DocumentSelector, b: DocumentSelector): boolean {
+  private compareDocumentSelectors(a: DocumentSelector, b: DocumentSelector, strict = true): boolean {
     if (typeof a !== typeof b) return false;
     if (typeof a === "object" && typeof b == "object" && "length" in a !== "length" in b) return false;
 
@@ -122,7 +105,9 @@ export default class PluginService implements InvertIfBaseProvider, Disposable {
     }
 
     if (typeof a === "object" && "length" in a && typeof b == "object" && "length" in b) {
-      return a.every((aItem) => b.some((bItem) => this.compareDocumentSelectors(aItem, bItem)));
+      return strict
+        ? a.every((aItem) => b.some((bItem) => this.compareDocumentSelectors(aItem, bItem)))
+        : a.some((aItem) => b.some((bItem) => this.compareDocumentSelectors(aItem, bItem)));
     }
 
     const _a = a as DocumentFilter;
@@ -154,7 +139,7 @@ export default class PluginService implements InvertIfBaseProvider, Disposable {
     return this.plugins.find(
       (compare) =>
         plugin.provider !== compare.provider &&
-        this.compareDocumentSelectors(plugin.documentSelector, compare.documentSelector) &&
+        this.compareDocumentSelectors(plugin.documentSelector, compare.documentSelector, false) &&
         this.compareCapabilities(plugin.capabilities, compare.capabilities)
     );
   }

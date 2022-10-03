@@ -1,5 +1,5 @@
 import { DocumentSelector, Event } from "vscode";
-import { Plugin } from "../../services/PluginService";
+import { Plugin } from "../context/Plugin";
 import { GuardClauseProvider } from "./GuardClauseProvider";
 import { InvertConditionProvider } from "./InvertConditionProvider";
 import { InvertIfElseProvider } from "./InvertIfElseProvider";

@@ -9,6 +9,7 @@ export * from "./nodes/GenericNode";
 
 export * from "./context/ExpressionContext";
 export * from "./context/GuardClauseContext";
+export * from "./context/Plugin";
 
 export * from "./providers/InvertConditionProvider";
 export * from "./providers/InvertIfElseProvider";
