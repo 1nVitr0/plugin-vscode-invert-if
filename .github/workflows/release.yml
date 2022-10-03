@@ -19,7 +19,7 @@ jobs:
         uses: actions/setup-node@v2
 
       - name: Install dependencies
-        run: npm ci && nmp i --workspaces
+        run: npm ci && npm i --workspaces
 
       - name: Publish release
         env:
