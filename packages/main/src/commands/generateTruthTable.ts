@@ -1,7 +1,6 @@
 import generateMdTable from "json-md-table";
 import { Range, TextDocument, TextEditor, TextEditorEdit, window, workspace } from "vscode";
-import { RefSyntaxNode, UpdatedSyntaxNode } from "../api/nodes/SyntaxNode";
-import { InvertConditionProvider } from "../api/providers/InvertConditionProvider";
+import { InvertConditionProvider, RefSyntaxNode, UpdatedSyntaxNode } from "vscode-invert-if";
 import { service } from "../globals";
 
 function showTruthTable(...conditionGroups: UpdatedSyntaxNode<any>[][]) {
@@ -68,7 +67,7 @@ async function mapConditions<T>(document: TextDocument, provider: InvertConditio
  * @command invertIf.generateTruthTable
  */
 export default async function generateTruthTable(editor: TextEditor, _: TextEditorEdit, selection?: Range) {
-  const selections = selection ? [selection] : editor.selections;
+  const selections = selection ? [selection] : [...editor.selections];
 
   const provider = service.plugins.getInvertConditionProvider(editor.document);
 
@@ -88,7 +87,7 @@ export default async function generateTruthTable(editor: TextEditor, _: TextEdit
  * @command invertIf.compareWithInvertedCondition
  */
 export async function compareWithInvertedCondition(editor: TextEditor, _: TextEditorEdit, selection?: Range) {
-  const selections = selection ? [selection] : editor.selections;
+  const selections = selection ? [selection] : [...editor.selections];
 
   const provider = service.plugins.getInvertConditionProvider(editor.document);
 

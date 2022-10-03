@@ -1,8 +1,8 @@
 out/
-api/
 dist/
 node_modules/
 .vscode-test/
 *.vsix
+tsconfig.tsbuildinfo
 .nyc_output/
 coverage/

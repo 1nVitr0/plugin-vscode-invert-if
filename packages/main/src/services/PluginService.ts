@@ -1,17 +1,21 @@
-import { GuardClauseProvider } from "../api/providers/GuardClauseProvider";
-import { InvertConditionProvider } from "../api/providers/InvertConditionProvider";
-import { InvertIfElseProvider } from "../api/providers/InvertIfElseProvider";
 import { DocumentFilter, DocumentSelector, TextDocument, languages, EventEmitter, Disposable, window } from "vscode";
 import ConfigurationService from "./ConfigurationService";
-import { InvertIfBaseProvider } from "../api/providers/InvertIfBaseProvider";
-import { Plugin } from "../api";
+import {
+  GuardClauseProvider,
+  InvertConditionProvider,
+  InvertIfBaseProvider,
+  InvertIfElseProvider,
+  Plugin,
+} from "vscode-invert-if";
 
 export default class PluginService implements InvertIfBaseProvider, Disposable {
   private plugins: Plugin<any, any>[] = [];
   private registerProviderEvent: EventEmitter<Plugin<any>>;
+  private unregisterProviderEvent: EventEmitter<Plugin<any>>;
 
   public constructor(private configurationService: ConfigurationService) {
     this.registerProviderEvent = new EventEmitter();
+    this.unregisterProviderEvent = new EventEmitter();
   }
 
   public registerConditionProvider<T>(provider: InvertConditionProvider<T>, documentSelector: DocumentSelector) {
@@ -38,6 +42,33 @@ export default class PluginService implements InvertIfBaseProvider, Disposable {
     });
   }
 
+  public unregisterConditionProvider<T>(
+    provider: InvertConditionProvider<T>,
+    documentSelector: DocumentSelector
+  ): void {
+    this.unRegisterPlugin({
+      provider,
+      documentSelector,
+      capabilities: { invertCondition: true },
+    });
+  }
+
+  public unregisterIfElseProvider<T>(provider: InvertIfElseProvider<T>, documentSelector: DocumentSelector): void {
+    this.unRegisterPlugin({
+      provider,
+      documentSelector,
+      capabilities: { invertIfElse: true },
+    });
+  }
+
+  public unregisterGuardClauseProvider<T>(provider: GuardClauseProvider<T>, documentSelector: DocumentSelector): void {
+    this.unRegisterPlugin({
+      provider,
+      documentSelector,
+      capabilities: { guardClause: true },
+    });
+  }
+
   public getInvertConditionProvider(document: TextDocument): InvertConditionProvider<any> | undefined {
     return this.plugins.find(
       ({ capabilities, documentSelector }) =>
@@ -57,12 +88,17 @@ export default class PluginService implements InvertIfBaseProvider, Disposable {
     )?.provider;
   }
 
-  public onRegisterProvider(listener: (e: Plugin<any>) => any): Disposable {
+  public onRegisterProvider<T>(listener: (e: Plugin<T>) => any): Disposable {
     return this.registerProviderEvent.event(listener);
+  }
+
+  public onUnregisterProvider<T>(listener: (e: Plugin<T>) => any): Disposable {
+    return this.unregisterProviderEvent.event(listener);
   }
 
   public dispose() {
     this.registerProviderEvent.dispose();
+    this.unregisterProviderEvent.dispose();
   }
 
   private registerPlugin<T>(plugin: Plugin<T>): Plugin<T> {
@@ -94,6 +130,31 @@ export default class PluginService implements InvertIfBaseProvider, Disposable {
     this.registerProviderEvent.fire(newPlugin);
 
     return newPlugin;
+  }
+
+  private unRegisterPlugin<T>(plugin: Plugin<T>): Plugin<T> {
+    const { capabilities, documentSelector, provider } = plugin;
+    const existingPlugin = this.getExistingPlugin(provider);
+
+    if (existingPlugin && this.compareDocumentSelectors(existingPlugin.documentSelector, documentSelector)) {
+      for (const key of Object.keys(capabilities) as (keyof Plugin<T>["capabilities"])[]) {
+        if (capabilities[key] === true) existingPlugin.capabilities[key] = false;
+      }
+      this.unregisterProviderEvent.fire(existingPlugin);
+
+      if (
+        !existingPlugin.capabilities.invertCondition &&
+        !existingPlugin.capabilities.invertIfElse &&
+        !existingPlugin.capabilities.guardClause
+      ) {
+        const index = this.plugins.indexOf(existingPlugin);
+        this.plugins.splice(index, 1);
+      }
+
+      return existingPlugin;
+    } else {
+      throw new Error("Plugin could not be unregistered because it was not registered.");
+    }
   }
 
   private compareDocumentSelectors(a: DocumentSelector, b: DocumentSelector, strict = true): boolean {

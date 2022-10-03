@@ -1,181 +1,47 @@
 {
-  "name": "invert-if",
+  "name": "plugin-vscode-invert-if",
   "version": "1.0.0",
-  "preview": true,
-  "displayName": "Invert If",
   "description": "Invert if blocks & conditions and create guard clauses on the fly",
-  "author": "1nVitr0",
-  "publisher": "1nVitr0",
   "repository": {
     "type": "git",
-    "url": "https://github.com/1nVitr0/plugin-vscode-invert-if.git"
+    "url": "git+https://github.com/1nVitr0/plugin-vscode-invert-if.git"
   },
-  "main": "./dist/extension.js",
-  "engines": {
-    "vscode": "^1.60.0"
+  "author": "Aram Becker",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/1nVitr0/plugin-vscode-invert-if/issues"
   },
-  "extensionKind": [
-    "workspace",
-    "ui"
+  "homepage": "https://github.com/1nVitr0/plugin-vscode-invert-if#readme",
+  "workspaces": [
+    "packages/api",
+    "packages/main",
+    "!packages/lang-support-js"
   ],
-  "categories": [
-    "Formatters",
-    "Programming Languages",
-    "Other"
-  ],
-  "keywords": [
-    "refactor",
-    "invert if condition",
-    "negate condition",
-    "swap if else",
-    "guard clause"
-  ],
-  "icon": "resources/icon.png",
-  "badges": [
-    {
-      "url": "https://img.shields.io/badge/%20%20%F0%9F%93%A6%F0%9F%9A%80-semantic--release-e10079.svg",
-      "href": "https://github.com/semantic-release/semantic-release",
-      "description": "Powered by Semantic Release"
-    },
-    {
-      "url": "https://img.shields.io/github/workflow/status/1nVitr0/plugin-vscode-invert-if/Tests?label=tests&logo=visualstudiocode",
-      "href": "https://github.com/1nVitr0/plugin-vscode-invert-if/actions/workflows/test.yml",
-      "description": "Main Test Status"
-    },
-    {
-      "url": "https://img.shields.io/github/workflow/status/1nVitr0/plugin-vscode-invert-if/Release?logo=visualstudiocode",
-      "href": "https://github.com/1nVitr0/plugin-vscode-invert-if/actions/workflows/release.yml",
-      "description": "Build Status"
-    }
-  ],
-  "galleryBanner": {
-    "color": "#06362d",
-    "theme": "dark"
-  },
-  "activationEvents": [
-    "onCommand:invertIf.createGuardClause",
-    "onCommand:invertIf.createCustomGuardClause",
-    "onCommand:invertIf.generateTruthTable",
-    "onCommand:invertIf.compareWithInvertedCondition",
-    "onCommand:invertIf.invertCondition",
-    "onCommand:invertIf.invertIfElse",
-    "onCommand:invertIf.mergeNestedIfs"
-  ],
-  "contributes": {
-    "configuration": {
-      "properties": {
-        "invertIf.truthTableBooleanText": {
-          "type": "object",
-          "default": {
-            "true": "true",
-            "false": "false"
-          },
-          "description": "The text to use for the boolean values in the truth table",
-          "required": [
-            "true",
-            "false"
-          ]
-        },
-        "invertIf.truthTableConditionIndex": {
-          "type": "string",
-          "default": "(#A)",
-          "description": "The index text for evaluated conditions in the truth tables. Use `#1` for numeric indexes, `#a` for alphabetic indexes, or `#I` for roman numerals",
-          "format": "regexp",
-          "pattern": "#\\d|#[a-z]|#[A-Z]"
-        }
-      }
-    },
-    "commands": [
-      {
-        "title": "Invert If: Create Guard Clause from Condition",
-        "shortTitle": "Create Guard Clause",
-        "command": "invertIf.createGuardClause"
-      },
-      {
-        "title": "Invert If: Create Custom Guard Clause",
-        "shortTitle": "Custom Guard Clause",
-        "command": "invertIf.createCustomGuardClause"
-      },
-      {
-        "title": "Invert If: Generate truth table",
-        "shortTitle": "Generate truth table",
-        "command": "invertIf.generateTruthTable"
-      },
-      {
-        "title": "Invert If: Invert Condition and compare truth tables",
-        "shortTitle": "Compare with inverted condition",
-        "command": "invertIf.compareWithInvertedCondition"
-      },
-      {
-        "title": "Invert If: Invert Condition",
-        "shortTitle": "Invert Condition",
-        "command": "invertIf.invertCondition"
-      },
-      {
-        "title": "Invert If: Invert If / Else Block",
-        "shortTitle": "Invert If / Else Block",
-        "command": "invertIf.invertIfElse"
-      },
-      {
-        "title": "Invert If: Merge selected if blocks",
-        "shortTitle": "Merge if blocks",
-        "command": "invertIf.mergeNestedIfs"
-      }
-    ]
-  },
-  "scripts": {
-    "vscode:prepublish": "npm run build:production",
-    "build": "tsc -p ./",
-    "build:api": "tsc -p tsconfig.api.json",
-    "build:webpack": "webpack --mode development",
-    "build:production": "webpack --mode production",
-    "watch": "tsc -watch -p ./",
-    "watch:api": "tsc -watch -p tsconfig.api.json",
-    "watch:webpack": "webpack --mode development --watch",
-    "pretest": "npm run build && npm run lint",
-    "lint": "eslint src --ext ts",
-    "test": "node ./out/test/runTest.js",
-    "test:coverage": "export COVERAGE=true && node ./out/test/runTest.js",
-    "coverage": "npm run test:coverage && nyc report --reporter=text",
-    "contributions": "node scripts/contributions.js"
-  },
   "devDependencies": {
-    "@istanbuljs/nyc-config-typescript": "^1.0.1",
-    "@microsoft/tsdoc": "^0.13.2",
-    "@semantic-release/changelog": "^6.0.0",
-    "@semantic-release/git": "^10.0.0",
-    "@types/chai": "^4.2.21",
-    "@types/glob": "^7.1.3",
-    "@types/mocha": "^8.2.2",
-    "@types/node": "14.x",
-    "@types/strip-comments": "^2.0.1",
+    "@istanbuljs/nyc-config-typescript": "^1.0.2",
+    "@semantic-release/changelog": "^6.0.1",
+    "@semantic-release/git": "^10.0.1",
+    "@types/chai": "^4.3.3",
+    "@types/glob": "^7.2.0",
+    "@types/mocha": "^8.2.3",
+    "@types/node": "^14.18.31",
     "@types/vscode": "^1.60.0",
-    "@typescript-eslint/eslint-plugin": "^4.26.0",
-    "@typescript-eslint/parser": "^4.26.0",
-    "chai": "^4.3.4",
-    "defaults-deep-ts": "^0.2.2",
-    "eslint": "^7.27.0",
-    "eslint-config-prettier": "^8.3.0",
-    "glob": "^7.1.7",
-    "jsonfile": "^6.1.0",
+    "@typescript-eslint/eslint-plugin": "^4.33.0",
+    "@typescript-eslint/parser": "^4.33.0",
+    "chai": "^4.3.6",
+    "eslint": "^7.32.0",
+    "eslint-config-prettier": "^8.5.0",
+    "glob": "^7.2.3",
     "mocha": "^8.4.0",
+    "multi-semantic-release": "^3.0.1",
     "nyc": "^15.1.0",
-    "semantic-release": "^19.0.3",
+    "semantic-release": "^19.0.5",
     "semantic-release-vsce": "^3.5.0",
-    "ts-loader": "^9.2.6",
-    "type-fest": "^2.3.4",
-    "typescript": "^4.3.2",
-    "vscode-test": "^1.5.2",
-    "webpack": "^5.59.0",
-    "webpack-cli": "^4.9.1"
-  },
-  "dependencies": {
-    "ast-types": "^0.14.2",
-    "babylon": "^6.18.0",
-    "escape-string-regexp": "^5.0.0",
-    "json-md-table": "^1.1.4",
-    "lines-and-columns": "^1.1.6",
-    "recast": "^0.20.5",
-    "strip-comments": "^2.0.1"
+    "ts-loader": "^9.4.1",
+    "type-fest": "^2.19.0",
+    "typescript": "^4.8.4",
+    "vscode-test": "^1.6.1",
+    "webpack": "^5.74.0",
+    "webpack-cli": "^4.10.0"
   }
 }

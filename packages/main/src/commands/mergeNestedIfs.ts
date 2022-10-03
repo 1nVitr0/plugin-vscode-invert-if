@@ -1,8 +1,6 @@
 import { Range, TextEditor, TextEditorEdit, window } from "vscode";
 import { service } from "../globals";
-import { IfStatementKind, FileKind } from "ast-types/gen/kinds";
-import { NodePath } from "ast-types/lib/node-path";
-import { IfStatementRefNode } from "../api/nodes/IfStatementNode";
+import { IfStatementRefNode } from "vscode-invert-if";
 
 /**
  * @title Invert If: Merge selected if blocks

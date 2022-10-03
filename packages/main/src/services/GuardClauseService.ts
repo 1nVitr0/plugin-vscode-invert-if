@@ -1,12 +1,18 @@
 import { TextEditor } from "vscode";
-import { GeneralStatementUpdatedNode } from "../api/nodes/GeneralStatementNode";
-import { GuardClauseContext, GuardClausePosition, GuardClauseType } from "../api/context/GuardClauseContext";
-import { IfStatementUpdatedNode } from "../api/nodes/IfStatementNode";
-import { SyntaxNodeType, RefSyntaxNode, UpdatedSyntaxNode } from "../api/nodes/SyntaxNode";
-import { GuardClauseProvider } from "../api/providers/GuardClauseProvider";
+import {
+  ExpressionContext,
+  GeneralStatementUpdatedNode,
+  GuardClauseContext,
+  GuardClausePosition,
+  GuardClauseProvider,
+  GuardClauseType,
+  IfStatementUpdatedNode,
+  RefSyntaxNode,
+  SyntaxNodeType,
+  UpdatedSyntaxNode,
+} from "vscode-invert-if";
 import ConditionService from "./ConditionService";
 import ConfigurationService from "./ConfigurationService";
-import { ExpressionContext } from "../api/context/ExpressionContext";
 
 export default class GuardClauseService {
   protected static replaceTrueParentStatement: GuardClauseContext[] = [

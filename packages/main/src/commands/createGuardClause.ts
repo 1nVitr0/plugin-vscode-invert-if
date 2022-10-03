@@ -1,5 +1,5 @@
 import { commands, Range, TextEditor, TextEditorEdit, window } from "vscode";
-import { GuardClausePosition, GuardClauseType } from "../api/context/GuardClauseContext";
+import { GuardClausePosition, GuardClauseType } from "vscode-invert-if";
 import { service } from "../globals";
 
 /**

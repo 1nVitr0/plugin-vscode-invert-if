@@ -1,24 +1,24 @@
+import { Range, TextEditor } from "vscode";
 import {
   BinaryExpressionUpdatedNode,
   BinaryOperator,
   ConditionRefNode,
   ConditionUpdatedNode,
+  InvertConditionProvider,
   isBinaryExpressionNode,
   isConditionNode,
   isLogicalExpressionNode,
   isUnaryExpressionNode,
-  LogicalOperator,
-  UnaryOperator,
-} from "../api/nodes/ConditionNode";
-import { SyntaxNodeType, UpdatedSyntaxNode, RefSyntaxNode } from "../api/nodes/SyntaxNode";
-import ConfigurationService from "./ConfigurationService";
-import {
-  UnaryExpressionUpdatedNode,
-  UnaryExpressionRefNode,
   LogicalExpressionSyntaxNode,
-} from "../api/nodes/ConditionNode";
-import { InvertConditionProvider } from "../api/providers/InvertConditionProvider";
-import { Range, TextEditor } from "vscode";
+  LogicalOperator,
+  RefSyntaxNode,
+  SyntaxNodeType,
+  UnaryExpressionRefNode,
+  UnaryExpressionUpdatedNode,
+  UnaryOperator,
+  UpdatedSyntaxNode,
+} from "vscode-invert-if";
+import ConfigurationService from "./ConfigurationService";
 
 export default class ConditionService {
   public static inverseLogicalOperator: Record<LogicalOperator, LogicalOperator> = {

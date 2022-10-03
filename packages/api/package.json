@@ -1,0 +1,26 @@
+{
+  "name": "vscode-invert-if",
+  "version": "1.0.0",
+  "displayName": "Invert If",
+  "description": "Invert if blocks & conditions and create guard clauses on the fly",
+  "author": "1nVitr0",
+  "publisher": "1nVitr0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/1nVitr0/plugin-vscode-invert-if.git"
+  },
+  "main": "./dist/index.js",
+  "keywords": [
+    "refactor",
+    "invert if condition",
+    "negate condition",
+    "swap if else",
+    "guard clause"
+  ],
+  "scripts": {
+    "build": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "lint": "eslint src --ext ts",
+    "prepublish": "npm run build"
+  }
+}

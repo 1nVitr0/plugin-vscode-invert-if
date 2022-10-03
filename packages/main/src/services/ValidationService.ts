@@ -2,12 +2,13 @@ import {
   BinaryOperator,
   ConditionSyntaxNode,
   isConditionNode,
+  isUnaryExpressionNode,
+  LogicalOperator,
   SyntaxNode,
   SyntaxNodeType,
   UnaryExpressionSyntaxNode,
   UnaryOperator,
-} from "../api";
-import { isUnaryExpressionNode, LogicalOperator } from "../api/nodes/ConditionNode";
+} from "vscode-invert-if";
 import ConditionService from "./ConditionService";
 import ConfigurationService from "./ConfigurationService";
 

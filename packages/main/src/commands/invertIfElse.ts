@@ -1,6 +1,5 @@
-import { Range, TextEditor, TextEditorEdit, window } from 'vscode';
+import { Range, TextEditor, TextEditorEdit, window } from "vscode";
 import { service } from "../globals";
-import { NodeKind } from 'ast-types/gen/kinds';
 
 /**
  * @title Invert If: Invert If / Else Block

@@ -17,8 +17,7 @@ import {
 import { NodePath } from "ast-types/lib/node-path";
 import { SharedContextMethods } from "ast-types/lib/path-visitor";
 import { parse, prettyPrint, print, types } from "recast";
-import { Position, Range, TextDocument, TextEditorEdit, Uri } from "vscode";
-import { isUnaryExpressionNode } from "../../api/nodes/ConditionNode";
+import { Range, TextDocument, TextEditorEdit, Uri } from "vscode";
 import {
   BinaryExpressionRefNode,
   BinaryExpressionUpdatedNode,
@@ -40,6 +39,7 @@ import {
   isLogicalExpressionNode,
   isLoopNode,
   isRefNode,
+  isUnaryExpressionNode,
   LogicalExpressionRefNode,
   LogicalExpressionUpdatedNode,
   LogicalOperator,
@@ -51,7 +51,7 @@ import {
   UnaryOperator,
   UpdatedSyntaxNode,
   WhileStatementRefNode,
-} from "../../api";
+} from "vscode-invert-if";
 
 type NP = NodePath<NodeKind>;
 interface ProgramEntry {
@@ -60,7 +60,7 @@ interface ProgramEntry {
   root: NodePath<ProgramKind>;
 }
 
-export default class TypeScriptInvertIfProvider
+export default class JavaScriptInvertIfProvider
   implements InvertConditionProvider<NP>, InvertIfElseProvider<NP>, GuardClauseProvider<NP>
 {
   private static guardClauseParentTypes: NodeKind["type"][] = [
@@ -203,7 +203,7 @@ export default class TypeScriptInvertIfProvider
   ): void {
     const { range, ref, parent } = condition;
 
-    if (TypeScriptInvertIfProvider.replaceTrueParentStatement.includes(parent.ref.node.type)) {
+    if (JavaScriptInvertIfProvider.replaceTrueParentStatement.includes(parent.ref.node.type)) {
       // Replace empty loop conditions with true
       edit.replace(range, "true");
     } else if (parent.type == SyntaxNodeType.IfStatement) {
@@ -484,7 +484,7 @@ export default class TypeScriptInvertIfProvider
       ? {
           parent: this.mapToSyntaxNode(parent, program),
           root: this.mapToSyntaxNode(
-            this.getFirstParent(path, TypeScriptInvertIfProvider.guardClauseParentTypes) ?? program.root,
+            this.getFirstParent(path, JavaScriptInvertIfProvider.guardClauseParentTypes) ?? program.root,
             program
           ),
         }
@@ -505,7 +505,7 @@ export default class TypeScriptInvertIfProvider
         };
         return ifNode;
       case "BinaryExpression":
-        operator = TypeScriptInvertIfProvider.binaryExpressionOperators[node.operator];
+        operator = JavaScriptInvertIfProvider.binaryExpressionOperators[node.operator];
         if (!operator) return { type: SyntaxNodeType.Generic, ...base };
         const binaryNode: BinaryExpressionRefNode<NP> = {
           ...base,
@@ -517,7 +517,7 @@ export default class TypeScriptInvertIfProvider
         };
         return binaryNode;
       case "LogicalExpression":
-        operator = TypeScriptInvertIfProvider.logicalExpressionOperators[node.operator];
+        operator = JavaScriptInvertIfProvider.logicalExpressionOperators[node.operator];
         if (!operator) return { type: SyntaxNodeType.Generic, ...base };
         const logicalNode: LogicalExpressionRefNode<NP> = {
           ...base,
@@ -529,7 +529,7 @@ export default class TypeScriptInvertIfProvider
         };
         return logicalNode;
       case "UnaryExpression":
-        operator = TypeScriptInvertIfProvider.unaryExpressionOperators[node.operator];
+        operator = JavaScriptInvertIfProvider.unaryExpressionOperators[node.operator];
         if (!operator) return { type: SyntaxNodeType.Generic, ...base };
         const unaryNode: UnaryExpressionRefNode<NP> = {
           ...base,
@@ -642,7 +642,7 @@ export default class TypeScriptInvertIfProvider
       const { left, right, operator } = node as BinaryExpressionUpdatedNode<NP>;
 
       const newExpression: BinaryExpressionKind = types.builders.binaryExpression.from({
-        operator: TypeScriptInvertIfProvider.reverseBinaryExpressionOperator(operator),
+        operator: JavaScriptInvertIfProvider.reverseBinaryExpressionOperator(operator),
         left: this.buildNodeKind(left) as ExpressionKind,
         right: this.buildNodeKind(right) as ExpressionKind,
         loc: locSource ? this.rangeToLoc(locSource.range) : node.range ? this.rangeToLoc(node.range) : null,
@@ -655,7 +655,7 @@ export default class TypeScriptInvertIfProvider
       const { left, right, operator } = node as LogicalExpressionUpdatedNode<NP>;
 
       const newExpression: LogicalExpressionKind = types.builders.logicalExpression.from({
-        operator: TypeScriptInvertIfProvider.reverseLogicalExpressionOperator(operator),
+        operator: JavaScriptInvertIfProvider.reverseLogicalExpressionOperator(operator),
         left: this.buildNodeKind(left) as ExpressionKind,
         right: this.buildNodeKind(right) as ExpressionKind,
         loc: locSource ? this.rangeToLoc(locSource.range) : node.range ? this.rangeToLoc(node.range) : null,
@@ -668,7 +668,7 @@ export default class TypeScriptInvertIfProvider
       const { argument, operator } = node as UnaryExpressionUpdatedNode<NP>;
 
       const newExpression: UnaryExpressionKind = types.builders.unaryExpression.from({
-        operator: TypeScriptInvertIfProvider.reverseUnaryExpressionOperator(operator),
+        operator: JavaScriptInvertIfProvider.reverseUnaryExpressionOperator(operator),
         argument: this.buildNodeKind(argument) as ExpressionKind,
         loc: locSource ? this.rangeToLoc(locSource.range) : node.range ? this.rangeToLoc(node.range) : null,
       });

@@ -1,0 +1,21 @@
+{
+  "tagFormat": "main_v${version}",
+  "plugins": [
+    "@semantic-release/commit-analyzer",
+    "@semantic-release/release-notes-generator",
+    "@semantic-release/changelog",
+    [
+      "@semantic-release/git",
+      {
+        "message": "release(api): ${nextRelease.version}\n\n${nextRelease.notes}"
+      }
+    ],
+    [
+      "semantic-release-vsce",
+      {
+        "packageVsix": true
+      }
+    ],
+    "@semantic-release/github"
+  ]
+}

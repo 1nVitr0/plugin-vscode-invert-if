@@ -1,10 +1,18 @@
 import { Range, TextEditor, window } from "vscode";
-import { ConditionRefNode, isConditionNode, LogicalOperator } from "../api/nodes/ConditionNode";
-import { IfStatementRefNode, IfStatementUpdatedNode, isIfStatementNode } from "../api/nodes/IfStatementNode";
-import { RefSyntaxNode, SyntaxNodeType, UpdatedSyntaxNode } from "../api/nodes/SyntaxNode";
+import {
+  ConditionRefNode,
+  IfStatementRefNode,
+  IfStatementUpdatedNode,
+  InvertIfElseProvider,
+  isConditionNode,
+  isIfStatementNode,
+  LogicalOperator,
+  RefSyntaxNode,
+  SyntaxNodeType,
+  UpdatedSyntaxNode,
+} from "vscode-invert-if";
 import ConditionService from "./ConditionService";
 import ConfigurationService from "./ConfigurationService";
-import { InvertIfElseProvider } from "../api/providers/InvertIfElseProvider";
 
 export default class IfElseService {
   public constructor(
