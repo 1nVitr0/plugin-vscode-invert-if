@@ -1,0 +1,23 @@
+{
+  "compilerOptions": {
+    "composite": true,
+    "module": "CommonJS",
+    "target": "es6",
+    "outDir": "out",
+    "lib": [
+      "es6"
+    ],
+    "sourceMap": true,
+    "rootDir": "src",
+    "strict": true
+  },
+  "references": [
+    {
+      "path": "../api"
+    }
+  ],
+  "exclude": [
+    "node_modules",
+    "out"
+  ]
+}
