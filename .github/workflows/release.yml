@@ -25,6 +25,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           VSCE_PAT: ${{ secrets.VSCE_PAT }}
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
         run: npx multi-semantic-release
 
   update_develop:
