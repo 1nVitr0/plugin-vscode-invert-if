@@ -1,3 +1,4 @@
+import { Disposable } from "vscode";
 import ConditionService from "../services/ConditionService";
 import ConfigurationService from "../services/ConfigurationService";
 import GuardClauseService from "../services/GuardClauseService";
@@ -6,7 +7,7 @@ import LanguageService from "../services/LanguageService";
 import PluginService from "../services/PluginService";
 import ValidationService from "../services/ValidationService";
 
-export default class InvertIfServiceProvider {
+export default class InvertIfServiceProvider implements Disposable {
   public readonly config: ConfigurationService;
   public readonly lang: LanguageService;
   public readonly condition: ConditionService;
@@ -23,5 +24,9 @@ export default class InvertIfServiceProvider {
     this.guardClause = new GuardClauseService(this.config, this.condition);
     this.validation = new ValidationService(this.config, this.condition);
     this.plugins = new PluginService(this.config);
+  }
+
+  public dispose() {
+    this.plugins.dispose();
   }
 }

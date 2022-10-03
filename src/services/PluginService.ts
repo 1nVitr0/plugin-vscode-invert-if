@@ -1,11 +1,17 @@
 import { GuardClauseProvider } from "../api/providers/GuardClauseProvider";
 import { InvertConditionProvider } from "../api/providers/InvertConditionProvider";
 import { InvertIfElseProvider } from "../api/providers/InvertIfElseProvider";
-import { DocumentFilter, DocumentSelector, TextDocument, languages } from "vscode";
+import { DocumentFilter, DocumentSelector, TextDocument, languages, EventEmitter, Disposable, window } from "vscode";
 import ConfigurationService from "./ConfigurationService";
 import { InvertIfBaseProvider } from "../api/providers/InvertIfBaseProvider";
 
-interface Plugin<T, P extends InvertConditionProvider<T> | InvertIfElseProvider<T> | GuardClauseProvider<T>> {
+export interface Plugin<
+  T,
+  P extends InvertConditionProvider<T> | InvertIfElseProvider<T> | GuardClauseProvider<T> =
+    | InvertConditionProvider<T>
+    | InvertIfElseProvider<T>
+    | GuardClauseProvider<T>
+> {
   documentSelector: DocumentSelector;
   capabilities: {
     invertCondition?: boolean;
@@ -17,50 +23,35 @@ interface Plugin<T, P extends InvertConditionProvider<T> | InvertIfElseProvider<
   provider: P;
 }
 
-export default class PluginService implements InvertIfBaseProvider {
+export default class PluginService implements InvertIfBaseProvider, Disposable {
   private plugins: Plugin<any, any>[] = [];
+  private registerProviderEvent: EventEmitter<Plugin<any>>;
 
-  public constructor(private configurationService: ConfigurationService) {}
+  public constructor(private configurationService: ConfigurationService) {
+    this.registerProviderEvent = new EventEmitter();
+  }
 
   public registerConditionProvider<T>(provider: InvertConditionProvider<T>, documentSelector: DocumentSelector) {
-    const existingPlugin = this.getExistingPlugin(provider);
-
-    if (existingPlugin && this.compareDocumentSelectors(existingPlugin.documentSelector, documentSelector)) {
-      existingPlugin.capabilities.invertCondition = true;
-    }
-
-    this.plugins.push({
+    this.registerPlugin({
+      provider,
       documentSelector,
       capabilities: { invertCondition: true },
-      provider,
     });
   }
 
   public registerIfElseProvider<T>(provider: InvertIfElseProvider<T>, documentSelector: DocumentSelector) {
-    const existingPlugin = this.getExistingPlugin(provider);
-
-    if (existingPlugin && this.compareDocumentSelectors(existingPlugin.documentSelector, documentSelector)) {
-      existingPlugin.capabilities.invertIfElse = true;
-    }
-
-    this.plugins.push({
+    this.registerPlugin({
+      provider,
       documentSelector,
       capabilities: { invertIfElse: true },
-      provider,
     });
   }
 
   public registerGuardClauseProvider<T>(provider: GuardClauseProvider<T>, documentSelector: DocumentSelector) {
-    const existingPlugin = this.getExistingPlugin(provider);
-
-    if (existingPlugin && this.compareDocumentSelectors(existingPlugin.documentSelector, documentSelector)) {
-      existingPlugin.capabilities.guardClause = true;
-    }
-
-    this.plugins.push({
+    this.registerPlugin({
+      provider,
       documentSelector,
       capabilities: { guardClause: true },
-      provider,
     });
   }
 
@@ -83,6 +74,45 @@ export default class PluginService implements InvertIfBaseProvider {
     )?.provider;
   }
 
+  public onRegisterProvider(listener: (e: Plugin<any>) => any): Disposable {
+    return this.registerProviderEvent.event(listener);
+  }
+
+  public dispose() {
+    this.registerProviderEvent.dispose();
+  }
+
+  private registerPlugin<T>(plugin: Plugin<T>): Plugin<T> {
+    const { capabilities, documentSelector, provider } = plugin;
+    const existingPlugin = this.getExistingPlugin(provider);
+    const intersectingPlugin = this.getIntersectingPlugin(plugin);
+
+    if (intersectingPlugin) {
+      window.showWarningMessage(
+        "Multiple invert if providers for the same language have been registered. This may cause unexpected behavior."
+      );
+    }
+
+    if (existingPlugin && this.compareDocumentSelectors(existingPlugin.documentSelector, documentSelector)) {
+      for (const key of Object.keys(capabilities) as (keyof Plugin<T>["capabilities"])[]) {
+        existingPlugin.capabilities[key] = existingPlugin.capabilities[key] || capabilities[key];
+      }
+      this.registerProviderEvent.fire(existingPlugin);
+
+      return existingPlugin;
+    }
+
+    const newPlugin: Plugin<T> = {
+      documentSelector,
+      capabilities: { invertCondition: true },
+      provider,
+    };
+    this.plugins.push(newPlugin);
+    this.registerProviderEvent.fire(newPlugin);
+
+    return newPlugin;
+  }
+
   private compareDocumentSelectors(a: DocumentSelector, b: DocumentSelector): boolean {
     if (typeof a !== typeof b) return false;
     if (typeof a === "object" && typeof b == "object" && "length" in a !== "length" in b) return false;
@@ -103,9 +133,29 @@ export default class PluginService implements InvertIfBaseProvider {
     );
   }
 
-  private getExistingPlugin<T, P extends InvertConditionProvider<T> | InvertIfElseProvider<T> | GuardClauseProvider<T>>(
-    provider: P
-  ): Plugin<T, P> | undefined {
-    return this.plugins.find((plugin) => plugin.provider === provider) as Plugin<T, P> | undefined;
+  private compareCapabilities<T>(a: Plugin<T>["capabilities"], b: Plugin<T>["capabilities"]): number {
+    let result = 0;
+
+    // We intentionally use weak compare, as `false` and `undefined` are treated equally
+    if (a.invertCondition == b.invertCondition) result++;
+    if (a.invertIfElse == b.invertIfElse) result++;
+    if (a.guardClause == b.guardClause) result++;
+
+    return result;
+  }
+
+  private getExistingPlugin<T>(
+    provider: InvertConditionProvider<T> | InvertIfElseProvider<T> | GuardClauseProvider<T>
+  ): Plugin<T> | undefined {
+    return this.plugins.find((plugin) => plugin.provider === provider) as Plugin<T> | undefined;
+  }
+
+  private getIntersectingPlugin<T>(plugin: Plugin<T>): Plugin<any> | undefined {
+    return this.plugins.find(
+      (compare) =>
+        plugin.provider !== compare.provider &&
+        this.compareDocumentSelectors(plugin.documentSelector, compare.documentSelector) &&
+        this.compareCapabilities(plugin.capabilities, compare.capabilities)
+    );
   }
 }
