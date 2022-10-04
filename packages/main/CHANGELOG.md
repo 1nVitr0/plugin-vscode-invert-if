@@ -1,3 +1,10 @@
+# invert-if 1.0.0 (2022-10-04)
+
+
+### Bug Fixes
+
+* **main:** update documentation ([818b1cd](https://github.com/1nVitr0/plugin-vscode-invert-if/commit/818b1cd439b8afb7e5c87f7f51d10d570acb1790))
+
 # Changelog
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
