@@ -40,7 +40,7 @@
     "multi-semantic-release": "^3.0.1",
     "nyc": "^15.1.0",
     "semantic-release": "^19.0.5",
-    "semantic-release-vsce": "^3.5.0",
+    "semantic-release-vsce": "github:1nVitr0/semantic-release-vsce",
     "ts-loader": "^9.4.1",
     "type-fest": "^2.19.0",
     "typescript": "^4.8.4",

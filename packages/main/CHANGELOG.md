@@ -2,7 +2,17 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
-# [1.0.0](https://github.com/1nVitr0/plugin-vscode-invert-if/releases/tag/v1.0.0) (2021-09-25)
+# [2.0.0](https://github.com/1nVitr0/plugin-vscode-invert-if/releases/tag/main_v2.0.0) (2022-10-03)
+
+
+### Features
+
+* standardized API for language connectors ([e9e940c](https://github.com/1nVitr0/plugin-vscode-invert-if/commit/e9e940c44995f23745d9ecf27cad735cd57c8aef))
+* implement new standardized API ([cb3fcce](https://github.com/1nVitr0/plugin-vscode-invert-if/commit/cb3fcceb7bf742bd1d0962fbb5424f6365acf244))
+* ts and js language connector as separate module ([fe04ef9](https://github.com/1nVitr0/plugin-vscode-invert-if/commit/fe04ef95be0015c00387f46d67139627452434f5))
+
+
+# [1.0.0](https://github.com/1nVitr0/plugin-vscode-invert-if/releases/tag/main_sv1.0.0) (2021-09-25)
 
 
 ### Bug Fixes
