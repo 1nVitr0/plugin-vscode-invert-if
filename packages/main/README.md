@@ -2,8 +2,7 @@
 
 [![Build Status](https://img.shields.io/github/workflow/status/1nVitr0/plugin-vscode-invert-if/Release)](https://github.com/1nVitr0/plugin-vscode-invert-if/actions/workflows/release.yml)
 [![Test Status](https://img.shields.io/github/workflow/status/1nVitr0/plugin-vscode-invert-if/Tests?label=tests)](https://github.com/1nVitr0/plugin-vscode-invert-if/actions/workflows/test.yml)
-[![Minimum Coverage](https://img.shields.io/nycrc/1nVitr0/plugin-vscode-invert-if?config=.nycrc.json&preferredThreshold=lines)](https://github.com/1nVitr0/plugin-vscode-invert-if/blob/main/.nycrc.json)
-[![semantic-release](https://img.shields.io/badge/%20%20%F0%9F%93%A6%F0%9F%9A%80-semantic--release-e10079.svg)](https://github.com/semantic-release/semantic-release)<br>
+[![semantic-release](https://img.shields.io/badge/%20%20%F0%9F%93%A6%F0%9F%9A%80-semantic--release-e10079.svg)](https://github.com/semantic-release/semantic-release)
 [![Visual Studio Code extension 1nVitr0.invert-if](https://vsmarketplacebadge.apphb.com/version/1nVitr0.invert-if.svg)](https://marketplace.visualstudio.com/items?itemName=1nVitr0.invert-if)
 [![Installs for Visual Studio Code extension 1nVitr0.invert-if](https://vsmarketplacebadge.apphb.com/installs/1nVitr0.invert-if.svg)](https://marketplace.visualstudio.com/items?itemName=1nVitr0.invert-if)
 [![Rating for Visual Studio Code extension 1nVitr0.invert-if](https://vsmarketplacebadge.apphb.com/rating/1nVitr0.invert-if.svg)](https://marketplace.visualstudio.com/items?itemName=1nVitr0.invert-if)
@@ -27,13 +26,17 @@ While still in active development, the following features are already available:
 
 ### Commands
 
-- `Invert If: Invert If Block` Inverts if / else blocks
-- `Invert If: Merge selected if blocks` Merge selected if / else blocks into a single if block (concatenating the conditions using `&&`)
-- `Invert If: Create Guard Clause from Condition` Creates guard clause for the selected Condition
-- `Invert If: Create Custom Guard Clause from Condition` Creates guard clause for the selected Condition with custom options
-- `Invert If: Invert Condition` Invert selected edition
-- `Invert If: Generate truth table` Generate truth tables for the selected conditions
-- `Invert If: Invert Condition and compare truth tables` Invert selected editions and show their truth tables
+
+
+| Command                                                | Description                                                                                      |
+| ------------------------------------------------------ | ------------------------------------------------------------------------------------------------ |
+| `Invert If: Invert If Block`                           | Inverts selected if / else block(s)                                                              |
+| `Invert If: Merge selected if block`                   | Merge selected if / else blocks into a single if block (concatenating the conditions using `&&`) |
+| `Invert If: Create Guard Clause from Condition`        | Creates guard clause for the selected Condition                                                  |
+| `Invert If: Create Custom Guard Clause from Condition` | Creates guard clause for the selected Condition with custom options                              |
+| `Invert If: Invert Condition`                          | Invert selected condition(s)                                                                     |
+| `Invert If: Generate truth table`                      | Generate truth tables for the selected conditions                                                |
+| `Invert If: Invert Condition and compare truth tables` | Invert selected editions and show their truth tables                                             |
 
 The selection is currently only the condition under the active cursors, but more fine grained control will be available. The commands take into account **all** cursors, so **multiple selections** are possible.
 
@@ -70,7 +73,10 @@ You can add additional language support by providing an [extension](packages/mai
 
 ## Extension Settings
 
-The extension settings are currently not exported
+| Setting                      | Description                                                 | Default                            |
+| ---------------------------- | ----------------------------------------------------------- | ---------------------------------- |
+| `truthTableBooleanText`      | The text to use for the boolean values in the truth table   | `{ true: "true", false: "false" }` |
+| `*truthTableConditionIndex*` | The index text for evaluated conditions in the truth tables | `(#1)`                             |
 
 ## Known Issues
 

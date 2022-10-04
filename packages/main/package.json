@@ -1,6 +1,6 @@
 {
   "name": "invert-if",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "preview": true,
   "displayName": "Invert If",
   "description": "Invert if blocks & conditions and create guard clauses on the fly",
@@ -82,10 +82,10 @@
         },
         "invertIf.truthTableConditionIndex": {
           "type": "string",
-          "default": "(#A)",
+          "default": "(#1)",
           "description": "The index text for evaluated conditions in the truth tables. Use `#1` for numeric indexes, `#a` for alphabetic indexes, or `#I` for roman numerals",
           "format": "regexp",
-          "pattern": "#\\d|#[a-z]|#[A-Z]"
+          "pattern": "#[\\daAiI]"
         }
       }
     },
