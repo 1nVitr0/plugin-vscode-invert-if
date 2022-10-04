@@ -135,4 +135,4 @@ if (invertIfExtension) {
 }
 ```
 
-For a practical example, see the [provider]([packages/lang-support-js](https://github.com/1nVitr0/plugin-vscode-invert-if/tree/main/packages/lang-support-js) for `JavaScript` and `TypeScript` language support, that is shipped with the extension.
+For a practical example, see the [provider](https://github.com/1nVitr0/plugin-vscode-invert-if/tree/main/packages/lang-support-js) for `JavaScript` and `TypeScript` language support, that is shipped with the extension.
