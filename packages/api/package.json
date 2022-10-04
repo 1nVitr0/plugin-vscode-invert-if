@@ -1,6 +1,6 @@
 {
   "name": "vscode-invert-if",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "displayName": "Invert If",
   "description": "Invert if blocks & conditions and create guard clauses on the fly",
   "author": "1nVitr0",
