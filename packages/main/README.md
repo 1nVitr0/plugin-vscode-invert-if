@@ -80,9 +80,7 @@ You can add additional language support by providing an [extension](packages/mai
 
 ## Known Issues
 
-- `TypeScript` AST tree seems to be a bit unstable, which can lead to inconsistent inversion
-
-There are most likely a few more Bugs, but the tests are in the process of being expanded.
+There are most likely a few Bugs, but the tests are in the process of being expanded.
 
 ## Contributing
 
