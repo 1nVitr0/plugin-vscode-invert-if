@@ -8,7 +8,7 @@
 [![Rating for Visual Studio Code extension 1nVitr0.invert-if](https://vsmarketplacebadge.apphb.com/rating/1nVitr0.invert-if.svg)](https://marketplace.visualstudio.com/items?itemName=1nVitr0.invert-if)
 
 
-![Demo of Extension](packages/main/resources/demo.gif)
+![Demo of Extension](packages/extension/resources/demo.gif)
 
 This is a preview for the `invert-if` Extension that allows you to quickly and easily **invert if blocks**, **merge nested if blocks**, **invert conditions** and **create guard clauses**.  It also provides the option to **generate truth tables** to verify update if conditions.
 
@@ -69,7 +69,7 @@ Currently only the following languages are supported. I plan to add more but I n
 - `javascript`
 - `typescript`
 
-You can add additional language support by providing an [extension](packages/main/CONTRIBUTING.md) that registers itself with `Invert If`.
+You can add additional language support by providing an [extension](packages/extension/CONTRIBUTING.md) that registers itself with `Invert If`.
 
 ## Extension Settings
 
@@ -86,4 +86,4 @@ There are most likely a few Bugs, but the tests are in the process of being expa
 
 There are currently no feature contributions required, but when you encounter an error or weird behavior feel free to open an issue. I still need a lot of test data to provide solid fixtures for all edge cases.
 
-You can also add additional language support by providing an [extension](packages/main/CONTRIBUTING.md) that registers itself with `Invert If`.
+You can also add additional language support by providing an [extension](packages/extension/CONTRIBUTING.md) that registers itself with `Invert If`.

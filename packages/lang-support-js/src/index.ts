@@ -1,5 +1,5 @@
 import { DocumentFilter, ExtensionContext, extensions } from "vscode";
-import { InvertIfBaseProvider } from "../../api";
+import { InvertIfBaseProvider } from "vscode-invert-if";
 import JavaScriptInvertIfProvider from "./JavaScriptInvertIfProvider";
 
 /**

@@ -1,14 +1,14 @@
-## invert-if [2.0.2](https://github.com/1nVitr0/plugin-vscode-invert-if/compare/invert-if@v2.0.1...invert-if@2.0.2) (2022-10-05)
+# Changelog
+
+All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
+
+
+# invert-if [2.0.2](https://github.com/1nVitr0/plugin-vscode-invert-if/compare/invert-if@v2.0.1...invert-if@2.0.2) (2022-10-05)
 
 
 ### Bug Fixes
 
 * update changelog after manual releases ([478bfbf](https://github.com/1nVitr0/plugin-vscode-invert-if/commit/478bfbf64492f27d95812753f79f1541d949afb5))
-
-# Changelog
-
-All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
-
 
 # invert-if 2.0.1 (2022-10-04)
 

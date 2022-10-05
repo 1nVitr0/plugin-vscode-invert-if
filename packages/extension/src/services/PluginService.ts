@@ -42,29 +42,23 @@ export default class PluginService implements InvertIfBaseProvider, Disposable {
     });
   }
 
-  public unregisterConditionProvider<T>(
-    provider: InvertConditionProvider<T>,
-    documentSelector: DocumentSelector
-  ): void {
+  public unregisterConditionProvider<T>(provider: InvertConditionProvider<T>): void {
     this.unRegisterPlugin({
       provider,
-      documentSelector,
       capabilities: { invertCondition: true },
     });
   }
 
-  public unregisterIfElseProvider<T>(provider: InvertIfElseProvider<T>, documentSelector: DocumentSelector): void {
+  public unregisterIfElseProvider<T>(provider: InvertIfElseProvider<T>): void {
     this.unRegisterPlugin({
       provider,
-      documentSelector,
       capabilities: { invertIfElse: true },
     });
   }
 
-  public unregisterGuardClauseProvider<T>(provider: GuardClauseProvider<T>, documentSelector: DocumentSelector): void {
+  public unregisterGuardClauseProvider<T>(provider: GuardClauseProvider<T>): void {
     this.unRegisterPlugin({
       provider,
-      documentSelector,
       capabilities: { guardClause: true },
     });
   }
@@ -132,11 +126,11 @@ export default class PluginService implements InvertIfBaseProvider, Disposable {
     return newPlugin;
   }
 
-  private unRegisterPlugin<T>(plugin: Plugin<T>): Plugin<T> {
-    const { capabilities, documentSelector, provider } = plugin;
+  private unRegisterPlugin<T>(plugin: Omit<Plugin<T>, "documentSelector">): Plugin<T> {
+    const { capabilities, provider } = plugin;
     const existingPlugin = this.getExistingPlugin(provider);
 
-    if (existingPlugin && this.compareDocumentSelectors(existingPlugin.documentSelector, documentSelector)) {
+    if (existingPlugin) {
       for (const key of Object.keys(capabilities) as (keyof Plugin<T>["capabilities"])[]) {
         if (capabilities[key] === true) existingPlugin.capabilities[key] = false;
       }
