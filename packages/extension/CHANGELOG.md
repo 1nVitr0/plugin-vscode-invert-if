@@ -1,40 +1,15 @@
-# invert-if 1.0.0 (2022-10-04)
-
-
-### Bug Fixes
-
-* **main:** fix contributing spelling ([7629f41](https://github.com/1nVitr0/plugin-vscode-invert-if/commit/7629f4180804d6ee1ebff6b6bbe8c3b9960168da))
-* **main:** ignore dependencies on automatic build ([9b846d0](https://github.com/1nVitr0/plugin-vscode-invert-if/commit/9b846d0a67a3e400fa2d89032d1b2cab49f76985))
-* **main:** update documentation ([818b1cd](https://github.com/1nVitr0/plugin-vscode-invert-if/commit/818b1cd439b8afb7e5c87f7f51d10d570acb1790))
-* temporarily use patched version for semantic-release-vsce ([a2f9e79](https://github.com/1nVitr0/plugin-vscode-invert-if/commit/a2f9e79c3924766e386f3c0908501470331b028f))
-
-# invert-if 1.0.0 (2022-10-04)
-
-
-### Bug Fixes
-
-* **main:** fix contributing spelling ([7629f41](https://github.com/1nVitr0/plugin-vscode-invert-if/commit/7629f4180804d6ee1ebff6b6bbe8c3b9960168da))
-* **main:** ignore dependencies on automatic build ([9b846d0](https://github.com/1nVitr0/plugin-vscode-invert-if/commit/9b846d0a67a3e400fa2d89032d1b2cab49f76985))
-* **main:** update documentation ([818b1cd](https://github.com/1nVitr0/plugin-vscode-invert-if/commit/818b1cd439b8afb7e5c87f7f51d10d570acb1790))
-
-# invert-if 1.0.0 (2022-10-04)
-
-
-### Bug Fixes
-
-* **main:** fix contributing spelling ([7629f41](https://github.com/1nVitr0/plugin-vscode-invert-if/commit/7629f4180804d6ee1ebff6b6bbe8c3b9960168da))
-* **main:** update documentation ([818b1cd](https://github.com/1nVitr0/plugin-vscode-invert-if/commit/818b1cd439b8afb7e5c87f7f51d10d570acb1790))
-
-# invert-if 1.0.0 (2022-10-04)
-
-
-### Bug Fixes
-
-* **main:** update documentation ([818b1cd](https://github.com/1nVitr0/plugin-vscode-invert-if/commit/818b1cd439b8afb7e5c87f7f51d10d570acb1790))
-
 # Changelog
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
+
+
+# invert-if 2.0.1 (2022-10-04)
+
+
+### Bug Fixes
+
+* **main:** fix contributing spelling ([7629f41](https://github.com/1nVitr0/plugin-vscode-invert-if/commit/7629f4180804d6ee1ebff6b6bbe8c3b9960168da))
+* **main:** update documentation ([818b1cd](https://github.com/1nVitr0/plugin-vscode-invert-if/commit/818b1cd439b8afb7e5c87f7f51d10d570acb1790))
 
 # [2.0.0](https://github.com/1nVitr0/plugin-vscode-invert-if/releases/tag/main_v2.0.0) (2022-10-03)
 
