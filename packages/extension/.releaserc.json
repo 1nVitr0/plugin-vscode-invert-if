@@ -1,6 +1,12 @@
 {
-  "tagFormat": "main_v${version}",
+  "tagFormat": "invert-if@v${version}",
   "plugins": [
+    [
+      "@semantic-release/exec",
+      {
+        "verifyConditionsCmd": "node test.js"
+      }
+    ],
     "@semantic-release/commit-analyzer",
     "@semantic-release/release-notes-generator",
     "@semantic-release/changelog",

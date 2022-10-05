@@ -1,5 +1,5 @@
 {
-  "tagFormat": "api_v${version}",
+  "tagFormat": "vscode-invert-if@v${version}",
   "plugins": [
     "@semantic-release/commit-analyzer",
     "@semantic-release/release-notes-generator",
@@ -10,7 +10,7 @@
         "message": "release(api): ${nextRelease.version}\n\n${nextRelease.notes}"
       }
     ],
-    "@semantic-release/npm",
-    "@semantic-release/github"
+    "@semantic-release/github",
+    "@semantic-release/npm"
   ]
 }
