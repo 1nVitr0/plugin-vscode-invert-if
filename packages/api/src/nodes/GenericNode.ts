@@ -1,5 +1,8 @@
 import { SyntaxNode, SyntaxNodeType, RefSyntaxNode, UpdatedSyntaxNode } from "./SyntaxNode";
 
+/**
+ * Syntax node representing a generic node, that is not included in {@link SyntaxNodeType}.
+ */
 export interface GenericNode<T> extends SyntaxNode<T> {
   type: SyntaxNodeType.Generic;
 }

@@ -1,5 +1,8 @@
 import { SyntaxNode, SyntaxNodeType, RefSyntaxNode, UpdatedSyntaxNode } from "./SyntaxNode";
 
+/**
+ * Syntax node representing an noop statement. 
+ */
 export interface EmptyNode<T> extends SyntaxNode<T> {
   type: SyntaxNodeType.Empty;
 }

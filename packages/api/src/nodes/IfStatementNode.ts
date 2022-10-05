@@ -1,9 +1,21 @@
 import { SyntaxNode, SyntaxNodeType, RefSyntaxNode, UpdatedSyntaxNode } from "./SyntaxNode";
 
+/**
+ * Syntax node representing an if statement.
+ */
 export interface IfStatementSyntaxNode<T, S extends SyntaxNode<T> = SyntaxNode<T>> extends SyntaxNode<T> {
   type: SyntaxNodeType.IfStatement;
+  /**
+   * The test condition of the if statement.
+   */
   test: S;
+  /**
+   * The body of the if statement.
+   */
   consequent: S;
+  /**
+   * The body of the else statement.s
+   */
   alternate?: S;
 }
 

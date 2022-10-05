@@ -1,3 +1,8 @@
+/**
+ * The context wín which a condition is used.
+ * This is generally the type of the `root` syntax node as specified in
+ *{@link ExpressionContext.root}
+ */
 export enum GuardClauseContext {
   WhileStatement,
   DoWhileStatement,
@@ -5,6 +10,9 @@ export enum GuardClauseContext {
   FunctionDeclaration,
 }
 
+/**
+ * The type of a generated guard clause.
+ */
 export enum GuardClauseType {
   Break,
   Continue,
@@ -12,6 +20,9 @@ export enum GuardClauseType {
   Auto,
 }
 
+/**
+ * The position of a generated guard clause.
+ */
 export enum GuardClausePosition {
   Prepend,
   Append,

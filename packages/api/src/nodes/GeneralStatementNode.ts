@@ -1,7 +1,13 @@
 import { SyntaxNodeType, RefSyntaxNode, SyntaxNode, UpdatedSyntaxNode } from "./SyntaxNode";
 
+/**
+ * Syntax node representing an execution keyword such as `return`, `break`, `continue`, etc.s
+ */
 export interface GeneralStatementSyntaxNode<T, S extends SyntaxNode<T> = SyntaxNode<T>> extends SyntaxNode<T> {
   type: SyntaxNodeType.ReturnStatement | SyntaxNodeType.BreakStatement | SyntaxNodeType.ContinueStatement;
+  /**
+   * The argument of the statement.
+   */
   argument?: S;
 }
 

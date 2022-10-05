@@ -1,5 +1,8 @@
 import { SyntaxNode, SyntaxNodeType, RefSyntaxNode, UpdatedSyntaxNode } from "./SyntaxNode";
 
+/**
+ * Syntax node representing a function declaration.
+ */
 export interface FunctionDeclarationNode<T> extends SyntaxNode<T> {
   type: SyntaxNodeType.FunctionDeclaration;
 }
