@@ -39,9 +39,9 @@ export function activate(context: ExtensionContext) {
  */
 export function deactivate() {
   if (invertIf && provider) {
-    invertIf.unregisterConditionProvider(provider, documentFilter);
-    invertIf.unregisterIfElseProvider(provider, documentFilter);
-    invertIf.unregisterGuardClauseProvider(provider, documentFilter);
+    invertIf.unregisterConditionProvider(provider);
+    invertIf.unregisterIfElseProvider(provider);
+    invertIf.unregisterGuardClauseProvider(provider);
   }
 }
 
