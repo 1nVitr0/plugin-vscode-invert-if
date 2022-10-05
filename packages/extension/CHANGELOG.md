@@ -12,10 +12,6 @@
 
 * **main:** implement simplified plugin API ([061f359](https://github.com/1nVitr0/plugin-vscode-invert-if/commit/061f359f68d22710d44124f211730ed5206292a2))
 
-# Changelog
-
-All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
-
 
 # invert-if [2.0.2](https://github.com/1nVitr0/plugin-vscode-invert-if/compare/invert-if@v2.0.1...invert-if@2.0.2) (2022-10-05)
 

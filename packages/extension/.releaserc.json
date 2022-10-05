@@ -13,7 +13,7 @@
     [
       "@semantic-release/git",
       {
-        "message": "release(api): ${nextRelease.version}\n\n${nextRelease.notes}"
+        "message": "release(extension): ${nextRelease.version}\n\n${nextRelease.notes}"
       }
     ],
     [
