@@ -10,6 +10,7 @@
     "strict": true,
     "sourceMap": false,
     "declaration": true,
+    "removeComments": false,
     "rootDir": "src"
   },
   "exclude": [
