@@ -1,3 +1,10 @@
+## invert-if [2.0.4](https://github.com/1nVitr0/plugin-vscode-invert-if/compare/invert-if@2.0.3...invert-if@2.0.4) (2022-10-06)
+
+
+### Bug Fixes
+
+* **extension:** log plugin registrations to console ([7347b41](https://github.com/1nVitr0/plugin-vscode-invert-if/commit/7347b41887ef195a6bb8b241b39d4f1806bdc820))
+
 ## invert-if [2.0.3](https://github.com/1nVitr0/plugin-vscode-invert-if/compare/invert-if@2.0.2...invert-if@2.0.3) (2022-10-05)
 
 
