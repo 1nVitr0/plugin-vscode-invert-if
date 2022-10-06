@@ -16,6 +16,8 @@ export default class PluginService implements InvertIfBaseProvider, Disposable {
   public constructor(private configurationService: ConfigurationService) {
     this.registerProviderEvent = new EventEmitter();
     this.unregisterProviderEvent = new EventEmitter();
+
+    this.init();
   }
 
   public registerConditionProvider<T>(provider: InvertConditionProvider<T>, documentSelector: DocumentSelector) {
@@ -95,6 +97,15 @@ export default class PluginService implements InvertIfBaseProvider, Disposable {
     this.unregisterProviderEvent.dispose();
   }
 
+  private init() {
+    this.onRegisterProvider((plugin) => {
+      console.info("Registered plugin", this.describePlugin(plugin));
+    });
+    this.onUnregisterProvider((plugin) => {
+      console.info("Unregistered plugin", this.describePlugin(plugin));
+    });
+  }
+
   private registerPlugin<T>(plugin: Plugin<T>): Plugin<T> {
     const { capabilities, documentSelector, provider } = plugin;
     const existingPlugin = this.getExistingPlugin(provider);
@@ -149,6 +160,17 @@ export default class PluginService implements InvertIfBaseProvider, Disposable {
     } else {
       throw new Error("Plugin could not be unregistered because it was not registered.");
     }
+  }
+
+  private describePlugin(plugin: Plugin<any>): string {
+    const { capabilities, documentSelector } = plugin;
+    const documentSelectorString = JSON.stringify(documentSelector);
+    const capabilitiesString = Object.entries(capabilities)
+      .filter(([, value]) => value)
+      .map(([key]) => key)
+      .join(", ");
+
+    return `for ${documentSelectorString} with capabilities [${capabilitiesString}]`;
   }
 
   private compareDocumentSelectors(a: DocumentSelector, b: DocumentSelector, strict = true): boolean {
