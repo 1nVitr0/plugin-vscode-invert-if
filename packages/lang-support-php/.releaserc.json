@@ -1,0 +1,28 @@
+{
+  "tagFormat": "invert-if-php@v${version}",
+  "plugins": [
+    [
+      "@semantic-release/exec",
+      {
+        "verifyConditionsCmd": "node test.js"
+      }
+    ],
+    "@semantic-release/commit-analyzer",
+    "@semantic-release/release-notes-generator",
+    "@semantic-release/changelog",
+    [
+      "@semantic-release/git",
+      {
+        "message": "release(lang-php): ${nextRelease.version}\n\n${nextRelease.notes}"
+      }
+    ],
+    [
+      "semantic-release-vsce",
+      {
+        "packageVsix": true,
+        "args": ["--no-dependencies"]
+      }
+    ],
+    "@semantic-release/github"
+  ]
+}
