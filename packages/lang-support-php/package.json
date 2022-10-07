@@ -1,0 +1,59 @@
+{
+  "name": "invert-if-php",
+  "version": "1.0.0",
+  "preview": true,
+  "displayName": "Invert If PHP Language Support",
+  "description": "php Language Support for Invert If",
+  "author": "1nVitr0",
+  "publisher": "1nVitr0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/1nVitr0/plugin-vscode-invert-if.git"
+  },
+  "main": "./dist/index.js",
+  "engines": {
+    "vscode": "^1.60.0"
+  },
+  "extensionKind": [
+    "workspace",
+    "ui"
+  ],
+  "categories": [
+    "Formatters",
+    "Programming Languages",
+    "Other"
+  ],
+  "keywords": [
+    "refactor",
+    "invert if condition",
+    "negate condition",
+    "swap if else",
+    "guard clause"
+  ],
+  "extensionDependencies": [
+    "1nVitr0.invert-if"
+  ],
+  "activationEvents": [
+    "*"
+  ],
+  "scripts": {
+    "vscode:prepublish": " npm run build && npm run build:production",
+    "build": "tsc --build",
+    "build:webpack": "webpack --mode development",
+    "build:production": "webpack --mode production",
+    "watch": "tsc --build --watch",
+    "watch:webpack": "webpack --mode development --watch",
+    "pretest": "npm run build && npm run lint",
+    "lint": "eslint src --ext ts",
+    "test": "node ./out/test/runTest.js",
+    "test:coverage": "export COVERAGE=true && node ./out/test/runTest.js",
+    "coverage": "npm run test:coverage && nyc report --reporter=text",
+    "contributions": "node scripts/contributions.js"
+  },
+  "dependencies": {
+    "php-parser": "^3.1.1"
+  },
+  "vsce": {
+    "dependencies": false
+  }
+}
