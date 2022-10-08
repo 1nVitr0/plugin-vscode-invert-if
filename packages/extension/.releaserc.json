@@ -19,8 +19,7 @@
     [
       "semantic-release-vsce",
       {
-        "packageVsix": true,
-        "args": ["--no-dependencies"]
+        "packageVsix": true
       }
     ],
     "@semantic-release/github"

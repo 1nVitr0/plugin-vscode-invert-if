@@ -31,6 +31,6 @@ export default async function invertIfElse(editor: TextEditor, editBuilder: Text
       ...(await provider.resolveIfStatement?.(statement)),
     };
 
-    service.ifElse.inverseIfElse(editor, provider, resolvedStatement);
+    editor.edit((edit) => service.ifElse.inverseIfElse(editor.document, edit, provider, resolvedStatement));
   }
 }

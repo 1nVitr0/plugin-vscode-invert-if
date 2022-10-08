@@ -24,6 +24,8 @@ export default async function mergeNestedIfs(editor: TextEditor, _: TextEditorEd
 
   for (const group of groups) {
     const parent = group.shift();
-    if (parent) service.ifElse.mergeNestedIfs(editor, provider, parent, ...group);
+    if (parent) {
+      editor.edit((edit) => service.ifElse.mergeNestedIfs(editor.document, edit, provider, parent, ...group));
+    }
   }
 }

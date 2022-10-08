@@ -1,4 +1,4 @@
-import { Range, TextEditor } from "vscode";
+import { Range, TextDocument, TextEditorEdit } from "vscode";
 import {
   BinaryExpressionUpdatedNode,
   BinaryOperator,
@@ -43,14 +43,14 @@ export default class ConditionService {
   public constructor(private configurationService: ConfigurationService) {}
 
   public inverseCondition<T>(
-    editor: TextEditor,
+    document: TextDocument,
+    edit: TextEditorEdit,
     provider: InvertConditionProvider<T>,
     condition: RefSyntaxNode<T>,
     depth = this.configurationService.inversionDepth
   ) {
     const inverse = this.getInverseCondition(condition, depth);
-
-    editor.edit((editBuilder) => provider.replaceCondition(editor.document, editBuilder, condition, inverse));
+    provider.replaceCondition(document, edit, condition, inverse);
   }
 
   public getInverseCondition<T>(

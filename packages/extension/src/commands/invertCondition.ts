@@ -31,6 +31,6 @@ export default async function invertCondition(editor: TextEditor, editBuilder: T
       ...(await provider.resolveCondition?.(condition)),
     };
 
-    service.condition.inverseCondition(editor, provider, resolvedCondition);
+    editor.edit((edit) => service.condition.inverseCondition(editor.document, edit, provider, resolvedCondition));
   }
 }

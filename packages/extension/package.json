@@ -57,13 +57,7 @@
     "theme": "dark"
   },
   "activationEvents": [
-    "onCommand:invertIf.createGuardClause",
-    "onCommand:invertIf.createCustomGuardClause",
-    "onCommand:invertIf.generateTruthTable",
-    "onCommand:invertIf.compareWithInvertedCondition",
-    "onCommand:invertIf.invertCondition",
-    "onCommand:invertIf.invertIfElse",
-    "onCommand:invertIf.mergeNestedIfs"
+    "*"
   ],
   "contributes": {
     "configuration": {
