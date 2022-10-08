@@ -6,33 +6,58 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "name": "Run Extension",
+      "name": "Run Invert If Extension",
       "type": "extensionHost",
       "request": "launch",
       "args": ["--extensionDevelopmentPath=${workspaceFolder}"],
-      "outFiles": ["${workspaceFolder}/dist/**/*.js"],
+      "outFiles": [
+        "${workspaceFolder}/packages/extension/dist/**/*.js"
+      ],
       "preLaunchTask": "${defaultBuildTask}"
     },
     {
-      "name": "Extension Tests",
+      "name": "Invert If Extension Tests",
       "type": "extensionHost",
       "request": "launch",
       "args": [
-        "--extensionDevelopmentPath=${workspaceFolder}",
-        "--extensionTestsPath=${workspaceFolder}/out/test/suite/index"
+        "--extensionDevelopmentPath=${workspaceFolder}/packages/extension",
+        "--extensionTestsPath=${workspaceFolder}/packages/extension/out/test/suite/index"
       ],
       "env": {
         "COVERAGE": "true"
       },
-      "outFiles": ["${workspaceFolder}/out/**/*.js"],
+      "outFiles": [
+        "${workspaceFolder}/packages/extension/out/**/*.js"
+      ],
       "preLaunchTask": "${defaultBuildTask}"
     },
     {
-      "name": "Launch currently open File",
-      "program": "${file}",
+      "name": "Run Language Support for PHP Extension",
+      "type": "extensionHost",
       "request": "launch",
-      "skipFiles": ["<node_internals>/**"],
-      "type": "pwa-node"
+      "args": [
+        "--extensionDevelopmentPath=${workspaceFolder}"
+      ],
+      "outFiles": [
+        "${workspaceFolder}/packages/lang-support-php/dist/**/*.js"
+      ],
+      "preLaunchTask": "npm(lang-php): watch"
+    },
+    {
+      "name": "Language Support for PHP Extension Tests",
+      "type": "extensionHost",
+      "request": "launch",
+      "args": [
+        "--extensionDevelopmentPath=${workspaceFolder}/packages/lang-support-php",
+        "--extensionTestsPath=${workspaceFolder}/packages/lang-support-php/out/test/suite/index"
+      ],
+      "env": {
+        "COVERAGE": "true"
+      },
+      "outFiles": [
+        "${workspaceFolder}/packages/lang-support-php/out/**/*.js"
+      ],
+      "preLaunchTask": "npm(lang-php): watch"
     }
   ]
 }
