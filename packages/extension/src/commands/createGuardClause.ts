@@ -39,7 +39,9 @@ export default async function createGuardClause(
       ...(await provider.resolveCondition?.(condition)),
     };
 
-    service.guardClause.moveToGuardClause(editor, provider, resolvedCondition, position, type);
+    editor.edit((edit) =>
+      service.guardClause.moveToGuardClause(editor.document, edit, provider, resolvedCondition, position, type)
+    );
   }
 }
 

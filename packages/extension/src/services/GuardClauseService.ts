@@ -1,4 +1,4 @@
-import { TextEditor } from "vscode";
+import { TextDocument, TextEditorEdit } from "vscode";
 import {
   ExpressionContext,
   GeneralStatementUpdatedNode,
@@ -27,7 +27,8 @@ export default class GuardClauseService {
   ) {}
 
   public moveToGuardClause<T>(
-    editor: TextEditor,
+    document: TextDocument,
+    edit: TextEditorEdit,
     provider: GuardClauseProvider<T>,
     condition: RefSyntaxNode<T> & ExpressionContext<T>,
     position: GuardClausePosition = GuardClausePosition.Auto,
@@ -40,17 +41,15 @@ export default class GuardClauseService {
 
     const guardClause = this.getGuardClauseCondition(condition, detectedGuardType);
 
-    editor.edit((editBuilder) => {
-      if (detectedPosition == GuardClausePosition.Prepend) {
-        provider.prependSyntaxNode(editor.document, editBuilder, guardClause, condition.root);
-      } else if (detectedPosition == GuardClausePosition.Append) {
-        provider.appendSyntaxNode(editor.document, editBuilder, guardClause, condition.root);
-      } else {
-        provider.insertSyntaxNodeBefore(editor.document, editBuilder, guardClause, condition.parent);
-      }
+    if (detectedPosition == GuardClausePosition.Prepend) {
+      provider.prependSyntaxNode(document, edit, guardClause, condition.root);
+    } else if (detectedPosition == GuardClausePosition.Append) {
+      provider.appendSyntaxNode(document, edit, guardClause, condition.root);
+    } else {
+      provider.insertSyntaxNodeBefore(document, edit, guardClause, condition.parent);
+    }
 
-      provider.removeCondition(editor.document, editBuilder, condition);
-    });
+    provider.removeCondition(document, edit, condition);
   }
 
   public getGuardClauseCondition<T>(

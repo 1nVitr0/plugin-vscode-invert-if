@@ -65,6 +65,22 @@ export default class PluginService implements InvertIfBaseProvider, Disposable {
     });
   }
 
+  public getAvailableCapabilities(document: TextDocument): Plugin<any>["capabilities"] {
+    const plugins = this.plugins.filter((plugin) => languages.match(plugin.documentSelector, document));
+    const capabilities = plugins.reduce(
+      (acc, plugin) => {
+        return {
+          invertCondition: acc.invertCondition || plugin.capabilities.invertCondition,
+          invertIfElse: acc.invertIfElse || plugin.capabilities.invertIfElse,
+          guardClause: acc.guardClause || plugin.capabilities.guardClause,
+        };
+      },
+      { invertCondition: false, invertIfElse: false, guardClause: false } as Plugin<any>["capabilities"]
+    );
+
+    return capabilities;
+  }
+
   public getInvertConditionProvider(document: TextDocument): InvertConditionProvider<any> | undefined {
     return this.plugins.find(
       ({ capabilities, documentSelector }) =>

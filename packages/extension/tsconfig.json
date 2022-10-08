@@ -23,9 +23,9 @@
     }
   ],
   "exclude": [
-    "../main/node_modules",
-    "../main/.vscode-test",
-    "../main/test",
-    "../main/src/test"
+    "../../node_modules",
+    "./.vscode-test",
+    "./test",
+    "./src/test"
   ]
 }

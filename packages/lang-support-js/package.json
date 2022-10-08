@@ -10,7 +10,7 @@
     "type": "git",
     "url": "https://github.com/1nVitr0/plugin-vscode-invert-if.git"
   },
-  "main": "./out/index.js",
+  "main": "./out/extension.js",
   "engines": {
     "vscode": "^1.60.0"
   },
