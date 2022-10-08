@@ -4,17 +4,14 @@ import {
   CodeActionContext,
   CodeActionKind,
   CodeActionProvider,
-  ProviderResult,
   Range,
   Selection,
   TextDocument,
   TextEditorEdit,
   WorkspaceEdit,
 } from "vscode";
-import { GuardClausePosition, GuardClauseType } from "vscode-invert-if";
+import { GuardClausePosition, GuardClauseType, IfStatementRefNode, RefSyntaxNode, SyntaxNode } from "vscode-invert-if";
 import { service } from "../globals";
-import { RefSyntaxNode, SyntaxNode } from "../../../api/src/nodes/SyntaxNode";
-import { IfStatementRefNode } from "../../../api/src/nodes/IfStatementNode";
 
 export class InvertIfCodeActionKind {
   private static Condition = CodeActionKind.Refactor.append("condition");
