@@ -1,3 +1,16 @@
+# invert-if [2.1.0](https://github.com/1nVitr0/plugin-vscode-invert-if/compare/invert-if@2.0.4...invert-if@2.1.0) (2022-10-08)
+
+
+### Bug Fixes
+
+* **extension:** make extension always active to allow plugin registration ([5ce9db7](https://github.com/1nVitr0/plugin-vscode-invert-if/commit/5ce9db78b4362eca502554602cf617339b8a4116))
+
+
+### Features
+
+* **extension:** add Code Action / Refactoring provider ([903f9b2](https://github.com/1nVitr0/plugin-vscode-invert-if/commit/903f9b22314a4ecf7f653886b30a782549531d14))
+* **extension:** edits are now synchronous ([58496d2](https://github.com/1nVitr0/plugin-vscode-invert-if/commit/58496d298a3630995eb95b6cd75645589da25313))
+
 ## invert-if [2.0.4](https://github.com/1nVitr0/plugin-vscode-invert-if/compare/invert-if@2.0.3...invert-if@2.0.4) (2022-10-06)
 
 
