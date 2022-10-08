@@ -1,5 +1,4 @@
 import { Block, Expression, For, If, Node, Statement } from "php-parser";
-import { prettyPrint, print } from "recast";
 import { Range, TextDocument, TextEditorEdit, Uri } from "vscode";
 import {
   BinaryExpressionRefNode,
@@ -20,10 +19,10 @@ import {
   RefSyntaxNode,
   SyntaxNodeType,
   UnaryExpressionRefNode,
-  UpdatedSyntaxNode,
+  UpdatedSyntaxNode
 } from "vscode-invert-if";
 import PHPParser from "./PHPParser";
-import { ProgramEntry, NodeWithParent } from "./ProgramEntry";
+import { NodeWithParent, ProgramEntry } from "./ProgramEntry";
 
 export default class PHPInvertIfProvider
   implements
@@ -41,27 +40,23 @@ export default class PHPInvertIfProvider
     range?: Range
   ): (RefSyntaxNode<NodeWithParent<Node>> & ExpressionContext<NodeWithParent<Node>>)[] {
     const program = this.parseDocument(document);
-    // TODO: Implement
-    throw new Error("Method not implemented.");
-    // const conditions: NodeWithParent<Expression>[] = [];
+    const conditions: NodeWithParent<Expression>[] = [];
 
-    // function addCondition(this: SharedContextMethods, path: NodeWithParent<Statement & { test: any }>) {
-    //   const test = path.get("test");
-    //   if (test && (!range || PHPParser.isRangeForNode(range, test.node))) {
-    //     conditions.push(test);
-    //   }
+    function addCondition(node: NodeWithParent<Statement & { test: NodeWithParent<Node> }>) {
+      const { test } = node;
+      if (test && (!range || PHPParser.isRangeForNode(range, test))) {
+        conditions.push(test);
+      }
+    }
 
-    //   this.traverse(path);
-    // }
+    PHPParser.visit(program.program, {
+      for: addCondition,
+      if: addCondition,
+      do: addCondition,
+      while: addCondition,
+    });
 
-    // visit(program.programNode, {
-    //   visitIfStatement: addCondition,
-    //   visitForStatement: addCondition,
-    //   visitWhileStatement: addCondition,
-    //   visitDoWhileStatement: addCondition,
-    // });
-
-    // return conditions.map((statement) => PHPParser.getSyntaxNodeFromNode(statement, program, true));
+    return conditions.map((statement) => PHPParser.getSyntaxNodeFromNode(statement, program, true));
   }
 
   public async resolveCondition(
@@ -74,20 +69,17 @@ export default class PHPInvertIfProvider
     const program = this.parseDocument(document);
     const statements: NodeWithParent<If>[] = [];
 
-    // TODO: Implement
-    throw new Error("Method not implemented.");
+    PHPParser.visit(program.program, {
+      if: (node: NodeWithParent<If>) => {
+        if (!range || PHPParser.isRangeForNode(range, node)) {
+          statements.push(node as NodeWithParent<If>);
+        }
+      },
+    });
 
-    // visit(program.programNode, {
-    //   visitIfStatement(path) {
-    //     if ((!range || PHPParser.isNodeIntersectingRange(path.node, range)) && path.name !== "alternate")
-    //       statements.push(path);
-    //     this.traverse(path);
-    //   },
-    // });
-
-    // return statements.map(
-    //   (statement) => PHPParser.getSyntaxNodeFromNode(statement, program) as IfStatementRefNode<NodeWithParent<Node>>
-    // );
+    return statements.map(
+      (statement) => PHPParser.getSyntaxNodeFromNode(statement, program) as IfStatementRefNode<NodeWithParent<If>>
+    );
   }
 
   public async resolveIfStatement(

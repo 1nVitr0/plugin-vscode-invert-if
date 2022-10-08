@@ -1,20 +1,4 @@
-import {
-  Bin,
-  Block,
-  Break,
-  Continue,
-  Do,
-  Engine,
-  For,
-  If,
-  Location,
-  Node,
-  Noop,
-  Program,
-  Return,
-  Unary,
-  While,
-} from "php-parser";
+import { Bin, Block, Break, Continue, Engine, If, Location, Node, Noop, Program, Return, Unary } from "php-parser";
 import { Range, TextDocument } from "vscode";
 import {
   BinaryExpressionRefNode,
@@ -110,30 +94,6 @@ export default class PHPParser {
     return new Range(start.line - 1, start.column, end.line - 1, end.column);
   }
 
-  private static getBinaryExpressionOperator(operator: BinaryOperator): Bin["type"] {
-    for (const [key, value] of Object.entries(this.binaryExpressionOperators)) {
-      if (value == operator) return key as Bin["type"];
-    }
-
-    throw new Error(`Unknown binary operator: ${operator}`);
-  }
-
-  private static getLogicalExpressionOperator(operator: LogicalOperator): Bin["type"] {
-    for (const [key, value] of Object.entries(this.logicalExpressionOperators)) {
-      if (value == operator) return key as Bin["type"];
-    }
-
-    throw new Error(`Unknown logical operator: ${operator}`);
-  }
-
-  private static getUnaryExpressionOperator(operator: UnaryOperator): Unary["type"] {
-    for (const [key, value] of Object.entries(this.unaryExpressionOperators)) {
-      if (value == operator) return key as Unary["type"];
-    }
-
-    throw new Error(`Unknown unary operator: ${operator}`);
-  }
-
   public static getCode(document: TextDocument, node: NodeWithParent<Node>, indent?: string): string {
     let code = "TODO";
     if (indent === undefined) indent = this.getNodeIndentation(node, document);
@@ -141,27 +101,14 @@ export default class PHPParser {
     return code.replace(/^/gm, `${indent}`); // Try to keep original indentation
   }
 
-  public static getFirstParent<N extends Node, P extends Node>(node: NodeWithParent<N>, type: P["kind"][]): P | null {
+  public static getFirstParent<N extends Node, P extends Node>(
+    node: NodeWithParent<N>,
+    type: P["kind"][]
+  ): NodeWithParent<P> | null {
     let parent = node.parent;
     while (parent && !(type as string[]).includes(parent.kind)) parent = parent.parent;
 
-    return (parent as unknown as P) || null;
-  }
-
-  private static getLocFromRange(range: Range): Location {
-    return {
-      source: null,
-      start: {
-        line: range.start.line + 1,
-        column: range.start.character,
-        offset: 0,
-      },
-      end: {
-        line: range.end.line + 1,
-        column: range.end.character,
-        offset: 0,
-      },
-    };
+    return (parent as unknown as NodeWithParent<P>) || null;
   }
 
   public static getNodeIndentation(node: NodeWithParent<Node>, document: TextDocument): string {
@@ -189,6 +136,46 @@ export default class PHPParser {
 
   public static isRangeInNode(node: NodeWithParent<Node>, range: Range): boolean {
     return !!node.loc && this.getNodeRange(node).contains(range);
+  }
+
+  private static getBinaryExpressionOperator(operator: BinaryOperator): Bin["type"] {
+    for (const [key, value] of Object.entries(this.binaryExpressionOperators)) {
+      if (value == operator) return key as Bin["type"];
+    }
+
+    throw new Error(`Unknown binary operator: ${operator}`);
+  }
+
+  private static getLogicalExpressionOperator(operator: LogicalOperator): Bin["type"] {
+    for (const [key, value] of Object.entries(this.logicalExpressionOperators)) {
+      if (value == operator) return key as Bin["type"];
+    }
+
+    throw new Error(`Unknown logical operator: ${operator}`);
+  }
+
+  private static getUnaryExpressionOperator(operator: UnaryOperator): Unary["type"] {
+    for (const [key, value] of Object.entries(this.unaryExpressionOperators)) {
+      if (value == operator) return key as Unary["type"];
+    }
+
+    throw new Error(`Unknown unary operator: ${operator}`);
+  }
+
+  private static getLocFromRange(range: Range): Location {
+    return {
+      source: null,
+      start: {
+        line: range.start.line + 1,
+        column: range.start.character,
+        offset: 0,
+      },
+      end: {
+        line: range.end.line + 1,
+        column: range.end.character,
+        offset: 0,
+      },
+    };
   }
 
   public static getNodeKindFromSyntaxNode(
@@ -286,21 +273,21 @@ export default class PHPParser {
     }
   }
 
-  public static getSyntaxNodeFromNode(
-    node: NodeWithParent<Node>,
+  public static getSyntaxNodeFromNode<N extends Node>(
+    node: NodeWithParent<N>,
     program: ProgramEntry,
     includeContext: true
-  ): RefSyntaxNode<Node> & ExpressionContext<Node>;
-  public static getSyntaxNodeFromNode(
-    node: NodeWithParent<Node>,
+  ): RefSyntaxNode<NodeWithParent<N>> & ExpressionContext<NodeWithParent<N>>;
+  public static getSyntaxNodeFromNode<N extends Node>(
+    node: NodeWithParent<N>,
     program: ProgramEntry,
     includeContext?: false
-  ): RefSyntaxNode<Node>;
-  public static getSyntaxNodeFromNode(
-    node: NodeWithParent<Node>,
+  ): RefSyntaxNode<NodeWithParent<N>>;
+  public static getSyntaxNodeFromNode<N extends Node>(
+    node: NodeWithParent<N>,
     program: ProgramEntry,
     includeContext = false
-  ): RefSyntaxNode<Node> {
+  ): RefSyntaxNode<NodeWithParent<N>> {
     const { parent } = node;
     const base = { ref: node, range: this.getNodeRange(node) };
     const context = includeContext
@@ -316,56 +303,54 @@ export default class PHPParser {
 
     switch (node.kind) {
       case "IfStatement":
-        const ifNode: IfStatementRefNode<Node> = {
+        const ifNode: IfStatementRefNode<NodeWithParent<N>> = {
           ...base,
           ...context,
           type: SyntaxNodeType.IfStatement,
-          test: this.getSyntaxNodeFromNode((node as NodeWithParent<If>).test, program),
-          consequent: this.getSyntaxNodeFromNode((node as NodeWithParent<If>).body, program),
-          alternate: (node as NodeWithParent<If>).alternate
-            ? this.getSyntaxNodeFromNode((node as NodeWithParent<If>).alternate!, program)
-            : undefined,
+          test: this.getSyntaxNodeFromNode((node as any).test, program),
+          consequent: this.getSyntaxNodeFromNode((node as any).body, program),
+          alternate: (node as any).alternate ? this.getSyntaxNodeFromNode((node as any).alternate, program) : undefined,
         };
         return ifNode;
       case "BinaryExpression":
-        operator = PHPParser.binaryExpressionOperators[(node as NodeWithParent<Bin>).type];
+        operator = PHPParser.binaryExpressionOperators[(node as any).type];
         if (!operator) return { type: SyntaxNodeType.Generic, ...base };
-        const binaryNode: BinaryExpressionRefNode<Node> = {
+        const binaryNode: BinaryExpressionRefNode<NodeWithParent<N>> = {
           ...base,
           ...context,
           type: SyntaxNodeType.BinaryExpression,
-          left: this.getSyntaxNodeFromNode((node as NodeWithParent<Bin>).left, program),
-          right: this.getSyntaxNodeFromNode((node as NodeWithParent<Bin>).right, program),
+          left: this.getSyntaxNodeFromNode((node as any).left, program),
+          right: this.getSyntaxNodeFromNode((node as any).right, program),
           operator,
         };
         return binaryNode;
       case "LogicalExpression":
-        operator = PHPParser.logicalExpressionOperators[(node as NodeWithParent<Bin>).type];
+        operator = PHPParser.logicalExpressionOperators[(node as any).type];
         if (!operator) return { type: SyntaxNodeType.Generic, ...base };
-        const logicalNode: LogicalExpressionRefNode<Node> = {
+        const logicalNode: LogicalExpressionRefNode<NodeWithParent<N>> = {
           ...base,
           ...context,
           type: SyntaxNodeType.LogicalExpression,
-          left: this.getSyntaxNodeFromNode((node as NodeWithParent<Bin>).left, program),
-          right: this.getSyntaxNodeFromNode((node as NodeWithParent<Bin>).right, program),
+          left: this.getSyntaxNodeFromNode((node as any).left, program),
+          right: this.getSyntaxNodeFromNode((node as any).right, program),
           operator,
         };
         return logicalNode;
       case "UnaryExpression":
-        operator = PHPParser.unaryExpressionOperators[(node as NodeWithParent<Unary>).type];
+        operator = PHPParser.unaryExpressionOperators[(node as any).type];
         if (!operator) return { type: SyntaxNodeType.Generic, ...base };
-        const unaryNode: UnaryExpressionRefNode<Node> = {
+        const unaryNode: UnaryExpressionRefNode<NodeWithParent<N>> = {
           ...base,
           ...context,
           type: SyntaxNodeType.UnaryExpression,
-          argument: this.getSyntaxNodeFromNode((node as NodeWithParent<Unary>).what, program),
+          argument: this.getSyntaxNodeFromNode((node as any).what, program),
           operator,
         };
         return unaryNode;
       case "FunctionDeclaration":
       case "FunctionExpression":
       case "ArrowFunctionExpression":
-        const functionNode: FunctionDeclarationRefNode<Node> = {
+        const functionNode: FunctionDeclarationRefNode<NodeWithParent<N>> = {
           ...base,
           ...context,
           type: SyntaxNodeType.FunctionDeclaration,
@@ -373,62 +358,77 @@ export default class PHPParser {
         };
         return functionNode;
       case "DoWhileStatement":
-        const doWhileNode: DoWhileStatementRefNode<Node> = {
+        const doWhileNode: DoWhileStatementRefNode<NodeWithParent<N>> = {
           ...base,
           ...context,
           type: SyntaxNodeType.DoWhileStatement,
-          test: this.getSyntaxNodeFromNode((node as NodeWithParent<Do>).test, program),
+          test: this.getSyntaxNodeFromNode((node as any).test, program),
         };
         return doWhileNode;
       case "WhileStatement":
-        const whileNode: WhileStatementRefNode<Node> = {
+        const whileNode: WhileStatementRefNode<NodeWithParent<N>> = {
           ...base,
           ...context,
           type: SyntaxNodeType.WhileStatement,
-          test: this.getSyntaxNodeFromNode((node as NodeWithParent<While>).test, program),
+          test: this.getSyntaxNodeFromNode((node as any).test, program),
         };
         return whileNode;
       case "ForStatement":
-        const forNode: ForStatementRefNode<Node> = {
+        const forNode: ForStatementRefNode<NodeWithParent<N>> = {
           ...base,
           ...context,
           type: SyntaxNodeType.ForStatement,
-          test: (node as NodeWithParent<For>).test
-            ? this.getSyntaxNodeFromNode((node as NodeWithParent<For>).test[0], program)
+          test: (node as any).test
+            ? this.getSyntaxNodeFromNode((node as any).test[0], program)
             : { type: SyntaxNodeType.Empty, ...base },
         };
         return forNode;
       case "ReturnStatement":
-        const returnNode: GeneralStatementRefNode<Node> = {
+        const returnNode: GeneralStatementRefNode<NodeWithParent<N>> = {
           ...base,
           ...context,
           type: SyntaxNodeType.ReturnStatement,
-          argument: (node as NodeWithParent<Return>).expr
-            ? this.getSyntaxNodeFromNode((node as NodeWithParent<Return>).expr!, program)
-            : undefined,
+          argument: (node as any).expr ? this.getSyntaxNodeFromNode((node as any).expr, program) : undefined,
         };
         return returnNode;
       case "BreakStatement":
-        const breakNode: GeneralStatementRefNode<Node> = {
+        const breakNode: GeneralStatementRefNode<NodeWithParent<N>> = {
           type: SyntaxNodeType.BreakStatement,
           ...base,
           ...context,
         };
         return breakNode;
       case "ContinueStatement":
-        const continueNode: GeneralStatementRefNode<Node> = {
+        const continueNode: GeneralStatementRefNode<NodeWithParent<N>> = {
           ...base,
           ...context,
           type: SyntaxNodeType.ContinueStatement,
         };
         return continueNode;
       default:
-        const generic: GenericRefNode<Node> = {
+        const generic: GenericRefNode<NodeWithParent<N>> = {
           ...base,
           ...context,
           type: SyntaxNodeType.Generic,
         };
         return generic;
+    }
+  }
+
+  public static visit<N extends Node>(root: Node, visitKinds: Record<Node["kind"], (node: N) => void | boolean>) {
+    const stack: Node[] = [root];
+    while (stack.length) {
+      const current = stack.pop()!;
+      for (const node of Object.values(current)) {
+        if (PHPParser.isNode(node)) {
+          stack.push(node);
+        }
+      }
+
+      if (visitKinds[current.kind]) {
+        const result = visitKinds[current.kind](current as N);
+        if (result === false) return;
+      }
     }
   }
 

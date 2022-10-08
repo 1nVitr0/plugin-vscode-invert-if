@@ -10,7 +10,7 @@
     "type": "git",
     "url": "https://github.com/1nVitr0/plugin-vscode-invert-if.git"
   },
-  "main": "./dist/index.js",
+  "main": "./dist/extension.js",
   "engines": {
     "vscode": "^1.60.0"
   },
@@ -34,7 +34,13 @@
     "1nVitr0.invert-if"
   ],
   "activationEvents": [
-    "*"
+    "onCommand:invertIf.createGuardClause",
+    "onCommand:invertIf.createCustomGuardClause",
+    "onCommand:invertIf.generateTruthTable",
+    "onCommand:invertIf.compareWithInvertedCondition",
+    "onCommand:invertIf.invertCondition",
+    "onCommand:invertIf.invertIfElse",
+    "onCommand:invertIf.mergeNestedIfs"
   ],
   "scripts": {
     "vscode:prepublish": " npm run build && npm run build:production",
