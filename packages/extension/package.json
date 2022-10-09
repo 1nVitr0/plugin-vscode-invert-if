@@ -137,9 +137,11 @@
   },
   "devDependencies": {
     "@microsoft/tsdoc": "^0.13.2",
+    "@types/debounce": "^1.2.1",
     "jsonfile": "^6.1.0"
   },
   "dependencies": {
+    "debounce": "^1.2.1",
     "json-md-table": "^1.2.0"
   },
   "vsce": {

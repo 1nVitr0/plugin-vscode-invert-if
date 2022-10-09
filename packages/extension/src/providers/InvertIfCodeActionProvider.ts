@@ -1,16 +1,27 @@
+import { debounce } from "debounce";
 import {
   CancellationToken,
   CodeAction,
   CodeActionContext,
   CodeActionKind,
   CodeActionProvider,
+  Disposable,
+  DocumentFilter,
+  languages,
   Range,
   Selection,
   TextDocument,
   TextEditorEdit,
   WorkspaceEdit,
 } from "vscode";
-import { GuardClausePosition, GuardClauseType, IfStatementRefNode, RefSyntaxNode, SyntaxNode } from "vscode-invert-if";
+import {
+  GuardClausePosition,
+  GuardClauseType,
+  IfStatementRefNode,
+  RefSyntaxNode,
+  SyntaxNode,
+  InvertIfBaseProvider,
+} from "vscode-invert-if";
 import { service } from "../globals";
 
 export class InvertIfCodeActionKind {
@@ -36,7 +47,46 @@ export class InvertIfCodeAction<N extends SyntaxNode<any> | SyntaxNode<any>[] = 
   }
 }
 
-export default class InvertIfCodeActionProvider implements CodeActionProvider<InvertIfCodeAction> {
+export default class InvertIfCodeActionProvider implements CodeActionProvider<InvertIfCodeAction>, Disposable {
+  public documentSelector: ReadonlyArray<DocumentFilter | string> = [];
+  private registered: Disposable | null = null;
+  private disposables: Disposable[] = [];
+
+  public constructor(plugins: InvertIfBaseProvider) {
+    // Debounce the registration of the code action provider to avoid unnecessary cycles
+    const register = debounce(() => this.register(), 100);
+
+    this.disposables.push(
+      plugins.onRegisterProvider((provider) => {
+        if (provider.documentSelector instanceof Array) {
+          this.documentSelector = this.documentSelector.concat(provider.documentSelector);
+        } else {
+          this.documentSelector = this.documentSelector.concat([provider.documentSelector]);
+        }
+
+        // Only re-register if we have already registered
+        if (this.registered) register();
+      }),
+      plugins.onUnregisterProvider((provider) => {
+        if (provider.documentSelector instanceof Array) {
+          this.documentSelector = this.documentSelector.filter(
+            (selector) => !(provider.documentSelector as ReadonlyArray<DocumentFilter | string>).includes(selector)
+          );
+        } else {
+          this.documentSelector = this.documentSelector.filter((selector) => selector !== provider.documentSelector);
+        }
+
+        // Only re-register if we have already registered
+        if (this.registered) register();
+      })
+    );
+  }
+
+  public register() {
+    if (this.registered) this.registered.dispose();
+    this.registered = languages.registerCodeActionsProvider(this.documentSelector, this);
+  }
+
   public async provideCodeActions(
     document: TextDocument,
     range: Range | Selection,
@@ -131,6 +181,16 @@ export default class InvertIfCodeActionProvider implements CodeActionProvider<In
     }
 
     return codeAction;
+  }
+
+  public dispose() {
+    if (this.registered) {
+      this.registered.dispose();
+      this.registered = null;
+    }
+
+    this.disposables.forEach((d) => d.dispose());
+    this.disposables = [];
   }
 
   private async getFirstCondition(

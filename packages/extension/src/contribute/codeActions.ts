@@ -1,6 +1,10 @@
-import { languages } from 'vscode';
-import InvertIfCodeActionProvider from '../providers/InvertIfCodeActionProvider';
+import { ExtensionContext } from "vscode";
+import InvertIfCodeActionProvider from "../providers/InvertIfCodeActionProvider";
+import { service } from "../globals";
 
-export default function contributeCodeActions() {
-  return [languages.registerCodeActionsProvider('', new InvertIfCodeActionProvider())];
+export default function contributeCodeActions(context: ExtensionContext) {
+  const codeActionProvider = new InvertIfCodeActionProvider(service.plugins);
+  codeActionProvider.register();
+
+  return [codeActionProvider];
 }
