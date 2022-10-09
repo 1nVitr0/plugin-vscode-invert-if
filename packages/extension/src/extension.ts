@@ -6,7 +6,7 @@ import { service } from "./globals";
 
 export function activate(context: ExtensionContext) {
   registerTypescriptInvertIfProvider(service.plugins);
-  context.subscriptions.push(service, ...contributeCommands(), ...contributeCodeActions());
+  context.subscriptions.push(service, ...contributeCommands(), ...contributeCodeActions(context));
 
   return service.plugins;
 }
