@@ -16,6 +16,15 @@
 * **extension:** respect available languages for code actions ([01103d2](https://github.com/1nVitr0/plugin-vscode-invert-if/commit/01103d287c1e3506daa9fde3e51617f351d81628))
 * **extension:** respect available languages for code actions ([65792b0](https://github.com/1nVitr0/plugin-vscode-invert-if/commit/65792b0f2651544e77b0592d39476cc6bdd7496e))
 
+## invert-if [2.1.2](https://github.com/1nVitr0/plugin-vscode-invert-if/compare/invert-if@2.1.1...invert-if@2.1.2) (2022-10-09)
+
+
+### Bug Fixes
+
+* **extension:** export api in activation function ([8f08a83](https://github.com/1nVitr0/plugin-vscode-invert-if/commit/8f08a8316ba616232de933ec63703487e7d6c0a2))
+* **extension:** respect available languages for code actions ([01103d2](https://github.com/1nVitr0/plugin-vscode-invert-if/commit/01103d287c1e3506daa9fde3e51617f351d81628))
+* **extension:** respect available languages for code actions ([65792b0](https://github.com/1nVitr0/plugin-vscode-invert-if/commit/65792b0f2651544e77b0592d39476cc6bdd7496e))
+
 ## invert-if [2.1.1](https://github.com/1nVitr0/plugin-vscode-invert-if/compare/invert-if@2.1.0...invert-if@2.1.1) (2022-10-09)
 
 
