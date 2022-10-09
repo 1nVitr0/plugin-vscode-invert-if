@@ -18,7 +18,8 @@
   "workspaces": [
     "packages/api",
     "packages/extension",
-    "packages/lang-support-js"
+    "packages/lang-support-js",
+    "packages/lang-support-php"
   ],
   "devDependencies": {
     "@istanbuljs/nyc-config-typescript": "^1.0.2",

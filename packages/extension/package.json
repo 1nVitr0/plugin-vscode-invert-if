@@ -141,5 +141,8 @@
   },
   "dependencies": {
     "json-md-table": "^1.2.0"
+  },
+  "vsce": {
+    "dependencies": false
   }
 }

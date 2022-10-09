@@ -4,9 +4,17 @@
   "version": "2.0.0",
   "tasks": [
     {
-      "type": "npm",
-      "script": "watch",
-      "problemMatcher": ["$tsc-watch"],
+      "label": "npm(extension): watch",
+      "type": "shell",
+      "command": "npm",
+      "args": [
+        "run",
+        "watch:webpack",
+        "--workspace=packages/extension"
+      ],
+      "problemMatcher": [
+        "$ts-webpack-watch"
+      ],
       "isBackground": true,
       "presentation": {
         "reveal": "never"
@@ -14,6 +22,26 @@
       "group": {
         "kind": "build",
         "isDefault": true
+      }
+    },
+    {
+      "label": "npm(lang-php): watch",
+      "type": "shell",
+      "command": "npm",
+      "args": [
+        "run",
+        "watch:webpack",
+        "--workspace=packages/lang-support-php"
+      ],
+      "problemMatcher": [
+        "$ts-webpack-watch"
+      ],
+      "isBackground": true,
+      "presentation": {
+        "reveal": "never"
+      },
+      "group": {
+        "kind": "build"
       }
     }
   ]

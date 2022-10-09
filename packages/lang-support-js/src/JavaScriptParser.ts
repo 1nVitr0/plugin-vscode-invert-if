@@ -101,6 +101,30 @@ export default class JavaScriptParser {
     return new Range(start.line - 1, start.column, end.line - 1, end.column);
   }
 
+  private static getBinaryExpressionOperator(operator: BinaryOperator): BinaryExpressionKind["operator"] {
+    for (const [key, value] of Object.entries(this.binaryExpressionOperators)) {
+      if (value == operator) return key as BinaryExpressionKind["operator"];
+    }
+
+    throw new Error(`Unknown binary operator: ${operator}`);
+  }
+
+  private static getLogicalExpressionOperator(operator: LogicalOperator): LogicalExpressionKind["operator"] {
+    for (const [key, value] of Object.entries(this.logicalExpressionOperators)) {
+      if (value == operator) return key as LogicalExpressionKind["operator"];
+    }
+
+    throw new Error(`Unknown logical operator: ${operator}`);
+  }
+
+  private static getUnaryExpressionOperator(operator: UnaryOperator): UnaryExpressionKind["operator"] {
+    for (const [key, value] of Object.entries(this.unaryExpressionOperators)) {
+      if (value == operator) return key as UnaryExpressionKind["operator"];
+    }
+
+    throw new Error(`Unknown unary operator: ${operator}`);
+  }
+
   public static getBody<S extends NodeKind>(path: NodePath<S>): NodePath<BlockStatementKind> | null {
     let body = path.get("body");
     while (body?.value && "body" in body.value) body = body.get("body");
@@ -212,7 +236,7 @@ export default class JavaScriptParser {
       const { left, right, operator } = node as BinaryExpressionUpdatedNode<NodePath<NodeKind>>;
 
       const newExpression: BinaryExpressionKind = types.builders.binaryExpression.from({
-        operator: JavaScriptParser.reverseBinaryExpressionOperator(operator),
+        operator: JavaScriptParser.getBinaryExpressionOperator(operator),
         left: this.getNodeKindFromSyntaxNode(left) as ExpressionKind,
         right: this.getNodeKindFromSyntaxNode(right) as ExpressionKind,
         loc: locSource ? this.getLocFromRange(locSource.range) : node.range ? this.getLocFromRange(node.range) : null,
@@ -225,7 +249,7 @@ export default class JavaScriptParser {
       const { left, right, operator } = node as LogicalExpressionUpdatedNode<NodePath<NodeKind>>;
 
       const newExpression: LogicalExpressionKind = types.builders.logicalExpression.from({
-        operator: JavaScriptParser.reverseLogicalExpressionOperator(operator),
+        operator: JavaScriptParser.getLogicalExpressionOperator(operator),
         left: this.getNodeKindFromSyntaxNode(left) as ExpressionKind,
         right: this.getNodeKindFromSyntaxNode(right) as ExpressionKind,
         loc: locSource ? this.getLocFromRange(locSource.range) : node.range ? this.getLocFromRange(node.range) : null,
@@ -238,7 +262,7 @@ export default class JavaScriptParser {
       const { argument, operator } = node as UnaryExpressionUpdatedNode<NodePath<NodeKind>>;
 
       const newExpression: UnaryExpressionKind = types.builders.unaryExpression.from({
-        operator: JavaScriptParser.reverseUnaryExpressionOperator(operator),
+        operator: JavaScriptParser.getUnaryExpressionOperator(operator),
         argument: this.getNodeKindFromSyntaxNode(argument) as ExpressionKind,
         loc: locSource ? this.getLocFromRange(locSource.range) : node.range ? this.getLocFromRange(node.range) : null,
       });
@@ -412,30 +436,6 @@ export default class JavaScriptParser {
 
     if (initialIndent) return code.replace(new RegExp(`^${initialIndent}`), "");
     else return code;
-  }
-
-  private static reverseBinaryExpressionOperator(operator: BinaryOperator): BinaryExpressionKind["operator"] {
-    for (const [key, value] of Object.entries(this.binaryExpressionOperators)) {
-      if (value == operator) return key as BinaryExpressionKind["operator"];
-    }
-
-    throw new Error(`Unknown binary operator: ${operator}`);
-  }
-
-  private static reverseLogicalExpressionOperator(operator: LogicalOperator): LogicalExpressionKind["operator"] {
-    for (const [key, value] of Object.entries(this.logicalExpressionOperators)) {
-      if (value == operator) return key as LogicalExpressionKind["operator"];
-    }
-
-    throw new Error(`Unknown logical operator: ${operator}`);
-  }
-
-  private static reverseUnaryExpressionOperator(operator: UnaryOperator): UnaryExpressionKind["operator"] {
-    for (const [key, value] of Object.entries(this.unaryExpressionOperators)) {
-      if (value == operator) return key as UnaryExpressionKind["operator"];
-    }
-
-    throw new Error(`Unknown unary operator: ${operator}`);
   }
 
   private parser: { parse: () => NodeKind };
