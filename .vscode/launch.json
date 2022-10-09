@@ -38,7 +38,7 @@
       "type": "extensionHost",
       "request": "launch",
       "args": [
-        "--extensionDevelopmentPath=${workspaceFolder}"
+        "--extensionDevelopmentPath=${workspaceFolder}/packages/lang-support-php"
       ],
       "outFiles": [
         "${workspaceFolder}/packages/lang-support-php/dist/**/*.js"
