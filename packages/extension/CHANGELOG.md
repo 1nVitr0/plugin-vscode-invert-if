@@ -1,3 +1,10 @@
+## invert-if [2.1.1](https://github.com/1nVitr0/plugin-vscode-invert-if/compare/invert-if@2.1.0...invert-if@2.1.1) (2022-10-09)
+
+
+### Bug Fixes
+
+* **extension:** export api in activation function ([bd537aa](https://github.com/1nVitr0/plugin-vscode-invert-if/commit/bd537aaa9b3a826a3be328afb191406302dafe98))
+
 # invert-if [2.1.0](https://github.com/1nVitr0/plugin-vscode-invert-if/compare/invert-if@2.0.4...invert-if@2.1.0) (2022-10-08)
 
 
