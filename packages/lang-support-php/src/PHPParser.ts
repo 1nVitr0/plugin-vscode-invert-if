@@ -1,4 +1,4 @@
-import { Bin, Block, Break, Continue, Engine, If, Location, Node, Noop, Program, Return, Unary } from "php-parser";
+import { AST, Bin, Block, Break, Continue, Engine, If, Location, Node, Noop, Program, Return, Unary } from "php-parser";
 import { Range, TextDocument } from "vscode";
 import {
   BinaryExpressionRefNode,
@@ -24,6 +24,7 @@ import {
   WhileStatementRefNode,
 } from "vscode-invert-if";
 import { NodeWithParent, ProgramEntry } from "./ProgramEntry";
+import unparse = require("php-unparser");
 
 type AnyConstructor<N extends Node> = new (...args: any) => N;
 
@@ -38,11 +39,6 @@ export default class PHPParser {
     "FunctionExpression",
     "FunctionDeclaration",
     "ArrowFunctionExpression",
-  ];
-  protected static replaceTrueParentStatement: NodeWithParent<Node>["kind"][] = [
-    "WhileStatement",
-    "DoWhileStatement",
-    "ForStatement",
   ];
   private static binaryExpressionOperators: Partial<Record<Bin["type"], BinaryOperator>> = {
     "==": BinaryOperator.Equal,
@@ -64,6 +60,14 @@ export default class PHPParser {
     "+": UnaryOperator.Positive,
     "-": UnaryOperator.Negative,
   };
+  private static logicalOperatorPrecedence: (LogicalOperator | UnaryOperator)[] = [
+    UnaryOperator.Not,
+    LogicalOperator.And,
+    LogicalOperator.Or,
+    LogicalOperator.NullishCoalescing,
+  ];
+
+  private static ast = AST.prototype as unknown as Record<string, AnyConstructor<Node>>;
 
   public static getBlockCode(
     document: TextDocument,
@@ -178,7 +182,7 @@ export default class PHPParser {
     };
   }
 
-  public static getNodeKindFromSyntaxNode(
+  public static getNodeFromSyntaxNode(
     node: UpdatedSyntaxNode<NodeWithParent<Node>>,
     locSource?: RefSyntaxNode<NodeWithParent<Node>>
   ): NodeWithParent<Node> {
@@ -190,10 +194,10 @@ export default class PHPParser {
     if (node.type == SyntaxNodeType.IfStatement) {
       const { test, consequent, alternate, ref } = node as IfStatementUpdatedNode<NodeWithParent<If>>;
       if (ref) {
-        if (test.changed || test.created) ref.test = this.getNodeKindFromSyntaxNode(test);
+        if (test.changed || test.created) ref.test = this.getNodeFromSyntaxNode(test);
 
-        const consequentNode = this.getNodeKindFromSyntaxNode(consequent) as NodeWithParent<Block>;
-        const alternateNode = alternate && (this.getNodeKindFromSyntaxNode(alternate) as NodeWithParent<If | Block>);
+        const consequentNode = this.getNodeFromSyntaxNode(consequent) as NodeWithParent<Block>;
+        const alternateNode = alternate && (this.getNodeFromSyntaxNode(alternate) as NodeWithParent<If | Block>);
 
         if (consequent?.removed) ref.destroy();
         else ref.body = consequentNode;
@@ -205,10 +209,10 @@ export default class PHPParser {
       return (
         ref ??
         PHPParser.extendWithParent(
-          new (If as AnyConstructor<If>)(
-            this.getNodeKindFromSyntaxNode(test),
-            consequent ? this.getNodeKindFromSyntaxNode(consequent) : new Noop(),
-            alternate ? this.getNodeKindFromSyntaxNode(alternate) : undefined,
+          new this.ast.if(
+            this.getNodeFromSyntaxNode(test),
+            consequent ? this.getNodeFromSyntaxNode(consequent) : new Noop(),
+            alternate ? this.getNodeFromSyntaxNode(alternate) : undefined,
             false,
             undefined,
             locSource
@@ -217,57 +221,61 @@ export default class PHPParser {
               ? this.getLocFromRange(node.range)
               : undefined
           ),
-          node.ref?.parent
+          node.ref?.parent,
+          false
         )
       );
     } else if (node.type == SyntaxNodeType.BinaryExpression) {
       const { left, right, operator } = node as BinaryExpressionUpdatedNode<NodeWithParent<Node>>;
 
       return PHPParser.extendWithParent(
-        new (Bin as AnyConstructor<Bin>)(
+        new this.ast.bin(
           PHPParser.getBinaryExpressionOperator(operator),
-          this.getNodeKindFromSyntaxNode(left),
-          this.getNodeKindFromSyntaxNode(right),
+          this.getNodeFromSyntaxNode(left),
+          this.getNodeFromSyntaxNode(right),
           undefined,
           locSource ? this.getLocFromRange(locSource.range) : node.range ? this.getLocFromRange(node.range) : undefined
         ),
-        node.ref?.parent
+        node.ref?.parent,
+        false
       );
     } else if (node.type == SyntaxNodeType.LogicalExpression) {
       const { left, right, operator } = node as LogicalExpressionUpdatedNode<NodeWithParent<Node>>;
 
       return PHPParser.extendWithParent(
-        new (Bin as AnyConstructor<Bin>)(
+        new this.ast.bin(
           PHPParser.getLogicalExpressionOperator(operator),
-          this.getNodeKindFromSyntaxNode(left),
-          this.getNodeKindFromSyntaxNode(right),
+          this.getNodeFromSyntaxNode(left),
+          this.getNodeFromSyntaxNode(right),
           undefined,
           locSource ? this.getLocFromRange(locSource.range) : node.range ? this.getLocFromRange(node.range) : undefined
         ),
-        node.ref?.parent
+        node.ref?.parent,
+        false
       );
     } else if (node.type == SyntaxNodeType.UnaryExpression) {
       const { argument, operator } = node as UnaryExpressionUpdatedNode<NodeWithParent<Node>>;
 
       // (type, what, docs, location)
       return PHPParser.extendWithParent(
-        new (Unary as AnyConstructor<Unary>)(
+        new this.ast.unary(
           PHPParser.getUnaryExpressionOperator(operator),
-          this.getNodeKindFromSyntaxNode(argument),
+          this.getNodeFromSyntaxNode(argument),
           locSource ? this.getLocFromRange(locSource.range) : node.range ? this.getLocFromRange(node.range) : undefined
         ),
-        node.ref?.parent
+        node.ref?.parent,
+        false
       );
     } else if (node.type == SyntaxNodeType.ReturnStatement) {
-      return PHPParser.extendWithParent(new (Return as AnyConstructor<Return>)(null), node.ref?.parent);
+      return PHPParser.extendWithParent(new this.ast.return(null), node.ref?.parent, false);
     } else if (node.type == SyntaxNodeType.BreakStatement) {
-      return PHPParser.extendWithParent(new Break(), node.ref?.parent);
+      return PHPParser.extendWithParent(new this.ast.break(), node.ref?.parent, false);
     } else if (node.type == SyntaxNodeType.ContinueStatement) {
-      return PHPParser.extendWithParent(new Continue(), node.ref?.parent);
+      return PHPParser.extendWithParent(new this.ast.continue(), node.ref?.parent, false);
     } else if (node.type == SyntaxNodeType.Generic) {
-      return node.ref ?? PHPParser.extendWithParent(new Noop());
+      return node.ref ?? PHPParser.extendWithParent(new this.ast.noop(), null, false);
     } else if (node.type == SyntaxNodeType.Empty) {
-      return PHPParser.extendWithParent(new Noop(), node.ref?.parent);
+      return PHPParser.extendWithParent(new this.ast.noop(), node.ref?.parent, false);
     } else {
       throw new Error(`Unknown node type: ${node.type}`);
     }
@@ -302,7 +310,7 @@ export default class PHPParser {
     let operator;
 
     switch (node.kind) {
-      case "IfStatement":
+      case "if":
         const ifNode: IfStatementRefNode<NodeWithParent<N>> = {
           ...base,
           ...context,
@@ -312,31 +320,22 @@ export default class PHPParser {
           alternate: (node as any).alternate ? this.getSyntaxNodeFromNode((node as any).alternate, program) : undefined,
         };
         return ifNode;
-      case "BinaryExpression":
-        operator = PHPParser.binaryExpressionOperators[(node as any).type];
+      case "bin":
+        operator = Object.values(this.logicalExpressionOperators).includes((node as any).type)
+          ? PHPParser.logicalExpressionOperators[(node as any).type]
+          : PHPParser.binaryExpressionOperators[(node as any).type];
         if (!operator) return { type: SyntaxNodeType.Generic, ...base };
-        const binaryNode: BinaryExpressionRefNode<NodeWithParent<N>> = {
+        return {
           ...base,
           ...context,
-          type: SyntaxNodeType.BinaryExpression,
+          type: Object.values(LogicalOperator).includes(operator as LogicalOperator)
+            ? SyntaxNodeType.LogicalExpression
+            : SyntaxNodeType.BinaryExpression,
           left: this.getSyntaxNodeFromNode((node as any).left, program),
           right: this.getSyntaxNodeFromNode((node as any).right, program),
           operator,
-        };
-        return binaryNode;
-      case "LogicalExpression":
-        operator = PHPParser.logicalExpressionOperators[(node as any).type];
-        if (!operator) return { type: SyntaxNodeType.Generic, ...base };
-        const logicalNode: LogicalExpressionRefNode<NodeWithParent<N>> = {
-          ...base,
-          ...context,
-          type: SyntaxNodeType.LogicalExpression,
-          left: this.getSyntaxNodeFromNode((node as any).left, program),
-          right: this.getSyntaxNodeFromNode((node as any).right, program),
-          operator,
-        };
-        return logicalNode;
-      case "UnaryExpression":
+        } as BinaryExpressionRefNode<NodeWithParent<N>> | LogicalExpressionRefNode<NodeWithParent<N>>;
+      case "unary":
         operator = PHPParser.unaryExpressionOperators[(node as any).type];
         if (!operator) return { type: SyntaxNodeType.Generic, ...base };
         const unaryNode: UnaryExpressionRefNode<NodeWithParent<N>> = {
@@ -347,9 +346,7 @@ export default class PHPParser {
           operator,
         };
         return unaryNode;
-      case "FunctionDeclaration":
-      case "FunctionExpression":
-      case "ArrowFunctionExpression":
+      case "function":
         const functionNode: FunctionDeclarationRefNode<NodeWithParent<N>> = {
           ...base,
           ...context,
@@ -357,7 +354,7 @@ export default class PHPParser {
           ref: node,
         };
         return functionNode;
-      case "DoWhileStatement":
+      case "do":
         const doWhileNode: DoWhileStatementRefNode<NodeWithParent<N>> = {
           ...base,
           ...context,
@@ -365,7 +362,7 @@ export default class PHPParser {
           test: this.getSyntaxNodeFromNode((node as any).test, program),
         };
         return doWhileNode;
-      case "WhileStatement":
+      case "while":
         const whileNode: WhileStatementRefNode<NodeWithParent<N>> = {
           ...base,
           ...context,
@@ -373,7 +370,7 @@ export default class PHPParser {
           test: this.getSyntaxNodeFromNode((node as any).test, program),
         };
         return whileNode;
-      case "ForStatement":
+      case "for":
         const forNode: ForStatementRefNode<NodeWithParent<N>> = {
           ...base,
           ...context,
@@ -383,7 +380,7 @@ export default class PHPParser {
             : { type: SyntaxNodeType.Empty, ...base },
         };
         return forNode;
-      case "ReturnStatement":
+      case "return":
         const returnNode: GeneralStatementRefNode<NodeWithParent<N>> = {
           ...base,
           ...context,
@@ -391,14 +388,14 @@ export default class PHPParser {
           argument: (node as any).expr ? this.getSyntaxNodeFromNode((node as any).expr, program) : undefined,
         };
         return returnNode;
-      case "BreakStatement":
+      case "break":
         const breakNode: GeneralStatementRefNode<NodeWithParent<N>> = {
           type: SyntaxNodeType.BreakStatement,
           ...base,
           ...context,
         };
         return breakNode;
-      case "ContinueStatement":
+      case "continue":
         const continueNode: GeneralStatementRefNode<NodeWithParent<N>> = {
           ...base,
           ...context,
@@ -422,6 +419,10 @@ export default class PHPParser {
       for (const node of Object.values(current)) {
         if (PHPParser.isNode(node)) {
           stack.push(node);
+        } else if (node instanceof Array) {
+          for (const child of node) {
+            if (PHPParser.isNode(child)) stack.push(child);
+          }
         }
       }
 
@@ -442,23 +443,32 @@ export default class PHPParser {
   }
 
   private static isNode(node: any): node is Node {
-    return "kind" in node;
+    return node && typeof node === "object" && "kind" in node;
   }
 
   private static extendWithParent<T extends Node>(
     node: T,
-    parent: NodeWithParent<Node> | null = null
+    parent: NodeWithParent<Node> | null = null,
+    recursive = true
   ): NodeWithParent<T> {
     (node as NodeWithParent<T>).parent = parent;
 
-    for (const key of Object.keys(node) as (keyof T)[]) {
-      if (PHPParser.isNode(node[key])) {
-        (node[key] as Node) = this.extendWithParent(node[key] as Node, node as NodeWithParent<T>);
-        (node[key] as NodeWithParent<Node>).pathName = key as string;
+    if (recursive) {
+      for (const key of Object.keys(node) as (keyof T)[]) {
+        if (PHPParser.isNode(node[key])) {
+          (node[key] as Node) = this.extendWithParent(node[key] as Node, node as NodeWithParent<T>);
+          (node[key] as NodeWithParent<Node>).pathName = key as string;
+        }
       }
     }
 
     return node as NodeWithParent<T>;
+  }
+
+  private static createASTNode<N extends typeof Node, R extends Node>(base: N, ...args: any[]): R {
+    const node = Object.create(base.prototype);
+    base.apply(node, args as []);
+    return node;
   }
 
   private parser: Engine;
@@ -486,5 +496,18 @@ export default class PHPParser {
     const ast = this.parser.parseCode(code, filename);
 
     return PHPParser.extendWithParent(ast);
+  }
+
+  public stringifyNode(
+    node: UpdatedSyntaxNode<NodeWithParent<Node>>,
+    document: TextDocument,
+    precedingOperator?: LogicalOperator | UnaryOperator
+  ): string {
+    const { changed, created, removed, ref, range } = node;
+
+    if (removed) return "";
+    if (!changed && !created) return ref?.loc?.source ?? range ? document.getText(range) : "";
+
+    return unparse(PHPParser.getNodeFromSyntaxNode(node));
   }
 }

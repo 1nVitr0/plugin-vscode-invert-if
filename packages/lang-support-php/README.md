@@ -1,5 +1,10 @@
-# `Invert If` Language support for `JavaScript` and `TypeScript`
+# `Invert If` Language support for `PHP`
 
-This package includes `JavaScript` and `TypeScript` for the (Invert If)[https://marketplace.visualstudio.com/items?itemName=1nVitr0.invert-if] Visual Studio Code extension.
+This extension includes `PHP` for the (Invert If)[https://marketplace.visualstudio.com/items?itemName=1nVitr0.invert-if] Visual Studio Code extension.
 
-More documentation will be added, for now refer to [CONTRIBUTING.md](https://github.com/1nVitr0/plugin-vscode-invert-if/tree/main/packages/main/CONTRIBUTING.md).
+It is in very early alpha and depends on an outdated PHP generator. Expect some bugs and non-functioning commands.
+
+## Known Issues
+
+- The generator does **NOT** respect logical operator precedence:
+  - `(a || b) && c` will be generated as `a || b && c`, which is the same as `a || (b && c)`

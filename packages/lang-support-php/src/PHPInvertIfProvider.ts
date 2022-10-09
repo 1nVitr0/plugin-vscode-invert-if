@@ -15,11 +15,12 @@ import {
   isRefNode,
   isUnaryExpressionNode,
   LogicalExpressionRefNode,
+  LogicalOperator,
   LoopRefNode,
   RefSyntaxNode,
   SyntaxNodeType,
   UnaryExpressionRefNode,
-  UpdatedSyntaxNode
+  UpdatedSyntaxNode,
 } from "vscode-invert-if";
 import PHPParser from "./PHPParser";
 import { NodeWithParent, ProgramEntry } from "./ProgramEntry";
@@ -30,7 +31,7 @@ export default class PHPInvertIfProvider
     InvertIfElseProvider<NodeWithParent<Node>>,
     GuardClauseProvider<NodeWithParent<Node>>
 {
-  protected static replaceTrueParentStatement: Node["kind"][] = ["WhileStatement", "DoWhileStatement", "ForStatement"];
+  private static replaceTrueParentStatement: Node["kind"][] = ["while", "do", "for"];
 
   private parsers: Map<`${5 | 6 | 7 | 8}.${number}` | undefined, PHPParser> = new Map();
   private programs: Map<Uri, ProgramEntry> = new Map();
@@ -94,7 +95,8 @@ export default class PHPInvertIfProvider
     original: RefSyntaxNode<NodeWithParent<Node>>,
     replace: UpdatedSyntaxNode<NodeWithParent<Node>>
   ): void {
-    const code = "TODO";
+    const { languageId } = document;
+    const code = this.getParser(languageId).stringifyNode(replace, document);
     edit.replace(original.range, code);
   }
 
@@ -151,7 +153,7 @@ export default class PHPInvertIfProvider
     root: RefSyntaxNode<NodeWithParent<Node>>
   ): void {
     const indent = PHPParser.getBlockIndentation(root.ref as NodeWithParent<Node> & { body: Block }, document);
-    const code = PHPParser.getCode(document, PHPParser.getNodeKindFromSyntaxNode(node), indent);
+    const code = PHPParser.getCode(document, PHPParser.getNodeFromSyntaxNode(node), indent);
     const range = PHPParser.getBlockRange(root.ref as NodeWithParent<Node> & { body: Block });
 
     edit.insert(range.start, `${PHPParser.removeInitialIndent(document, range, code)}\n\n${indent}`);
@@ -164,7 +166,7 @@ export default class PHPInvertIfProvider
     root: RefSyntaxNode<NodeWithParent<Node>>
   ): void {
     const indent = PHPParser.getBlockIndentation(root.ref as NodeWithParent<Node> & { body: Block }, document);
-    const code = PHPParser.getCode(document, PHPParser.getNodeKindFromSyntaxNode(node), indent);
+    const code = PHPParser.getCode(document, PHPParser.getNodeFromSyntaxNode(node), indent);
     const range = PHPParser.getBlockRange(root.ref as NodeWithParent<Node> & { body: Block });
 
     edit.insert(range.end, `\n\n${code}`);
@@ -177,7 +179,7 @@ export default class PHPInvertIfProvider
     before: RefSyntaxNode<NodeWithParent<Node>>
   ): void {
     const indent = PHPParser.getNodeIndentation(before.ref, document);
-    const code = PHPParser.getCode(document, PHPParser.getNodeKindFromSyntaxNode(node), indent);
+    const code = PHPParser.getCode(document, PHPParser.getNodeFromSyntaxNode(node), indent);
     edit.insert(before.range.start, `${PHPParser.removeInitialIndent(document, before.range, code)}\n\n${indent}`);
   }
 
@@ -188,7 +190,7 @@ export default class PHPInvertIfProvider
     after: RefSyntaxNode<NodeWithParent<Node>>
   ): void {
     const indent = PHPParser.getNodeIndentation(after.ref, document);
-    const code = PHPParser.getCode(document, PHPParser.getNodeKindFromSyntaxNode(node), indent);
+    const code = PHPParser.getCode(document, PHPParser.getNodeFromSyntaxNode(node), indent);
     edit.insert(after.range.end, `\n\n${code}`);
   }
 
