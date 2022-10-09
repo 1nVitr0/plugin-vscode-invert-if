@@ -4,6 +4,7 @@
   "preview": true,
   "displayName": "Invert If PHP Language Support",
   "description": "php Language Support for Invert If",
+  "icon": "resources/icon.png",
   "author": "1nVitr0",
   "publisher": "1nVitr0",
   "repository": {
@@ -24,7 +25,7 @@
     "Other"
   ],
   "keywords": [
-    "refactor",
+    "php",
     "invert if condition",
     "negate condition",
     "swap if else",
@@ -51,7 +52,8 @@
     "contributions": "node scripts/contributions.js"
   },
   "dependencies": {
-    "php-parser": "^3.1.1"
+    "php-parser": "^3.1.1",
+    "php-unparser": "github:1nVitr0/php-unparser"
   },
   "vsce": {
     "dependencies": false
