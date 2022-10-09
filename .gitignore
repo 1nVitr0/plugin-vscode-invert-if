@@ -2,7 +2,7 @@ out/
 dist/
 node_modules/
 .vscode-test/
-*.vsix
+**/*.vsix
 tsconfig.tsbuildinfo
 .nyc_output/
 coverage/
