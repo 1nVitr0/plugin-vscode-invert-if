@@ -27,22 +27,15 @@ export default async function createGuardClause(
     selections.map((selection) => provider.provideConditions(editor.document, selection))
   );
 
-  for (let i = 0; i < selections.length; i++) {
-    const range = selections[i];
-    const conditions = selectionConditions[i] ?? [];
-    const condition = service.condition.sortConditionsByRangeMatch(conditions, range).shift();
+  editor.edit((edit) => {
+    for (let i = 0; i < selections.length; i++) {
+      const range = selections[i];
+      const conditions = selectionConditions[i] ?? [];
+      const condition = service.condition.sortConditionsByRangeMatch(conditions, range).shift();
 
-    if (!condition) continue;
-
-    const resolvedCondition = {
-      ...condition,
-      ...(await provider.resolveCondition?.(condition)),
-    };
-
-    editor.edit((edit) =>
-      service.guardClause.moveToGuardClause(editor.document, edit, provider, resolvedCondition, position, type)
-    );
-  }
+      if (condition) service.guardClause.moveToGuardClause(editor.document, edit, provider, condition, position, type);
+    }
+  });
 }
 
 /**

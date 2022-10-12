@@ -18,19 +18,13 @@ export default async function invertIfElse(editor: TextEditor, editBuilder: Text
   const selectionStatements = await Promise.all(
     selections.map((selection) => provider.provideIfStatements(editor.document, selection))
   );
+  editor.edit((edit) => {
+    for (let i = 0; i < selections.length; i++) {
+      const range = selections[i];
+      const statements = selectionStatements[i] ?? [];
+      const statement = service.ifElse.sortIfStatementsByRangeMatch(statements, range).shift();
 
-  for (let i = 0; i < selections.length; i++) {
-    const range = selections[i];
-    const statements = selectionStatements[i] ?? [];
-    const statement = service.ifElse.sortIfStatementsByRangeMatch(statements, range).shift();
-
-    if (!statement) continue;
-
-    const resolvedStatement = {
-      ...statement,
-      ...(await provider.resolveIfStatement?.(statement)),
-    };
-
-    editor.edit((edit) => service.ifElse.inverseIfElse(editor.document, edit, provider, resolvedStatement));
-  }
+      if (statement) service.ifElse.inverseIfElse(editor.document, edit, provider, statement);
+    }
+  });
 }

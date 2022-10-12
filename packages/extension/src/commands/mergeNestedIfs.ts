@@ -22,10 +22,10 @@ export default async function mergeNestedIfs(editor: TextEditor, _: TextEditorEd
 
   const groups = service.ifElse.groupIfStatementsByParent(selectionStatements);
 
-  for (const group of groups) {
-    const parent = group.shift();
-    if (parent) {
-      editor.edit((edit) => service.ifElse.mergeNestedIfs(editor.document, edit, provider, parent, ...group));
+  editor.edit((edit) => {
+    for (const group of groups) {
+      const parent = group.shift();
+      if (parent) service.ifElse.mergeNestedIfs(editor.document, edit, provider, parent, ...group);
     }
-  }
+  });
 }
