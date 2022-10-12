@@ -1,7 +1,7 @@
 import { ExtensionContext, window } from "vscode";
 import contributeCodeActions from "./contribute/codeActions";
 import contributeCommands from "./contribute/commands";
-import { registerTypescriptInvertIfProvider } from "lang-support-js";
+import { registerTypescriptInvertIfProvider } from "invert-if-js";
 import { service } from "./globals";
 
 export function activate(context: ExtensionContext) {
