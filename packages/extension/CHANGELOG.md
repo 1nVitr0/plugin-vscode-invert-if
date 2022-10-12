@@ -1,3 +1,10 @@
+## invert-if [2.1.4](https://github.com/1nVitr0/plugin-vscode-invert-if/compare/invert-if@2.1.3...invert-if@2.1.4) (2022-10-12)
+
+
+### Bug Fixes
+
+* fix regression for inverting multiple selections ([a6b4d1e](https://github.com/1nVitr0/plugin-vscode-invert-if/commit/a6b4d1ec004cdcb9a3282542a64f890847c5fc1f))
+
 ## invert-if [2.1.3](https://github.com/1nVitr0/plugin-vscode-invert-if/compare/invert-if@2.1.2...invert-if@2.1.3) (2022-10-12)
 
 
