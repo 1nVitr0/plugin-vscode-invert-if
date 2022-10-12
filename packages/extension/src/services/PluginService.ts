@@ -81,6 +81,19 @@ export default class PluginService implements InvertIfBaseProvider, Disposable {
     return capabilities;
   }
 
+  public getAvailableDocumentSelector(): ReadonlyArray<DocumentFilter | string> {
+    const selectors: (DocumentFilter | string)[] = [];
+    for (const plugin of this.plugins) {
+      if (plugin.documentSelector instanceof Array) {
+        selectors.push(...plugin.documentSelector);
+      } else {
+        selectors.push(plugin.documentSelector);
+      }
+    }
+
+    return selectors;
+  }
+
   public getInvertConditionProvider(document: TextDocument): InvertConditionProvider<any> | undefined {
     return this.plugins.find(
       ({ capabilities, documentSelector }) =>

@@ -23,6 +23,7 @@ import {
   InvertIfBaseProvider,
 } from "vscode-invert-if";
 import { service } from "../globals";
+import PluginService from "../services/PluginService";
 
 export class InvertIfCodeActionKind {
   private static Condition = CodeActionKind.Refactor.append("condition");
@@ -82,8 +83,9 @@ export default class InvertIfCodeActionProvider implements CodeActionProvider<In
     );
   }
 
-  public register() {
+  public register(provider?: PluginService) {
     if (this.registered) this.registered.dispose();
+    if (provider) this.documentSelector = [...provider.getAvailableDocumentSelector()];
     this.registered = languages.registerCodeActionsProvider(this.documentSelector, this);
   }
 
