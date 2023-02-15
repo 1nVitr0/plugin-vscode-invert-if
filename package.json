@@ -1,6 +1,7 @@
 {
   "name": "plugin-vscode-invert-if",
   "description": "Invert if blocks & conditions and create guard clauses on the fly",
+  "license": "MIT",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/1nVitr0/plugin-vscode-invert-if.git"
