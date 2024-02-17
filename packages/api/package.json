@@ -25,7 +25,7 @@
     "prepublish": "npm run build"
   },
   "devDependencies": {
-    "typedoc": "^0.23.15",
-    "typedoc-plugin-markdown": "^3.13.6"
+    "typedoc": "^0.25.8",
+    "typedoc-plugin-markdown": "^3.17.1"
   }
 }
