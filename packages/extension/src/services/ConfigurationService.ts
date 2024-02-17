@@ -1,5 +1,5 @@
-import { NodeKind } from 'ast-types/gen/kinds';
-import { ConfigurationTarget, workspace, WorkspaceConfiguration } from 'vscode';
+import { NodeKind } from "ast-types/lib/gen/kinds";
+import { ConfigurationTarget, workspace, WorkspaceConfiguration } from "vscode";
 
 export interface LanguageOptions {}
 

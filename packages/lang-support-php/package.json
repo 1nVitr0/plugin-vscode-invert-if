@@ -52,7 +52,7 @@
     "contributions": "node scripts/contributions.js"
   },
   "dependencies": {
-    "php-parser": "^3.1.1",
+    "php-parser": "^3.1.5",
     "php-unparser": "github:1nVitr0/php-unparser"
   },
   "vsce": {
