@@ -15,7 +15,10 @@
       "semantic-release-vsce",
       {
         "packageVsix": true,
-        "args": ["--no-dependencies"]
+        "args": [
+          "--no-dependencies",
+          "--allow-star-activation"
+        ]
       }
     ],
     "@semantic-release/github"
