@@ -1,3 +1,10 @@
+# invert-if [2.2.0](https://github.com/1nVitr0/plugin-vscode-invert-if/compare/invert-if@2.1.4...invert-if@2.2.0) (2024-02-17)
+
+
+### Features
+
+* **lang-js:** support typescript-jsx ([dc2088b](https://github.com/1nVitr0/plugin-vscode-invert-if/commit/dc2088bd3f63fe20ec0881c8b473e0a9915f6d6b))
+
 ## invert-if [2.1.4](https://github.com/1nVitr0/plugin-vscode-invert-if/compare/invert-if@2.1.3...invert-if@2.1.4) (2022-10-12)
 
 
