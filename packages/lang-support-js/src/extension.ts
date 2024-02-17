@@ -7,6 +7,7 @@ import JavaScriptInvertIfProvider from "./JavaScriptInvertIfProvider";
  */
 const documentFilter: DocumentFilter[] = [
   { language: "typescript" },
+  { language: "typescriptreact" },
   { language: "javascript" },
   { language: "flow" },
   { language: "babylon" },
