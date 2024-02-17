@@ -1,5 +1,5 @@
 import { visit } from "ast-types";
-import { ExpressionKind, ForStatementKind, IfStatementKind, NodeKind, StatementKind } from "ast-types/gen/kinds";
+import { ExpressionKind, ForStatementKind, IfStatementKind, NodeKind, StatementKind } from "ast-types/lib/gen/kinds";
 import { NodePath } from "ast-types/lib/node-path";
 import { SharedContextMethods } from "ast-types/lib/path-visitor";
 import { prettyPrint, print } from "recast";

@@ -10,7 +10,7 @@ import {
   SourceLocationKind,
   StatementKind,
   UnaryExpressionKind,
-} from "ast-types/gen/kinds";
+} from "ast-types/lib/gen/kinds";
 import { NodePath } from "ast-types/lib/node-path";
 import { parse, print, types } from "recast";
 import { Range, TextDocument } from "vscode";
@@ -443,8 +443,9 @@ export default class JavaScriptParser {
   public constructor(language: string) {
     switch (language) {
       case "typescript":
+      case "typescriptreact":
       case "ts":
-        this.parser = require("recast/parsers/typescript");
+        this.parser = require("recast/parsers/babel-ts");
         break;
       case "flow":
         this.parser = require("recast/parsers/flow");

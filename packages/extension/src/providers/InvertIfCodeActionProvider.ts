@@ -1,4 +1,3 @@
-import { debounce } from "debounce";
 import {
   CancellationToken,
   CodeAction,
@@ -24,6 +23,7 @@ import {
 } from "vscode-invert-if";
 import { service } from "../globals";
 import PluginService from "../services/PluginService";
+import debounce = require("debounce");
 
 export class InvertIfCodeActionKind {
   private static Condition = CodeActionKind.Refactor.append("condition");
