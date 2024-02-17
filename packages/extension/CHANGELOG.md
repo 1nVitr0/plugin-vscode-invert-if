@@ -1,3 +1,10 @@
+## invert-if [2.2.1](https://github.com/1nVitr0/plugin-vscode-invert-if/compare/invert-if@2.2.0...invert-if@2.2.1) (2024-02-17)
+
+
+### Bug Fixes
+
+* trigger rerelease for github ([d1fc1ab](https://github.com/1nVitr0/plugin-vscode-invert-if/commit/d1fc1ab2a154825d0101a94f04fa8ac12f9d17a4))
+
 # invert-if [2.2.0](https://github.com/1nVitr0/plugin-vscode-invert-if/compare/invert-if@2.1.4...invert-if@2.2.0) (2024-02-17)
 
 
