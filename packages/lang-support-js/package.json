@@ -42,9 +42,9 @@
     "lint": "eslint src --ext ts"
   },
   "dependencies": {
-    "@babel/parser": "^7.23.9",
+    "@babel/parser": "^7.26.3",
     "ast-types": "^0.16.1",
     "babylon": "^6.18.0",
-    "recast": "^0.23.4"
+    "recast": "^0.23.9"
   }
 }
