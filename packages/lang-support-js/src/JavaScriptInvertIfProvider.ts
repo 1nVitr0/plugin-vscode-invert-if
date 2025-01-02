@@ -3,9 +3,10 @@ import { ExpressionKind, ForStatementKind, IfStatementKind, NodeKind, StatementK
 import { NodePath } from "ast-types/lib/node-path";
 import { SharedContextMethods } from "ast-types/lib/path-visitor";
 import { prettyPrint, print } from "recast";
-import { Range, TextDocument, TextEditorEdit, Uri } from "vscode";
+import { Range, TextEditorEdit, Uri } from "vscode";
 import {
   BinaryExpressionRefNode,
+  DocumentContext,
   ExpressionContext,
   GuardClauseProvider,
   IfStatementRefNode,
@@ -44,10 +45,10 @@ export default class JavaScriptInvertIfProvider
   private programs: Map<Uri, ProgramEntry> = new Map();
 
   public provideConditions(
-    document: TextDocument,
+    context: DocumentContext,
     range?: Range
   ): (RefSyntaxNode<NodePath<NodeKind>> & ExpressionContext<NodePath<NodeKind>>)[] {
-    const program = this.parseDocument(document);
+    const program = this.parseDocumentContext(context);
     const conditions: NodePath<ExpressionKind>[] = [];
 
     function addCondition(this: SharedContextMethods, path: NodePath<StatementKind & { test: any }>) {
@@ -70,13 +71,14 @@ export default class JavaScriptInvertIfProvider
   }
 
   public async resolveCondition(
+    context: DocumentContext,
     condition: RefSyntaxNode<NodePath<NodeKind>> & ExpressionContext<NodePath<NodeKind>>
   ): Promise<RefSyntaxNode<NodePath<NodeKind>> & ExpressionContext<NodePath<NodeKind>>> {
     return this.resolveSyntaxNode(condition);
   }
 
-  public provideIfStatements(document: TextDocument, range?: Range): IfStatementRefNode<NodePath<NodeKind>>[] {
-    const program = this.parseDocument(document);
+  public provideIfStatements(context: DocumentContext, range?: Range): IfStatementRefNode<NodePath<NodeKind>>[] {
+    const program = this.parseDocumentContext(context);
     const statements: NodePath<IfStatementKind>[] = [];
 
     visit(program.programNode, {
@@ -94,13 +96,14 @@ export default class JavaScriptInvertIfProvider
   }
 
   public async resolveIfStatement(
+    context: DocumentContext,
     statement: IfStatementRefNode<NodePath<NodeKind>>
   ): Promise<IfStatementRefNode<NodePath<NodeKind>>> {
     return this.resolveSyntaxNode(statement);
   }
 
   public replaceCondition(
-    document: TextDocument,
+    { document }: DocumentContext,
     edit: TextEditorEdit,
     original: RefSyntaxNode<NodePath<NodeKind>>,
     replace: UpdatedSyntaxNode<NodePath<NodeKind>>
@@ -110,7 +113,7 @@ export default class JavaScriptInvertIfProvider
   }
 
   public replaceIfStatement(
-    document: TextDocument,
+    { document }: DocumentContext,
     edit: TextEditorEdit,
     original: IfStatementRefNode<NodePath<NodeKind>>,
     replace: IfStatementRefNode<NodePath<NodeKind>>
@@ -120,7 +123,7 @@ export default class JavaScriptInvertIfProvider
   }
 
   public removeCondition(
-    document: TextDocument,
+    { document }: DocumentContext,
     edit: TextEditorEdit,
     condition: RefSyntaxNode<NodePath<NodeKind>> & ExpressionContext<NodePath<NodeKind>>
   ): void {
@@ -156,7 +159,7 @@ export default class JavaScriptInvertIfProvider
   }
 
   public prependSyntaxNode(
-    document: TextDocument,
+    { document }: DocumentContext,
     edit: TextEditorEdit,
     node: UpdatedSyntaxNode<NodePath<NodeKind>>,
     root: RefSyntaxNode<NodePath<NodeKind>>
@@ -169,7 +172,7 @@ export default class JavaScriptInvertIfProvider
   }
 
   public appendSyntaxNode(
-    document: TextDocument,
+    { document }: DocumentContext,
     edit: TextEditorEdit,
     node: UpdatedSyntaxNode<NodePath<NodeKind>>,
     root: RefSyntaxNode<NodePath<NodeKind>>
@@ -182,7 +185,7 @@ export default class JavaScriptInvertIfProvider
   }
 
   public insertSyntaxNodeBefore(
-    document: TextDocument,
+    { document }: DocumentContext,
     edit: TextEditorEdit,
     node: UpdatedSyntaxNode<NodePath<NodeKind>>,
     before: RefSyntaxNode<NodePath<NodeKind>>
@@ -196,7 +199,7 @@ export default class JavaScriptInvertIfProvider
   }
 
   public insertSyntaxNodeAfter(
-    document: TextDocument,
+    { document }: DocumentContext,
     edit: TextEditorEdit,
     node: UpdatedSyntaxNode<NodePath<NodeKind>>,
     after: RefSyntaxNode<NodePath<NodeKind>>
@@ -216,14 +219,14 @@ export default class JavaScriptInvertIfProvider
     return parser;
   }
 
-  private parseDocument(document: TextDocument): ProgramEntry {
-    const { uri, version, languageId } = document;
-    const program = this.programs.get(uri);
+  private parseDocumentContext(context: DocumentContext): ProgramEntry {
+    const { languageId, document } = context;
+    const program = this.programs.get(document.uri);
 
-    if (program?.version === version) return program;
+    if (program?.version === document.version) return program;
 
-    const invalidatedProgram = this.getParser(languageId).parseDocument(document);
-    this.programs.set(uri, invalidatedProgram);
+    const invalidatedProgram = this.getParser(languageId).parseDocumentContext(context);
+    this.programs.set(document.uri, invalidatedProgram);
 
     return invalidatedProgram as ProgramEntry;
   }

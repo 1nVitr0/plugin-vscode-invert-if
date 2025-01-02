@@ -18,6 +18,7 @@ import {
   BinaryExpressionRefNode,
   BinaryExpressionUpdatedNode,
   BinaryOperator,
+  DocumentContext,
   DoWhileStatementRefNode,
   ExpressionContext,
   ForStatementRefNode,
@@ -51,7 +52,7 @@ export default class JavaScriptParser {
     "FunctionDeclaration",
     "ArrowFunctionExpression",
   ];
-  protected static replaceTrueParentStatement: NodeKind["type"][] = [
+  private static replaceTrueParentStatement: NodeKind["type"][] = [
     "WhileStatement",
     "DoWhileStatement",
     "ForStatement",
@@ -438,7 +439,7 @@ export default class JavaScriptParser {
     else return code;
   }
 
-  private parser: { parse: () => NodeKind };
+  protected parser: { parse: () => NodeKind };
 
   public constructor(language: string) {
     switch (language) {
@@ -461,11 +462,11 @@ export default class JavaScriptParser {
     }
   }
 
-  public parseDocument(document: TextDocument): ProgramEntry {
+  public parseDocumentContext({ document, embeddedRange }: DocumentContext): ProgramEntry {
     const { version, getText } = document;
     const program: Partial<ProgramEntry> = {
       version,
-      programNode: this.parseText(getText()),
+      programNode: this.parseText(getText(embeddedRange)),
     };
 
     visit(program.programNode!, {
