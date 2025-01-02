@@ -2,6 +2,7 @@ import { Block, Expression, For, If, Node, Statement } from "php-parser";
 import { Range, TextDocument, TextEditorEdit, Uri } from "vscode";
 import {
   BinaryExpressionRefNode,
+  DocumentContext,
   ExpressionContext,
   GuardClauseProvider,
   IfStatementRefNode,
@@ -15,7 +16,6 @@ import {
   isRefNode,
   isUnaryExpressionNode,
   LogicalExpressionRefNode,
-  LogicalOperator,
   LoopRefNode,
   RefSyntaxNode,
   SyntaxNodeType,
@@ -37,10 +37,10 @@ export default class PHPInvertIfProvider
   private programs: Map<Uri, ProgramEntry> = new Map();
 
   public provideConditions(
-    document: TextDocument,
+    context: DocumentContext,
     range?: Range
   ): (RefSyntaxNode<NodeWithParent<Node>> & ExpressionContext<NodeWithParent<Node>>)[] {
-    const program = this.parseDocument(document);
+    const program = this.parseDocumentContext(context);
     const conditions: NodeWithParent<Expression>[] = [];
 
     function addCondition(node: NodeWithParent<Statement & { test: NodeWithParent<Node> }>) {
@@ -61,13 +61,14 @@ export default class PHPInvertIfProvider
   }
 
   public async resolveCondition(
+    context: DocumentContext,
     condition: RefSyntaxNode<NodeWithParent<Node>> & ExpressionContext<NodeWithParent<Node>>
   ): Promise<RefSyntaxNode<NodeWithParent<Node>> & ExpressionContext<NodeWithParent<Node>>> {
     return this.resolveSyntaxNode(condition);
   }
 
-  public provideIfStatements(document: TextDocument, range?: Range): IfStatementRefNode<NodeWithParent<Node>>[] {
-    const program = this.parseDocument(document);
+  public provideIfStatements(context: DocumentContext, range?: Range): IfStatementRefNode<NodeWithParent<Node>>[] {
+    const program = this.parseDocumentContext(context);
     const statements: NodeWithParent<If>[] = [];
 
     PHPParser.visit(program.program, {
@@ -84,24 +85,24 @@ export default class PHPInvertIfProvider
   }
 
   public async resolveIfStatement(
+    context: DocumentContext,
     statement: IfStatementRefNode<NodeWithParent<Node>>
   ): Promise<IfStatementRefNode<NodeWithParent<Node>>> {
     return this.resolveSyntaxNode(statement);
   }
 
   public replaceCondition(
-    document: TextDocument,
+    { document, languageId }: DocumentContext,
     edit: TextEditorEdit,
     original: RefSyntaxNode<NodeWithParent<Node>>,
     replace: UpdatedSyntaxNode<NodeWithParent<Node>>
   ): void {
-    const { languageId } = document;
     const code = this.getParser(languageId).stringifyNode(replace, document);
     edit.replace(original.range, code);
   }
 
   public replaceIfStatement(
-    document: TextDocument,
+    { document }: DocumentContext,
     edit: TextEditorEdit,
     original: IfStatementRefNode<NodeWithParent<Node>>,
     replace: IfStatementRefNode<NodeWithParent<Node>>
@@ -111,7 +112,7 @@ export default class PHPInvertIfProvider
   }
 
   public removeCondition(
-    document: TextDocument,
+    { document }: DocumentContext,
     edit: TextEditorEdit,
     condition: RefSyntaxNode<NodeWithParent<Node>> & ExpressionContext<NodeWithParent<Node>>
   ): void {
@@ -147,7 +148,7 @@ export default class PHPInvertIfProvider
   }
 
   public prependSyntaxNode(
-    document: TextDocument,
+    { document }: DocumentContext,
     edit: TextEditorEdit,
     node: UpdatedSyntaxNode<NodeWithParent<Node>>,
     root: RefSyntaxNode<NodeWithParent<Node>>
@@ -160,7 +161,7 @@ export default class PHPInvertIfProvider
   }
 
   public appendSyntaxNode(
-    document: TextDocument,
+    { document }: DocumentContext,
     edit: TextEditorEdit,
     node: UpdatedSyntaxNode<NodeWithParent<Node>>,
     root: RefSyntaxNode<NodeWithParent<Node>>
@@ -173,7 +174,7 @@ export default class PHPInvertIfProvider
   }
 
   public insertSyntaxNodeBefore(
-    document: TextDocument,
+    { document }: DocumentContext,
     edit: TextEditorEdit,
     node: UpdatedSyntaxNode<NodeWithParent<Node>>,
     before: RefSyntaxNode<NodeWithParent<Node>>
@@ -184,7 +185,7 @@ export default class PHPInvertIfProvider
   }
 
   public insertSyntaxNodeAfter(
-    document: TextDocument,
+    { document }: DocumentContext,
     edit: TextEditorEdit,
     node: UpdatedSyntaxNode<NodeWithParent<Node>>,
     after: RefSyntaxNode<NodeWithParent<Node>>
@@ -205,14 +206,14 @@ export default class PHPInvertIfProvider
     return parser;
   }
 
-  private parseDocument(document: TextDocument): ProgramEntry {
-    const { uri, version, languageId } = document;
-    const program = this.programs.get(uri);
+  private parseDocumentContext(context: DocumentContext): ProgramEntry {
+    const { languageId, document } = context;
+    const program = this.programs.get(document.uri);
 
-    if (program?.version === version) return program;
+    if (program?.version === document.version) return program;
 
-    const invalidatedProgram = this.getParser(languageId).parseDocument(document);
-    this.programs.set(uri, invalidatedProgram);
+    const invalidatedProgram = this.getParser(languageId).parseDocumentContext(context);
+    this.programs.set(document.uri, invalidatedProgram);
 
     return invalidatedProgram as ProgramEntry;
   }

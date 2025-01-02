@@ -1,9 +1,10 @@
-import { AST, Bin, Block, Break, Continue, Engine, If, Location, Node, Noop, Program, Return, Unary } from "php-parser";
+import { AST, Bin, Block, Engine, If, Location, Node, Noop, Program, Unary } from "php-parser";
 import { Range, TextDocument } from "vscode";
 import {
   BinaryExpressionRefNode,
   BinaryExpressionUpdatedNode,
   BinaryOperator,
+  DocumentContext,
   DoWhileStatementRefNode,
   ExpressionContext,
   ForStatementRefNode,
@@ -457,7 +458,7 @@ export default class PHPParser {
       for (const key of Object.keys(node) as (keyof T)[]) {
         if (PHPParser.isNode(node[key])) {
           (node[key] as Node) = this.extendWithParent(node[key] as Node, node as NodeWithParent<T>);
-          (node[key] as NodeWithParent<Node>).pathName = key as string;
+          (node[key] as Node as NodeWithParent<Node>).pathName = key as string;
         }
       }
     }
@@ -483,12 +484,12 @@ export default class PHPParser {
     this.parser = new Engine(options);
   }
 
-  public parseDocument(document: TextDocument): ProgramEntry {
+  public parseDocumentContext({document, embeddedRange}: DocumentContext): ProgramEntry {
     const { version, getText } = document;
 
     return {
       version,
-      program: this.parseText(getText(), document.fileName),
+      program: this.parseText(getText(embeddedRange), document.fileName),
     };
   }
 
