@@ -137,11 +137,11 @@
     "contributions": "node scripts/contributions.js"
   },
   "devDependencies": {
-    "@microsoft/tsdoc": "^0.14.2",
+    "@microsoft/tsdoc": "^0.15.1",
     "jsonfile": "^6.1.0"
   },
   "dependencies": {
-    "debounce": "^2.0.0",
+    "debounce": "^2.2.0",
     "json-md-table": "^1.2.0"
   },
   "vsce": {
