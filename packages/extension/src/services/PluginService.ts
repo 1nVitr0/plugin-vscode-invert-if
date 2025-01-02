@@ -1,12 +1,25 @@
-import { DocumentFilter, DocumentSelector, TextDocument, languages, EventEmitter, Disposable, window } from "vscode";
+import {
+  DocumentFilter,
+  DocumentSelector,
+  TextDocument,
+  languages,
+  EventEmitter,
+  Disposable,
+  window,
+  Range,
+} from "vscode";
 import ConfigurationService from "./ConfigurationService";
 import {
+  DocumentContext,
   GuardClauseProvider,
   InvertConditionProvider,
   InvertIfBaseProvider,
   InvertIfElseProvider,
+  isDocumentContext,
+  isEmbeddedDocumentContext,
   Plugin,
 } from "vscode-invert-if";
+import { EmbeddedLanguageProvider } from "vscode-invert-if/dist/providers/EmbeddedLanguageProvider";
 
 export default class PluginService implements InvertIfBaseProvider, Disposable {
   private plugins: Plugin<any, any>[] = [];
@@ -44,6 +57,13 @@ export default class PluginService implements InvertIfBaseProvider, Disposable {
     });
   }
 
+  public registerEmbeddedLanguageProvider(
+    provider: EmbeddedLanguageProvider,
+    documentSelector: DocumentSelector
+  ): void {
+    throw new Error("Method not implemented.");
+  }
+
   public unregisterConditionProvider<T>(provider: InvertConditionProvider<T>): void {
     this.unRegisterPlugin({
       provider,
@@ -63,6 +83,40 @@ export default class PluginService implements InvertIfBaseProvider, Disposable {
       provider,
       capabilities: { guardClause: true },
     });
+  }
+
+  public unregisterEmbeddedLanguageProvider<T>(provider: EmbeddedLanguageProvider): void {
+    throw new Error("Method not implemented.");
+  }
+
+  public rangeToGlobal(range: Range, context: DocumentContext): Range {
+    if (!isEmbeddedDocumentContext(context)) return range;
+
+    const { document, embeddedRange } = context;
+    const { line: lineOffset, character: characterOffset } = embeddedRange.start;
+    const { start, end } = range;
+
+    return document.validateRange(
+      new Range(
+        start.with(start.line + lineOffset, start.character + characterOffset),
+        end.with(end.line + lineOffset, start.line === end.line ? end.character + characterOffset : end.character)
+      )
+    );
+  }
+
+  public rangeToLocal(range: Range, context: DocumentContext): Range {
+    if (!isEmbeddedDocumentContext(context)) return range;
+
+    const { document, embeddedRange } = context;
+    const { line: lineOffset, character: characterOffset } = embeddedRange.start;
+    const { start, end } = range;
+
+    return document.validateRange(
+      new Range(
+        start.with(start.line - lineOffset, start.character - characterOffset),
+        end.with(end.line - lineOffset, start.line === end.line ? end.character - characterOffset : end.character)
+      )
+    );
   }
 
   public getAvailableCapabilities(document: TextDocument): Plugin<any>["capabilities"] {
@@ -94,23 +148,60 @@ export default class PluginService implements InvertIfBaseProvider, Disposable {
     return selectors;
   }
 
-  public getInvertConditionProvider(document: TextDocument): InvertConditionProvider<any> | undefined {
-    return this.plugins.find(
-      ({ capabilities, documentSelector }) =>
-        languages.match(documentSelector, document) && capabilities.invertCondition
-    )?.provider;
+  public getInvertConditionProvider(context: TextDocument | DocumentContext): InvertConditionProvider<any> | undefined {
+    const document = isDocumentContext(context) ? context.document : context;
+
+    return isEmbeddedDocumentContext(context)
+      ? this.plugins.find(
+          ({ capabilities, documentSelector }) =>
+            this.matchDocumentContext(documentSelector, context) && capabilities.invertCondition
+        )?.provider
+      : this.plugins.find(
+          ({ capabilities, documentSelector }) =>
+            languages.match(documentSelector, document) && capabilities.invertCondition
+        )?.provider;
   }
 
-  public getInvertIfElseProvider(document: TextDocument): InvertIfElseProvider<any> | undefined {
-    return this.plugins.find(
-      ({ capabilities, documentSelector }) => languages.match(documentSelector, document) && capabilities.invertIfElse
-    )?.provider;
+  public getInvertIfElseProvider(context: TextDocument | DocumentContext): InvertIfElseProvider<any> | undefined {
+    const document = isDocumentContext(context) ? context.document : context;
+
+    return isEmbeddedDocumentContext(context)
+      ? this.plugins.find(
+          ({ capabilities, documentSelector }) =>
+            this.matchDocumentContext(documentSelector, context) && capabilities.invertIfElse
+        )?.provider
+      : this.plugins.find(
+          ({ capabilities, documentSelector }) =>
+            languages.match(documentSelector, document) && capabilities.invertIfElse
+        )?.provider;
   }
 
-  public getGuardClauseProvider(document: TextDocument): GuardClauseProvider<any> | undefined {
-    return this.plugins.find(
-      ({ capabilities, documentSelector }) => languages.match(documentSelector, document) && capabilities.guardClause
-    )?.provider;
+  public getGuardClauseProvider(context: TextDocument | DocumentContext): GuardClauseProvider<any> | undefined {
+    const document = isDocumentContext(context) ? context.document : context;
+
+    return isEmbeddedDocumentContext(context)
+      ? this.plugins.find(
+          ({ capabilities, documentSelector }) =>
+            this.matchDocumentContext(documentSelector, context) && capabilities.guardClause
+        )?.provider
+      : this.plugins.find(
+          ({ capabilities, documentSelector }) =>
+            languages.match(documentSelector, document) && capabilities.guardClause
+        )?.provider;
+  }
+
+  public getEmbeddedLanguageProvider(context: TextDocument | DocumentContext): EmbeddedLanguageProvider | undefined {
+    const document = isDocumentContext(context) ? context.document : context;
+
+    return isEmbeddedDocumentContext(context)
+      ? this.plugins.find(
+          ({ capabilities, documentSelector }) =>
+            this.matchDocumentContext(documentSelector, context) && capabilities.embeddedLanguages
+        )?.provider
+      : this.plugins.find(
+          ({ capabilities, documentSelector }) =>
+            languages.match(documentSelector, document) && capabilities.embeddedLanguages
+        )?.provider;
   }
 
   public onRegisterProvider<T>(listener: (e: Plugin<T>) => any): Disposable {
@@ -156,10 +247,10 @@ export default class PluginService implements InvertIfBaseProvider, Disposable {
     }
 
     const newPlugin: Plugin<T> = {
-      documentSelector,
-      capabilities: { invertCondition: true },
+      documentSelector: Array.isArray(documentSelector) ? [...documentSelector] : documentSelector,
+      capabilities: { ...capabilities },
       provider,
-    };
+    }; // Shallow copy to prevent modification of the original object
     this.plugins.push(newPlugin);
     this.registerProviderEvent.fire(newPlugin);
 
@@ -222,6 +313,19 @@ export default class PluginService implements InvertIfBaseProvider, Disposable {
     return (
       _a.language === _b.language && _a.scheme === _b.scheme && _a.pattern === _b.pattern && _a.scheme === _b.scheme
     );
+  }
+
+  private matchDocumentContext(documentSelector: DocumentSelector, context: DocumentContext): boolean {
+    if ((Array.isArray as (arg: DocumentSelector) => arg is ReadonlyArray<DocumentFilter | string>)(documentSelector)) {
+      return documentSelector.some((selector) => this.matchDocumentContext(selector, context));
+    } else if (typeof documentSelector === "string") {
+      return documentSelector === context.languageId;
+    } else {
+      return (
+        documentSelector.language === context.languageId &&
+        (!documentSelector.scheme || documentSelector.scheme === "embedded")
+      );
+    }
   }
 
   private compareCapabilities<T>(a: Plugin<T>["capabilities"], b: Plugin<T>["capabilities"]): number {

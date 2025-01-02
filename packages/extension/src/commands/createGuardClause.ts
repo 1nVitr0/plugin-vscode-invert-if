@@ -1,6 +1,13 @@
 import { commands, Range, TextEditor, TextEditorEdit, window } from "vscode";
-import { GuardClausePosition, GuardClauseType } from "vscode-invert-if";
+import { DocumentContext, GuardClausePosition, GuardClauseType } from "vscode-invert-if";
 import { service } from "../globals";
+
+const {
+  plugins: { getEmbeddedLanguageProvider, getGuardClauseProvider, rangeToLocal },
+  embedded: { getPrimaryEmbeddedSection },
+  condition: { sortConditionsByRangeMatch },
+  guardClause: { moveToGuardClause },
+} = service;
 
 /**
  * @title Invert If: Create Guard Clause from Condition
@@ -10,13 +17,24 @@ import { service } from "../globals";
 export default async function createGuardClause(
   editor: TextEditor,
   _: TextEditorEdit,
-  selection?: Range | null,
+  selection?: Range,
   position: GuardClausePosition = GuardClausePosition.Auto,
   type: GuardClauseType = GuardClauseType.Auto
 ) {
-  const selections = selection ? [selection] : editor.selections;
+  const { document } = editor;
+  const { languageId } = document;
+  const selections = selection ? [selection] : [...editor.selections];
+  const context: DocumentContext = { document, languageId, originalLanguageId: languageId };
 
-  const provider = service.plugins.getGuardClauseProvider(editor.document);
+  const embedProvider = getEmbeddedLanguageProvider(editor.document);
+
+  if (embedProvider) {
+    const embeddedSection = await getPrimaryEmbeddedSection(context, embedProvider, selection);
+    context.embeddedRange = embeddedSection?.range;
+    context.languageId = embeddedSection?.languageId ?? languageId;
+  }
+
+  const provider = getGuardClauseProvider(context);
 
   if (!provider) {
     window.showErrorMessage("No guard clause provider found for this file type");
@@ -24,16 +42,16 @@ export default async function createGuardClause(
   }
 
   const selectionConditions = await Promise.all(
-    selections.map((selection) => provider.provideConditions(editor.document, selection))
+    selections.map((selection) => provider.provideConditions(context, rangeToLocal(selection, context)))
   );
 
   editor.edit((edit) => {
     for (let i = 0; i < selections.length; i++) {
       const range = selections[i];
       const conditions = selectionConditions[i] ?? [];
-      const condition = service.condition.sortConditionsByRangeMatch(conditions, range).shift();
+      const condition = sortConditionsByRangeMatch(conditions, range).shift();
 
-      if (condition) service.guardClause.moveToGuardClause(editor.document, edit, provider, condition, position, type);
+      if (condition) moveToGuardClause(context, edit, provider, condition, position, type);
     }
   });
 }
