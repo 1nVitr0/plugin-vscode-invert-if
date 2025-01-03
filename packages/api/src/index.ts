@@ -17,3 +17,5 @@ export * from "./providers/InvertIfElseProvider";
 export * from "./providers/GuardClauseProvider";
 export * from "./providers/InvertIfBaseProvider";
 export * from "./providers/EmbeddedLanguageProvider";
+
+export * from "./helpers/range";

@@ -99,28 +99,6 @@ export interface InvertIfBaseProvider {
   unregisterEmbeddedLanguageProvider(provider: EmbeddedLanguageProvider): void;
 
   /**
-   * Helper function to modify a range based on the context of the document.
-   * Returns range relative to the global document when the context is an embedded section,
-   * otherwise returns the range as is.
-   *
-   * @param range The range to modify.
-   * @param context The context of the document.
-   * @returns The modified range.
-   */
-  rangeToGlobal(range: Range, context: DocumentContext): Range;
-
-  /**
-   * Helper function to modify a range based on the context of the document.
-   * Returns range relative to the embedded section when the context is an embedded section,
-   * otherwise returns the range as is.
-   *
-   * @param range The range to modify.
-   * @param context The context of the document.
-   * @returns The modified range.
-   */
-  rangeToLocal(range: Range, context: DocumentContext): Range;
-
-  /**
    * Register an Event listener that is called when a plugin is registered.
    */
   onRegisterProvider: Event<Plugin<any>>;
