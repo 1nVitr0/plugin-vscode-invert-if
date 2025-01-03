@@ -61,7 +61,11 @@ export default class PluginService implements InvertIfBaseProvider, Disposable {
     provider: EmbeddedLanguageProvider,
     documentSelector: DocumentSelector
   ): void {
-    throw new Error("Method not implemented.");
+    this.registerPlugin({
+      provider,
+      documentSelector,
+      capabilities: { embeddedLanguages: true },
+    });
   }
 
   public unregisterConditionProvider<T>(provider: InvertConditionProvider<T>): void {
@@ -85,8 +89,11 @@ export default class PluginService implements InvertIfBaseProvider, Disposable {
     });
   }
 
-  public unregisterEmbeddedLanguageProvider<T>(provider: EmbeddedLanguageProvider): void {
-    throw new Error("Method not implemented.");
+  public unregisterEmbeddedLanguageProvider(provider: EmbeddedLanguageProvider): void {
+    this.unRegisterPlugin({
+      provider,
+      capabilities: { embeddedLanguages: true },
+    });
   }
 
   public getAvailableCapabilities(document: TextDocument): Plugin<any>["capabilities"] {
@@ -310,7 +317,7 @@ export default class PluginService implements InvertIfBaseProvider, Disposable {
   }
 
   private getExistingPlugin<T>(
-    provider: InvertConditionProvider<T> | InvertIfElseProvider<T> | GuardClauseProvider<T>
+    provider: InvertConditionProvider<T> | InvertIfElseProvider<T> | GuardClauseProvider<T> | EmbeddedLanguageProvider
   ): Plugin<T> | undefined {
     return this.plugins.find((plugin) => plugin.provider === provider) as Plugin<T> | undefined;
   }
