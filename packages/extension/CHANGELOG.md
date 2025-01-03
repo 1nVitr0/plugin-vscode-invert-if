@@ -1,3 +1,10 @@
+## invert-if [3.0.3](https://github.com/1nVitr0/plugin-vscode-invert-if/compare/invert-if@3.0.2...invert-if@3.0.3) (2025-01-03)
+
+
+### Bug Fixes
+
+* **extension:** update badges ([b26e077](https://github.com/1nVitr0/plugin-vscode-invert-if/commit/b26e0772942baeb59094adfa6996c88f33165e7c))
+
 ## invert-if [3.0.2](https://github.com/1nVitr0/plugin-vscode-invert-if/compare/invert-if@3.0.1...invert-if@3.0.2) (2025-01-03)
 
 
