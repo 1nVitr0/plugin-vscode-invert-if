@@ -1,10 +1,16 @@
 import generateMdTable from "json-md-table";
 import { Range, TextDocument, TextEditor, TextEditorEdit, window, workspace } from "vscode";
-import { DocumentContext, InvertConditionProvider, RefSyntaxNode, UpdatedSyntaxNode } from "vscode-invert-if";
+import {
+  DocumentContext,
+  InvertConditionProvider,
+  rangeToLocal,
+  RefSyntaxNode,
+  UpdatedSyntaxNode,
+} from "vscode-invert-if";
 import { service } from "../globals";
 
 const {
-  plugins: { getEmbeddedLanguageProvider, getInvertConditionProvider, rangeToLocal },
+  plugins: { getEmbeddedLanguageProvider, getInvertConditionProvider },
   condition: { getConditionName, getInverseCondition, sortConditionsByRangeMatch },
   validation: { generateTruthTable: generateValidationTruthTable, combineTruthTables },
   embedded: { getPrimaryEmbeddedSection },

@@ -1,9 +1,9 @@
 import { commands, Range, TextEditor, TextEditorEdit, window } from "vscode";
-import { DocumentContext, GuardClausePosition, GuardClauseType } from "vscode-invert-if";
+import { DocumentContext, GuardClausePosition, GuardClauseType, rangeToLocal } from "vscode-invert-if";
 import { service } from "../globals";
 
 const {
-  plugins: { getEmbeddedLanguageProvider, getGuardClauseProvider, rangeToLocal },
+  plugins: { getEmbeddedLanguageProvider, getGuardClauseProvider },
   embedded: { getPrimaryEmbeddedSection },
   condition: { sortConditionsByRangeMatch },
   guardClause: { moveToGuardClause },

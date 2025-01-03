@@ -1,9 +1,9 @@
 import { Range, TextEditor, TextEditorEdit, window } from "vscode";
 import { service } from "../globals";
-import { DocumentContext } from "vscode-invert-if";
+import { DocumentContext, rangeToLocal } from "vscode-invert-if";
 
 const {
-  plugins: { getEmbeddedLanguageProvider, getInvertIfElseProvider, rangeToLocal },
+  plugins: { getEmbeddedLanguageProvider, getInvertIfElseProvider },
   embedded: { getPrimaryEmbeddedSection },
   ifElse: { inverseIfElse, sortIfStatementsByRangeMatch },
 } = service;
