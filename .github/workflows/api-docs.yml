@@ -20,6 +20,9 @@ jobs:
         with:
           node-version: "20.x"
 
+      - name: Setup Pages
+        uses: actions/configure-pages@v5
+
       - name: Install dependencies
         run: npm ci && npm i --workspaces
 
@@ -28,10 +31,8 @@ jobs:
         run: npm run docs
 
       - name: Create pages artifact
-        id: deployment
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-pages-artifact@v3
         with:
-          name: github-pages
           path: packages/api/docs
 
   deploy_docs:
