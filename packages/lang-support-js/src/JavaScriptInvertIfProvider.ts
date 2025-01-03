@@ -21,6 +21,7 @@ import {
   isUnaryExpressionNode,
   LogicalExpressionRefNode,
   LoopRefNode,
+  positionToGlobal,
   rangeToGlobal,
   RefSyntaxNode,
   SyntaxNodeType,
@@ -29,7 +30,6 @@ import {
 } from "vscode-invert-if";
 import JavaScriptParser from "./JavaScriptParser";
 import { ProgramEntry } from "./ProgramEntry";
-import { positionToGlobal } from "../../api/src/helpers/position";
 
 export default class JavaScriptInvertIfProvider
   implements

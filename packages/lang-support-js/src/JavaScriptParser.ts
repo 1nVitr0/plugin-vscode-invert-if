@@ -13,7 +13,7 @@ import {
 } from "ast-types/lib/gen/kinds";
 import { NodePath } from "ast-types/lib/node-path";
 import { parse, print, types } from "recast";
-import { Range, TextDocument } from "vscode";
+import { Range } from "vscode";
 import {
   BinaryExpressionRefNode,
   BinaryExpressionUpdatedNode,
@@ -30,6 +30,7 @@ import {
   LogicalExpressionRefNode,
   LogicalExpressionUpdatedNode,
   LogicalOperator,
+  rangeToGlobal,
   RefSyntaxNode,
   SyntaxNodeType,
   UnaryExpressionRefNode,
@@ -39,7 +40,6 @@ import {
   WhileStatementRefNode,
 } from "vscode-invert-if";
 import { ProgramEntry } from "./ProgramEntry";
-import { rangeToGlobal } from "../../api/src/helpers/range";
 
 export default class JavaScriptParser {
   private static guardClauseParentTypes: NodeKind["type"][] = [
@@ -454,7 +454,7 @@ export default class JavaScriptParser {
       case "javascript":
       case "js":
       default:
-        this.parser = require("recast/parsers/esprima");
+        this.parser = require("recast/parsers/acorn");
         break;
     }
   }
