@@ -1,3 +1,10 @@
+## invert-if-vue [1.0.2](https://github.com/1nVitr0/plugin-vscode-invert-if/compare/invert-if-vue@1.0.1...invert-if-vue@1.0.2) (2025-01-03)
+
+
+### Bug Fixes
+
+* **lang-vue:** translate language to languageId ([77f81d9](https://github.com/1nVitr0/plugin-vscode-invert-if/commit/77f81d99c5fe17e637f90c016665ddf9d374992f))
+
 ## invert-if-vue [1.0.1](https://github.com/1nVitr0/plugin-vscode-invert-if/compare/invert-if-vue@1.0.0...invert-if-vue@1.0.1) (2025-01-03)
 
 
