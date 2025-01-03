@@ -1,3 +1,10 @@
+## invert-if-vue [1.0.1](https://github.com/1nVitr0/plugin-vscode-invert-if/compare/invert-if-vue@1.0.0...invert-if-vue@1.0.1) (2025-01-03)
+
+
+### Bug Fixes
+
+* **lang-vue:** update document filter from md to vue ([0c95dc7](https://github.com/1nVitr0/plugin-vscode-invert-if/commit/0c95dc77494a855e343961e00e1105a5e3625d9b))
+
 # invert-if-vue 1.0.0 (2025-01-03)
 
 
