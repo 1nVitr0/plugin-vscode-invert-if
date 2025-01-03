@@ -42,14 +42,29 @@
       "description": "Powered by Semantic Release"
     },
     {
-      "url": "https://img.shields.io/github/workflow/status/1nVitr0/plugin-vscode-invert-if/Tests?label=tests&logo=visualstudiocode",
-      "href": "https://github.com/1nVitr0/plugin-vscode-invert-if/actions/workflows/test.yml",
-      "description": "Main Test Status"
+      "url": "https://img.shields.io/npm/v/vscode-invert-if?logo=npm",
+      "href": "https://www.npmjs.com/package/vscode-invert-if",
+      "description": "npm-version"
     },
     {
-      "url": "https://img.shields.io/github/workflow/status/1nVitr0/plugin-vscode-invert-if/Release?logo=visualstudiocode",
-      "href": "https://github.com/1nVitr0/plugin-vscode-invert-if/actions/workflows/release.yml",
-      "description": "Build Status"
+      "url": "https://img.shields.io/visual-studio-marketplace/v/1nVitr0.invert-if?logo=visualstudiocode",
+      "href": "https://marketplace.visualstudio.com/items?itemName=1nVitr0.invert-if",
+      "description": "Visual Studio Code extension 1nVitr0.invert-if"
+    },
+    {
+      "url": "https://img.shields.io/open-vsx/v/1nVitr0/invert-if",
+      "href": "https://open-vsx.org/extension/1nVitr0/invert-if",
+      "description": "Open VSX extension 1nVitr0.invert-if"
+    },
+    {
+      "url": "https://img.shields.io/visual-studio-marketplace/v/1nVitr0.invert-if-php?label=php-support&logo=php",
+      "href": "https://marketplace.visualstudio.com/items?itemName=1nVitr0.invert-if-php",
+      "description": "Visual Studio Code extension 1nVitr0.invert-if-php"
+    },
+    {
+      "url": "https://img.shields.io/visual-studio-marketplace/v/1nVitr0.invert-if-vue?label=vue-support&logo=vuedotjs",
+      "href": "https://marketplace.visualstudio.com/items?itemName=1nVitr0.invert-if-vue",
+      "description": "Visual Studio Code extension 1nVitr0.invert-if-vue"
     }
   ],
   "galleryBanner": {
