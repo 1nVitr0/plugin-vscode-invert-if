@@ -1,3 +1,20 @@
+# invert-if [3.0.0](https://github.com/1nVitr0/plugin-vscode-invert-if/compare/invert-if@2.2.1...invert-if@3.0.0) (2025-01-03)
+
+
+### Bug Fixes
+
+* **extension:** fix command syntax ([569edcd](https://github.com/1nVitr0/plugin-vscode-invert-if/commit/569edcdd1e67e08a8cea18a219be094b4f307ffb))
+* **extension:** upgrade dependencies ([ff40ef1](https://github.com/1nVitr0/plugin-vscode-invert-if/commit/ff40ef104e09f26a9b23bb96401345ec36144456))
+* **extension:** use range conversion helpers from api ([10ce7cc](https://github.com/1nVitr0/plugin-vscode-invert-if/commit/10ce7cc32bfec75f0225692f974f889618b81242))
+
+
+* feat(extension)!: add support for embedded language sections ([3a0ac8b](https://github.com/1nVitr0/plugin-vscode-invert-if/commit/3a0ac8b4dd2f5bbae3b60d03748c677e3a027fb3))
+
+
+### BREAKING CHANGES
+
+* ranges are now relative to embedding context if applicable
+
 ## invert-if [2.2.1](https://github.com/1nVitr0/plugin-vscode-invert-if/compare/invert-if@2.2.0...invert-if@2.2.1) (2024-02-17)
 
 
