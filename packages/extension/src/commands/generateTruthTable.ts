@@ -1,6 +1,12 @@
 import generateMdTable from "json-md-table";
-import { Range, TextDocument, TextEditor, TextEditorEdit, window, workspace } from "vscode";
-import { InvertConditionProvider, RefSyntaxNode, UpdatedSyntaxNode } from "vscode-invert-if";
+import { Range, TextEditor, TextEditorEdit, window, workspace } from "vscode";
+import {
+  DocumentContext,
+  InvertConditionProvider,
+  rangeToLocal,
+  RefSyntaxNode,
+  UpdatedSyntaxNode,
+} from "vscode-invert-if";
 import { service } from "../globals";
 
 function showTruthTable(...conditionGroups: UpdatedSyntaxNode<any>[][]) {
@@ -47,14 +53,15 @@ function indexConditions(conditions: Record<string, boolean>[]) {
   );
 }
 
-async function mapConditions<T>(document: TextDocument, provider: InvertConditionProvider<T>, selections: Range[]) {
+async function mapConditions<T>(context: DocumentContext, provider: InvertConditionProvider<T>, selections: Range[]) {
   return (
     await Promise.all(
       selections.map(async (selection) => {
-        const conditions = (await provider.provideConditions(document, selection)) ?? [];
-        const condition = service.condition.sortConditionsByRangeMatch(conditions, selection).shift();
+        const translatedSelection = rangeToLocal(selection, context);
+        const conditions = (await provider.provideConditions(context, translatedSelection)) ?? [];
+        const condition = service.condition.sortConditionsByRangeMatch(conditions, translatedSelection).shift();
         return provider.resolveCondition && condition
-          ? (await provider.resolveCondition(condition)) ?? condition
+          ? (await provider.resolveCondition(context, condition)) ?? condition
           : condition;
       })
     )
@@ -67,16 +74,27 @@ async function mapConditions<T>(document: TextDocument, provider: InvertConditio
  * @command invertIf.generateTruthTable
  */
 export default async function generateTruthTable(editor: TextEditor, _: TextEditorEdit, selection?: Range) {
+  const { document } = editor;
+  const { languageId } = document;
   const selections = selection ? [selection] : [...editor.selections];
+  const context: DocumentContext = { document, languageId, originalLanguageId: languageId };
 
-  const provider = service.plugins.getInvertConditionProvider(editor.document);
+  const embedProvider = service.plugins.getEmbeddedLanguageProvider(editor.document);
+
+  if (embedProvider) {
+    const embeddedSection = await service.embedded.getPrimaryEmbeddedSection(context, embedProvider, selection);
+    context.embeddedRange = embeddedSection?.range;
+    context.languageId = embeddedSection?.languageId ?? languageId;
+  }
+
+  const provider = service.plugins.getInvertConditionProvider(context);
 
   if (!provider) {
     window.showErrorMessage("No invert condition provider found for this file type");
     return;
   }
 
-  const conditions = await mapConditions(editor.document, provider, selections);
+  const conditions = await mapConditions(context, provider, selections);
 
   showTruthTable(conditions);
 }
@@ -87,16 +105,27 @@ export default async function generateTruthTable(editor: TextEditor, _: TextEdit
  * @command invertIf.compareWithInvertedCondition
  */
 export async function compareWithInvertedCondition(editor: TextEditor, _: TextEditorEdit, selection?: Range) {
+  const { document } = editor;
+  const { languageId } = document;
   const selections = selection ? [selection] : [...editor.selections];
+  const context: DocumentContext = { document, languageId, originalLanguageId: languageId };
 
-  const provider = service.plugins.getInvertConditionProvider(editor.document);
+  const embedProvider = service.plugins.getEmbeddedLanguageProvider(editor.document);
+
+  if (embedProvider) {
+    const embeddedSection = await service.embedded.getPrimaryEmbeddedSection(context, embedProvider, selection);
+    context.embeddedRange = embeddedSection?.range;
+    context.languageId = embeddedSection?.languageId ?? languageId;
+  }
+
+  const provider = service.plugins.getInvertConditionProvider(context);
 
   if (!provider) {
     window.showErrorMessage("No invert condition provider found for this file type");
     return;
   }
 
-  const conditions = await mapConditions(editor.document, provider, selections);
+  const conditions = await mapConditions(context, provider, selections);
   const inverted = conditions.map((condition) => [condition, service.condition.getInverseCondition(condition)]);
 
   showTruthTable(...inverted);

@@ -1,9 +1,10 @@
-import { AST, Bin, Block, Break, Continue, Engine, If, Location, Node, Noop, Program, Return, Unary } from "php-parser";
+import { AST, Bin, Block, Engine, If, Location, Node, Noop, Program, Unary } from "php-parser";
 import { Range, TextDocument } from "vscode";
 import {
   BinaryExpressionRefNode,
   BinaryExpressionUpdatedNode,
   BinaryOperator,
+  DocumentContext,
   DoWhileStatementRefNode,
   ExpressionContext,
   ForStatementRefNode,
@@ -15,6 +16,7 @@ import {
   LogicalExpressionRefNode,
   LogicalExpressionUpdatedNode,
   LogicalOperator,
+  rangeToGlobal,
   RefSyntaxNode,
   SyntaxNodeType,
   UnaryExpressionRefNode,
@@ -70,22 +72,21 @@ export default class PHPParser {
   private static ast = AST.prototype as unknown as Record<string, AnyConstructor<Node>>;
 
   public static getBlockCode(
-    document: TextDocument,
     node: NodeWithParent<Node> & { body: Block },
+    context: DocumentContext,
     indent?: string
   ): string {
-    if (indent === undefined) indent = this.getNodeIndentation(node, document);
+    if (indent === undefined) indent = this.getNodeIndentation(node, context);
 
     return (
-      (node.body.children as NodeWithParent<Node>[]).map((node) => this.getCode(document, node, indent)).join("\n") ??
-      ""
+      (node.body.children as NodeWithParent<Node>[]).map((node) => this.getCode(node, context, indent)).join("\n") ?? ""
     );
   }
 
-  public static getBlockIndentation(node: NodeWithParent<Node> & { body: Block }, document: TextDocument): string {
+  public static getBlockIndentation(node: NodeWithParent<Node> & { body: Block }, context: DocumentContext): string {
     const firstStatement = node.body.children[0] as NodeWithParent<Node>;
 
-    return firstStatement ? this.getNodeIndentation(firstStatement, document) : "";
+    return firstStatement ? this.getNodeIndentation(firstStatement, context) : "";
   }
 
   public static getBlockRange(node: NodeWithParent<Node> & { body: Block }): Range {
@@ -98,9 +99,9 @@ export default class PHPParser {
     return new Range(start.line - 1, start.column, end.line - 1, end.column);
   }
 
-  public static getCode(document: TextDocument, node: NodeWithParent<Node>, indent?: string): string {
+  public static getCode(node: NodeWithParent<Node>, context: DocumentContext, indent?: string): string {
     let code = "TODO";
-    if (indent === undefined) indent = this.getNodeIndentation(node, document);
+    if (indent === undefined) indent = this.getNodeIndentation(node, context);
 
     return code.replace(/^/gm, `${indent}`); // Try to keep original indentation
   }
@@ -115,9 +116,11 @@ export default class PHPParser {
     return (parent as unknown as NodeWithParent<P>) || null;
   }
 
-  public static getNodeIndentation(node: NodeWithParent<Node>, document: TextDocument): string {
+  public static getNodeIndentation(node: NodeWithParent<Node>, context: DocumentContext): string {
     const range = this.getNodeRange(node);
-    const line = document.getText(new Range(range.start.line, 0, range.start.line, Infinity));
+    const line = context.document.getText(
+      rangeToGlobal(new Range(range.start.line, 0, range.start.line, Infinity), context)
+    );
 
     return /^\s*/.exec(line)?.[0] ?? "";
   }
@@ -433,10 +436,9 @@ export default class PHPParser {
     }
   }
 
-  public static removeInitialIndent(document: TextDocument, range: Range, code: string): string {
-    const initialIndent =
-      document.getText(new Range(range.start.line, 0, range.start.line, range.start.character)).match(/^\s*/)?.[0] ??
-      "";
+  public static removeInitialIndent(range: Range, context: DocumentContext, code: string): string {
+    const globalRange = rangeToGlobal(new Range(range.start.line, 0, range.start.line, range.start.character), context);
+    const initialIndent = context.document.getText(globalRange).match(/^\s*/)?.[0] ?? "";
 
     if (initialIndent) return code.replace(new RegExp(`^${initialIndent}`), "");
     else return code;
@@ -457,7 +459,7 @@ export default class PHPParser {
       for (const key of Object.keys(node) as (keyof T)[]) {
         if (PHPParser.isNode(node[key])) {
           (node[key] as Node) = this.extendWithParent(node[key] as Node, node as NodeWithParent<T>);
-          (node[key] as NodeWithParent<Node>).pathName = key as string;
+          (node[key] as Node as NodeWithParent<Node>).pathName = key as string;
         }
       }
     }
@@ -483,12 +485,12 @@ export default class PHPParser {
     this.parser = new Engine(options);
   }
 
-  public parseDocument(document: TextDocument): ProgramEntry {
+  public parseDocumentContext({ document, embeddedRange }: DocumentContext): ProgramEntry {
     const { version, getText } = document;
 
     return {
       version,
-      program: this.parseText(getText(), document.fileName),
+      program: this.parseText(getText(embeddedRange), document.fileName),
     };
   }
 

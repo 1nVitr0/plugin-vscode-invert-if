@@ -1,12 +1,9 @@
 # Invert If
 
-[![Build Status](https://img.shields.io/github/workflow/status/1nVitr0/plugin-vscode-invert-if/Release)](https://github.com/1nVitr0/plugin-vscode-invert-if/actions/workflows/release.yml)
-[![Test Status](https://img.shields.io/github/workflow/status/1nVitr0/plugin-vscode-invert-if/Tests?label=tests)](https://github.com/1nVitr0/plugin-vscode-invert-if/actions/workflows/test.yml)
 [![semantic-release](https://img.shields.io/badge/%20%20%F0%9F%93%A6%F0%9F%9A%80-semantic--release-e10079.svg)](https://github.com/semantic-release/semantic-release)
 [![Visual Studio Code extension 1nVitr0.invert-if](https://img.shields.io/visual-studio-marketplace/v/1nVitr0.invert-if?logo=visualstudiocode)](https://marketplace.visualstudio.com/items?itemName=1nVitr0.invert-if)
 [![Installs for Visual Studio Code extension 1nVitr0.invert-if](https://img.shields.io/visual-studio-marketplace/i/1nVitr0.invert-if?logo=visualstudiocode)](https://marketplace.visualstudio.com/items?itemName=1nVitr0.invert-if)
 [![Rating for Visual Studio Code extension 1nVitr0.invert-if](https://img.shields.io/visual-studio-marketplace/r/1nVitr0.invert-if?logo=visualstudiocode)](https://marketplace.visualstudio.com/items?itemName=1nVitr0.invert-if)
-
 
 ![Demo of Extension](packages/extension/resources/demo.gif)
 
@@ -25,8 +22,6 @@ This is a preview for the `invert-if` Extension that allows you to quickly and e
 While still in active development, the following features are already available:
 
 ### Commands
-
-
 
 | Command                                                | Description                                                                                      |
 | ------------------------------------------------------ | ------------------------------------------------------------------------------------------------ |

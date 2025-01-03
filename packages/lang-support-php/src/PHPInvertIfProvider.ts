@@ -1,7 +1,8 @@
 import { Block, Expression, For, If, Node, Statement } from "php-parser";
-import { Range, TextDocument, TextEditorEdit, Uri } from "vscode";
+import { Range, TextEditorEdit, Uri } from "vscode";
 import {
   BinaryExpressionRefNode,
+  DocumentContext,
   ExpressionContext,
   GuardClauseProvider,
   IfStatementRefNode,
@@ -15,8 +16,9 @@ import {
   isRefNode,
   isUnaryExpressionNode,
   LogicalExpressionRefNode,
-  LogicalOperator,
   LoopRefNode,
+  positionToGlobal,
+  rangeToGlobal,
   RefSyntaxNode,
   SyntaxNodeType,
   UnaryExpressionRefNode,
@@ -37,10 +39,10 @@ export default class PHPInvertIfProvider
   private programs: Map<Uri, ProgramEntry> = new Map();
 
   public provideConditions(
-    document: TextDocument,
+    context: DocumentContext,
     range?: Range
   ): (RefSyntaxNode<NodeWithParent<Node>> & ExpressionContext<NodeWithParent<Node>>)[] {
-    const program = this.parseDocument(document);
+    const program = this.parseDocumentContext(context);
     const conditions: NodeWithParent<Expression>[] = [];
 
     function addCondition(node: NodeWithParent<Statement & { test: NodeWithParent<Node> }>) {
@@ -61,13 +63,14 @@ export default class PHPInvertIfProvider
   }
 
   public async resolveCondition(
+    context: DocumentContext,
     condition: RefSyntaxNode<NodeWithParent<Node>> & ExpressionContext<NodeWithParent<Node>>
   ): Promise<RefSyntaxNode<NodeWithParent<Node>> & ExpressionContext<NodeWithParent<Node>>> {
     return this.resolveSyntaxNode(condition);
   }
 
-  public provideIfStatements(document: TextDocument, range?: Range): IfStatementRefNode<NodeWithParent<Node>>[] {
-    const program = this.parseDocument(document);
+  public provideIfStatements(context: DocumentContext, range?: Range): IfStatementRefNode<NodeWithParent<Node>>[] {
+    const program = this.parseDocumentContext(context);
     const statements: NodeWithParent<If>[] = [];
 
     PHPParser.visit(program.program, {
@@ -84,34 +87,35 @@ export default class PHPInvertIfProvider
   }
 
   public async resolveIfStatement(
+    context: DocumentContext,
     statement: IfStatementRefNode<NodeWithParent<Node>>
   ): Promise<IfStatementRefNode<NodeWithParent<Node>>> {
     return this.resolveSyntaxNode(statement);
   }
 
   public replaceCondition(
-    document: TextDocument,
+    context: DocumentContext,
     edit: TextEditorEdit,
     original: RefSyntaxNode<NodeWithParent<Node>>,
     replace: UpdatedSyntaxNode<NodeWithParent<Node>>
   ): void {
-    const { languageId } = document;
+    const { document, languageId } = context;
     const code = this.getParser(languageId).stringifyNode(replace, document);
-    edit.replace(original.range, code);
+    edit.replace(rangeToGlobal(original.range, context), code);
   }
 
   public replaceIfStatement(
-    document: TextDocument,
+    context: DocumentContext,
     edit: TextEditorEdit,
     original: IfStatementRefNode<NodeWithParent<Node>>,
     replace: IfStatementRefNode<NodeWithParent<Node>>
   ): void {
     const code = "TODO";
-    edit.replace(original.range, code);
+    edit.replace(rangeToGlobal(original.range, context), code);
   }
 
   public removeCondition(
-    document: TextDocument,
+    context: DocumentContext,
     edit: TextEditorEdit,
     condition: RefSyntaxNode<NodeWithParent<Node>> & ExpressionContext<NodeWithParent<Node>>
   ): void {
@@ -123,75 +127,81 @@ export default class PHPInvertIfProvider
     } else if (parent.type == SyntaxNodeType.IfStatement) {
       // Remove empty if statements, but keep else if
       const { alternate, consequent } = parent as IfStatementRefNode<NodeWithParent<Node>>;
-      const indent = PHPParser.getNodeIndentation(parent.ref, document);
-      let code = PHPParser.getBlockCode(document, consequent.ref as NodeWithParent<Node> & { body: Block }, indent);
-      if (alternate) code += `\n${PHPParser.getCode(document, alternate.ref, indent)}`;
-      code = PHPParser.removeInitialIndent(document, parent.range, code);
+      const indent = PHPParser.getNodeIndentation(parent.ref, context);
+      let code = PHPParser.getBlockCode(consequent.ref as NodeWithParent<Node> & { body: Block }, context, indent);
+      if (alternate) code += `\n${PHPParser.getCode(alternate.ref, context, indent)}`;
+      code = PHPParser.removeInitialIndent(parent.range, context, code);
 
-      edit.replace(parent.range, code);
+      edit.replace(rangeToGlobal(parent.range, context), code);
     } else if (ref.pathName == "left") {
       // Remove empty binary expressions (left)
       const { right } = parent as BinaryExpressionRefNode<NodeWithParent<Node>>;
-      edit.replace(range.with(range.start, right.range.start), "");
+      edit.replace(rangeToGlobal(range.with(range.start, right.range.start), context), "");
     } else if (ref.pathName == "right") {
       // Remove empty binary expressions (right)
       const { left } = parent as BinaryExpressionRefNode<NodeWithParent<Node>>;
-      edit.replace(range.with(left.range.end, range.end), "");
+      edit.replace(rangeToGlobal(range.with(left.range.end, range.end), context), "");
     } else if (ref.pathName == "argument") {
       // Remove empty unary expressions
-      edit.replace(parent.range, "");
+      edit.replace(rangeToGlobal(parent.range, context), "");
     } else {
       // Delete condition used as guard clause
-      edit.replace(range, "");
+      edit.replace(rangeToGlobal(range, context), "");
     }
   }
 
   public prependSyntaxNode(
-    document: TextDocument,
+    context: DocumentContext,
     edit: TextEditorEdit,
     node: UpdatedSyntaxNode<NodeWithParent<Node>>,
     root: RefSyntaxNode<NodeWithParent<Node>>
   ): void {
-    const indent = PHPParser.getBlockIndentation(root.ref as NodeWithParent<Node> & { body: Block }, document);
-    const code = PHPParser.getCode(document, PHPParser.getNodeFromSyntaxNode(node), indent);
+    const indent = PHPParser.getBlockIndentation(root.ref as NodeWithParent<Node> & { body: Block }, context);
+    const code = PHPParser.getCode(PHPParser.getNodeFromSyntaxNode(node), context, indent);
     const range = PHPParser.getBlockRange(root.ref as NodeWithParent<Node> & { body: Block });
 
-    edit.insert(range.start, `${PHPParser.removeInitialIndent(document, range, code)}\n\n${indent}`);
+    edit.insert(
+      positionToGlobal(range.start, context),
+      `${PHPParser.removeInitialIndent(range, context, code)}\n\n${indent}`
+    );
   }
 
   public appendSyntaxNode(
-    document: TextDocument,
+    context: DocumentContext,
     edit: TextEditorEdit,
     node: UpdatedSyntaxNode<NodeWithParent<Node>>,
     root: RefSyntaxNode<NodeWithParent<Node>>
   ): void {
-    const indent = PHPParser.getBlockIndentation(root.ref as NodeWithParent<Node> & { body: Block }, document);
-    const code = PHPParser.getCode(document, PHPParser.getNodeFromSyntaxNode(node), indent);
+    const indent = PHPParser.getBlockIndentation(root.ref as NodeWithParent<Node> & { body: Block }, context);
+    const code = PHPParser.getCode(PHPParser.getNodeFromSyntaxNode(node), context, indent);
     const range = PHPParser.getBlockRange(root.ref as NodeWithParent<Node> & { body: Block });
 
-    edit.insert(range.end, `\n\n${code}`);
+    edit.insert(positionToGlobal(range.end, context), `\n\n${code}`);
   }
 
   public insertSyntaxNodeBefore(
-    document: TextDocument,
+    context: DocumentContext,
     edit: TextEditorEdit,
     node: UpdatedSyntaxNode<NodeWithParent<Node>>,
     before: RefSyntaxNode<NodeWithParent<Node>>
   ): void {
-    const indent = PHPParser.getNodeIndentation(before.ref, document);
-    const code = PHPParser.getCode(document, PHPParser.getNodeFromSyntaxNode(node), indent);
-    edit.insert(before.range.start, `${PHPParser.removeInitialIndent(document, before.range, code)}\n\n${indent}`);
+    const indent = PHPParser.getNodeIndentation(before.ref, context);
+    const code = PHPParser.getCode(PHPParser.getNodeFromSyntaxNode(node), context, indent);
+    edit.insert(
+      positionToGlobal(before.range.start, context),
+      `${PHPParser.removeInitialIndent(before.range, context, code)}\n\n${indent}`
+    );
   }
 
   public insertSyntaxNodeAfter(
-    document: TextDocument,
+    context: DocumentContext,
     edit: TextEditorEdit,
     node: UpdatedSyntaxNode<NodeWithParent<Node>>,
     after: RefSyntaxNode<NodeWithParent<Node>>
   ): void {
-    const indent = PHPParser.getNodeIndentation(after.ref, document);
-    const code = PHPParser.getCode(document, PHPParser.getNodeFromSyntaxNode(node), indent);
-    edit.insert(after.range.end, `\n\n${code}`);
+    const indent = PHPParser.getNodeIndentation(after.ref, context);
+    const code = PHPParser.getCode(PHPParser.getNodeFromSyntaxNode(node), context, indent);
+    edit.insert(positionToGlobal(after.range.end, context), `\n\n${code}`);
   }
 
   private getParser(languageId: string): PHPParser {
@@ -205,14 +215,14 @@ export default class PHPInvertIfProvider
     return parser;
   }
 
-  private parseDocument(document: TextDocument): ProgramEntry {
-    const { uri, version, languageId } = document;
-    const program = this.programs.get(uri);
+  private parseDocumentContext(context: DocumentContext): ProgramEntry {
+    const { languageId, document } = context;
+    const program = this.programs.get(document.uri);
 
-    if (program?.version === version) return program;
+    if (program?.version === document.version) return program;
 
-    const invalidatedProgram = this.getParser(languageId).parseDocument(document);
-    this.programs.set(uri, invalidatedProgram);
+    const invalidatedProgram = this.getParser(languageId).parseDocumentContext(context);
+    this.programs.set(document.uri, invalidatedProgram);
 
     return invalidatedProgram as ProgramEntry;
   }
