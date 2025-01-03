@@ -4,7 +4,7 @@
 
 This package includes the API for extensions interacting with the extension [Invert If](https://marketplace.visualstudio.com/items?itemName=1nVitr0.invert-if) for Visual Studio Code.
 
-For the full documentation refer to the [Type Definitions](https://github.com/1nVitr0/plugin-vscode-invert-if/tree/main/packages/api/docs/modules.md) or to the [Contributing Guidelines](https://github.com/1nVitr0/plugin-vscode-invert-if/tree/main/packages/extension/CONTRIBUTING.md).
+For the full documentation refer to the exposed [Invert If Extension API](https://1nvitr0.github.io/plugin-vscode-invert-if/interfaces/InvertIfBaseProvider.html), the full [Type Definitions](https://1nvitr0.github.io/plugin-vscode-invert-if/modules.html) or to the [Contributing Guidelines](https://github.com/1nVitr0/plugin-vscode-invert-if/tree/main/packages/extension/CONTRIBUTING.md).
 
 ## Basic usage
 

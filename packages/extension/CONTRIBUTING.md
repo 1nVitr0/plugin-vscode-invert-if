@@ -127,7 +127,7 @@ export interface EmbeddedLanguageProvider {
 
 ### Provider Registration
 
-The base extension offers a registration API in the form of:
+The base extension offers a [registration API](https://1nvitr0.github.io/plugin-vscode-invert-if/interfaces/InvertIfBaseProvider.html) in the form of:
 
 ```typescript
 interface InvertIfBaseProvider {
