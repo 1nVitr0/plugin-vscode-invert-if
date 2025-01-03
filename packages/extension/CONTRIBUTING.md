@@ -9,6 +9,7 @@ Partial language support is possible by [registering](#provider-registration) pr
 - Conditions
 - If statements
 - Guard clauses
+- Embedded Code Sections
 
 ### Setup
 
@@ -25,11 +26,16 @@ Condition providers must implement the following interface:
 
 ```typescript
 interface InvertConditionProvider<T> {
-  provideConditions(document: TextDocument, range?: Range): ProviderResult<RefSyntaxNode<T>[]>;
-  resolveCondition?(condition: RefSyntaxNode<T>): ProviderResult<RefSyntaxNode<T>>;
+  provideConditions(
+    document: TextDocument,
+    range?: Range
+  ): ProviderResult<RefSyntaxNode<T>[]>;
+  resolveCondition?(
+    condition: RefSyntaxNode<T>
+  ): ProviderResult<RefSyntaxNode<T>>;
 
   replaceCondition(
-    document: TextDocument,
+    context: DocumentContext,
     edit: TextEditorEdit,
     original: RefSyntaxNode<T>,
     replace: UpdatedSyntaxNode<T>
@@ -43,11 +49,16 @@ If Else providers must implement the following interface:
 
 ```typescript
 interface InvertIfElseProvider<T> {
-  provideIfStatements(document: TextDocument, range?: Range): ProviderResult<IfStatementRefNode<T>[]>;
-  resolveIfStatement?(statement: IfStatementRefNode<T>): ProviderResult<IfStatementRefNode<T>>;
+  provideIfStatements(
+    document: TextDocument,
+    range?: Range
+  ): ProviderResult<IfStatementRefNode<T>[]>;
+  resolveIfStatement?(
+    statement: IfStatementRefNode<T>
+  ): ProviderResult<IfStatementRefNode<T>>;
 
   replaceIfStatement(
-    document: TextDocument,
+    context: DocumentContext,
     edit: TextEditorEdit,
     original: IfStatementRefNode<T>,
     replace: IfStatementUpdatedNode<T>
@@ -61,40 +72,56 @@ Guard Clause providers must implement the following interface, that extends most
 
 ```typescript
 export interface GuardClauseProvider<T> extends InvertConditionProvider<T> {
-  provideConditions(document: TextDocument, range?: Range): ProviderResult<(RefSyntaxNode<T> & ExpressionContext<T>)[]>;
+  provideConditions(
+    document: TextDocument,
+    range?: Range
+  ): ProviderResult<(RefSyntaxNode<T> & ExpressionContext<T>)[]>;
   resolveCondition?(
     condition: RefSyntaxNode<T> & ExpressionContext<T>
   ): ProviderResult<RefSyntaxNode<T> & ExpressionContext<T>>;
 
   removeCondition(
-    document: TextDocument,
+    context: DocumentContext,
     edit: TextEditorEdit,
     condition: RefSyntaxNode<T> & ExpressionContext<T>
   ): void;
   prependSyntaxNode(
-    document: TextDocument,
+    context: DocumentContext,
     edit: TextEditorEdit,
     node: UpdatedSyntaxNode<T>,
     root: RefSyntaxNode<T>
   ): void;
   appendSyntaxNode(
-    document: TextDocument,
+    context: DocumentContext,
     edit: TextEditorEdit,
     node: UpdatedSyntaxNode<T>,
     root: RefSyntaxNode<T>
   ): void;
   insertSyntaxNodeBefore(
-    document: TextDocument,
+    context: DocumentContext,
     edit: TextEditorEdit,
     node: UpdatedSyntaxNode<T>,
     before: RefSyntaxNode<T>
   ): void;
   insertSyntaxNodeAfter(
-    document: TextDocument,
+    context: DocumentContext,
     edit: TextEditorEdit,
     node: UpdatedSyntaxNode<T>,
     after: RefSyntaxNode<T>
   ): void;
+}
+```
+
+## Embedded Language Providers
+
+Embedded Language Providers must implement the following interface:
+
+```typescript
+export interface EmbeddedLanguageProvider {
+  provideEmbeddedSections(
+    context: DocumentContext,
+    range?: Range
+  ): ProviderResult<EmbeddedLanguageSection[]>;
 }
 ```
 
@@ -107,10 +134,12 @@ interface InvertIfBaseProvider {
   registerGuardClauseProvider<T>(provider: GuardClauseProvider<T>, documentSelector: DocumentSelector): void;
   registerConditionProvider<T>(provider: InvertConditionProvider<T>, documentSelector: DocumentSelector): void;
   registerIfElseProvider<T>(provider: InvertIfElseProvider<T>, documentSelector: DocumentSelector): void;
+  registerEmbeddedLanguageProvider(provider: EmbeddedLanguageProvider, documentSelector: DocumentSelector): void;
 
   unregisterGuardClauseProvider<T>(provider: GuardClauseProvider<T>, documentSelector: DocumentSelector): void;
   unregisterConditionProvider<T>(provider: InvertConditionProvider<T>, documentSelector: DocumentSelector): void;
   unregisterIfElseProvider<T>(provider: InvertIfElseProvider<T>, documentSelector: DocumentSelector): void;
+  unregisterEmbeddedLanguageProvider(provider: EmbeddedLanguageProvider): void;
 
   onRegisterProvider: Event<Plugin<any>>;
   onUnregisterProvider: Event<Plugin<any>>;
