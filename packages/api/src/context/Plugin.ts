@@ -6,10 +6,11 @@ import { EmbeddedLanguageProvider } from "../providers/EmbeddedLanguageProvider"
 
 export interface Plugin<
   T,
-  P extends InvertConditionProvider<T> | InvertIfElseProvider<T> | GuardClauseProvider<T> =
+  P extends InvertConditionProvider<T> | InvertIfElseProvider<T> | GuardClauseProvider<T> | EmbeddedLanguageProvider =
     | InvertConditionProvider<T>
     | InvertIfElseProvider<T>
     | GuardClauseProvider<T>
+    | EmbeddedLanguageProvider
 > {
   documentSelector: DocumentSelector;
   capabilities: {
