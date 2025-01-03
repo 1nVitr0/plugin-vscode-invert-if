@@ -1,3 +1,10 @@
+## vscode-invert-if [2.0.2](https://github.com/1nVitr0/plugin-vscode-invert-if/compare/vscode-invert-if@2.0.1...vscode-invert-if@2.0.2) (2025-01-03)
+
+
+### Bug Fixes
+
+* **api:** allow registering embedded language providers as plugin ([76164e9](https://github.com/1nVitr0/plugin-vscode-invert-if/commit/76164e9b5170ea7e40502719e7a9179a4d477071))
+
 ## vscode-invert-if [2.0.1](https://github.com/1nVitr0/plugin-vscode-invert-if/compare/vscode-invert-if@2.0.0...vscode-invert-if@2.0.1) (2025-01-03)
 
 
