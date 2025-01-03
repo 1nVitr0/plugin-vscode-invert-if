@@ -17,6 +17,8 @@ import {
   isUnaryExpressionNode,
   LogicalExpressionRefNode,
   LoopRefNode,
+  positionToGlobal,
+  rangeToGlobal,
   RefSyntaxNode,
   SyntaxNodeType,
   UnaryExpressionRefNode,
@@ -24,8 +26,6 @@ import {
 } from "vscode-invert-if";
 import PHPParser from "./PHPParser";
 import { NodeWithParent, ProgramEntry } from "./ProgramEntry";
-import { rangeToGlobal } from "../../api/src/helpers/range";
-import { positionToGlobal } from "../../api/src/helpers/position";
 
 export default class PHPInvertIfProvider
   implements
