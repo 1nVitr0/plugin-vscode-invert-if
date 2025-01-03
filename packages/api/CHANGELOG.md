@@ -1,3 +1,10 @@
+## vscode-invert-if [2.0.1](https://github.com/1nVitr0/plugin-vscode-invert-if/compare/vscode-invert-if@2.0.0...vscode-invert-if@2.0.1) (2025-01-03)
+
+
+### Bug Fixes
+
+* **api:** include link to github pages documentation in contributing guidelines ([4bfcbc5](https://github.com/1nVitr0/plugin-vscode-invert-if/commit/4bfcbc5479718aa79deffd16cb430a8cc247d458))
+
 # vscode-invert-if [2.0.0](https://github.com/1nVitr0/plugin-vscode-invert-if/compare/vscode-invert-if@1.0.2...vscode-invert-if@2.0.0) (2025-01-03)
 
 
