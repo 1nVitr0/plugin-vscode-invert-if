@@ -2,8 +2,8 @@
   "name": "invert-if-js",
   "version": "1.0.0",
   "preview": true,
-  "displayName": "Invert If",
-  "description": "Invert if blocks & conditions and create guard clauses on the fly",
+  "displayName": "Invert If JavaScript Support",
+  "description": "JavaScript, TypeScript, JSX, Flow and Babylon support for Invert If extension",
   "author": "1nVitr0",
   "publisher": "1nVitr0",
   "repository": {
