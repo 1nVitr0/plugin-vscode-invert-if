@@ -1,3 +1,10 @@
+## invert-if [3.0.2](https://github.com/1nVitr0/plugin-vscode-invert-if/compare/invert-if@3.0.1...invert-if@3.0.2) (2025-01-03)
+
+
+### Bug Fixes
+
+* **extension:** implement registering embedded language providers ([81e1d60](https://github.com/1nVitr0/plugin-vscode-invert-if/commit/81e1d605317ea9d08c81d8b1f3c01aebda09ae41))
+
 ## invert-if [3.0.1](https://github.com/1nVitr0/plugin-vscode-invert-if/compare/invert-if@3.0.0...invert-if@3.0.1) (2025-01-03)
 
 
