@@ -5,7 +5,7 @@ import VueEmbeddedLanguageProvider from "./VueEmbeddedLanguageProvider";
 /**
  * The document filter that selects for languages supported by your extension.
  */
-const documentFilter: DocumentFilter[] = [{ language: "markdown" }];
+const documentFilter: DocumentFilter[] = [{ language: "vue" }];
 
 let invertIf: InvertIfBaseProvider | undefined;
 let provider: VueEmbeddedLanguageProvider | undefined;
