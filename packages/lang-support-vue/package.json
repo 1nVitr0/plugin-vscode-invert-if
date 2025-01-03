@@ -1,0 +1,44 @@
+{
+  "name": "invert-if-vue",
+  "version": "1.0.0",
+  "preview": true,
+  "displayName": "Invert If Vue Support",
+  "description": "Vue SFC support for Invert If extension",
+  "author": "1nVitr0",
+  "publisher": "1nVitr0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/1nVitr0/plugin-vscode-invert-if.git"
+  },
+  "main": "./out/extension.js",
+  "engines": {
+    "vscode": "^1.60.0"
+  },
+  "extensionKind": [
+    "workspace",
+    "ui"
+  ],
+  "categories": [
+    "Formatters",
+    "Programming Languages",
+    "Other"
+  ],
+  "keywords": [
+    "refactor",
+    "invert if condition",
+    "negate condition",
+    "swap if else",
+    "guard clause"
+  ],
+  "extensionDependencies": [
+    "1nVitr0.invert-if"
+  ],
+  "activationEvents": [
+    "*"
+  ],
+  "scripts": {
+    "build": "tsc --build",
+    "watch": "tsc --build --watch",
+    "lint": "eslint src --ext ts"
+  }
+}
