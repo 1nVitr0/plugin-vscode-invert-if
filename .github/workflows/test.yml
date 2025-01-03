@@ -5,19 +5,16 @@ on:
     branches: [develop, main]
 
 jobs:
-  setup:
+  test:
+    name: Run extension tests
+    strategy:
+      matrix:
+        package: [ 'extension' ]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-node@v3
       - run: npm ci && npm i --workspaces
-  test:
-    strategy:
-      matrix:
-        package: [ 'extension' ]
-    runs-on: ubuntu-latest
-    needs: setup
-    steps:
       - name: Run tests for ${{ matrix.package }}
         working-directory: packages/${{ matrix.package }}
         run: xvfb-run -a npm test

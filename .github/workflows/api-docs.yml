@@ -1,0 +1,49 @@
+name: Update docs for API
+
+on:
+  push:
+    branches:
+      - "main"
+
+jobs:
+  build_docs:
+    name: Bump version
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20.x"
+
+      - name: Install dependencies
+        run: npm ci && npm i --workspaces
+
+      - name: Build API docs
+        working-directory: packages/api
+        run: npm run docs
+
+      - name: Create pages artifact
+        id: api_docs
+        uses: actions/upload-artifact@v3
+        with:
+          path: packages/api/docs
+
+  deploy_docs:
+    name: Deploy API docs
+    runs-on: ubuntu-latest
+    needs: build_docs
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.api_docs.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

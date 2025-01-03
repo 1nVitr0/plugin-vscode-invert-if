@@ -21,7 +21,7 @@
     "build": "tsc -p ./",
     "watch": "tsc -watch -p ./",
     "lint": "eslint src --ext ts",
-    "docs": "typedoc --plugin typedoc-plugin-markdown src/index.ts",
+    "docs": "typedoc --includeVersion src/index.ts",
     "prepublish": "npm run build"
   },
   "devDependencies": {
