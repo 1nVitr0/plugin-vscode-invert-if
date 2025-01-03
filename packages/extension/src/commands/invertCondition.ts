@@ -1,5 +1,6 @@
 import { Range, TextEditor, TextEditorEdit, window } from "vscode";
 import { service } from "../globals";
+import { DocumentContext, rangeToLocal } from "vscode-invert-if";
 
 /**
  * @title Invert If: Invert Condition
@@ -7,8 +8,20 @@ import { service } from "../globals";
  * @command invertIf.invertCondition
  */
 export default async function invertCondition(editor: TextEditor, editBuilder: TextEditorEdit, selection?: Range) {
-  const selections = selection ? [selection] : editor.selections;
-  const provider = service.plugins.getInvertConditionProvider(editor.document);
+  const { document } = editor;
+  const { languageId } = document;
+  const selections = selection ? [selection] : [...editor.selections];
+  const context: DocumentContext = { document, languageId, originalLanguageId: languageId };
+
+  const embedProvider = service.plugins.getEmbeddedLanguageProvider(editor.document);
+
+  if (embedProvider) {
+    const embeddedSection = await service.embedded.getPrimaryEmbeddedSection(context, embedProvider, selection);
+    context.embeddedRange = embeddedSection?.range;
+    context.languageId = embeddedSection?.languageId ?? languageId;
+  }
+
+  const provider = service.plugins.getInvertConditionProvider(context);
 
   if (!provider) {
     window.showErrorMessage("No invert condition provider found for this file type");
@@ -16,7 +29,7 @@ export default async function invertCondition(editor: TextEditor, editBuilder: T
   }
 
   const selectionConditions = await Promise.all(
-    selections.map((selection) => provider.provideConditions(editor.document, selection))
+    selections.map((selection) => provider.provideConditions(context, rangeToLocal(selection, context)))
   );
 
   editor.edit((edit) => {
@@ -25,7 +38,7 @@ export default async function invertCondition(editor: TextEditor, editBuilder: T
       const conditions = selectionConditions[i] ?? [];
       const condition = service.condition.sortConditionsByRangeMatch(conditions, range).shift();
 
-      if (condition) service.condition.inverseCondition(editor.document, edit, provider, condition);
+      if (condition) service.condition.inverseCondition(context, edit, provider, condition);
     }
   });
 }

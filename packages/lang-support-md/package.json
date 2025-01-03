@@ -1,9 +1,9 @@
 {
-  "name": "invert-if-js",
+  "name": "invert-if-md",
   "version": "1.0.0",
   "preview": true,
-  "displayName": "Invert If JavaScript Support",
-  "description": "JavaScript, TypeScript, JSX, Flow and Babylon support for Invert If extension",
+  "displayName": "Invert If Markdown Support",
+  "description": "Language embeddings in Markdown support for Invert If extension",
   "author": "1nVitr0",
   "publisher": "1nVitr0",
   "repository": {
@@ -40,11 +40,5 @@
     "build": "tsc --build",
     "watch": "tsc --build --watch",
     "lint": "eslint src --ext ts"
-  },
-  "dependencies": {
-    "@babel/parser": "^7.26.3",
-    "ast-types": "^0.16.1",
-    "babylon": "^6.18.0",
-    "recast": "^0.23.9"
   }
 }

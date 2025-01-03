@@ -1,6 +1,7 @@
-import { Range, TextDocument, TextEditor, TextEditorEdit, window } from "vscode";
+import { Range, TextEditorEdit, window } from "vscode";
 import {
   ConditionRefNode,
+  DocumentContext,
   IfStatementRefNode,
   IfStatementUpdatedNode,
   InvertIfElseProvider,
@@ -13,6 +14,7 @@ import {
 } from "vscode-invert-if";
 import ConditionService from "./ConditionService";
 import ConfigurationService from "./ConfigurationService";
+
 export default class IfElseService {
   public constructor(
     protected configurationService: ConfigurationService,
@@ -20,14 +22,14 @@ export default class IfElseService {
   ) {}
 
   public inverseIfElse<T>(
-    document: TextDocument,
+    context: DocumentContext,
     edit: TextEditorEdit,
     provider: InvertIfElseProvider<T>,
     ifElse: IfStatementRefNode<T>
   ) {
     try {
       const inverse = this.getInverseIfElse(ifElse);
-      provider.replaceIfStatement(document, edit, ifElse, inverse);
+      provider.replaceIfStatement(context, edit, ifElse, inverse);
     } catch (e) {
       window.showErrorMessage((e as Error).message ?? "unknown error inverting if statement");
       return;
@@ -54,14 +56,14 @@ export default class IfElseService {
   }
 
   public mergeNestedIfs<T>(
-    document: TextDocument,
+    context: DocumentContext,
     edit: TextEditorEdit,
     provider: InvertIfElseProvider<T>,
     parent: IfStatementRefNode<T>,
     ...statements: IfStatementRefNode<T>[]
   ) {
     const combined = this.getCombinedIfElse(parent, ...statements);
-    provider.replaceIfStatement(document, edit, parent, combined);
+    provider.replaceIfStatement(context, edit, parent, combined);
   }
 
   public getCombinedIfElse<T>(

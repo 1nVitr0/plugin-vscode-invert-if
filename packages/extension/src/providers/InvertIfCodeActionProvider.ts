@@ -20,6 +20,7 @@ import {
   RefSyntaxNode,
   SyntaxNode,
   InvertIfBaseProvider,
+  DocumentContext,
 } from "vscode-invert-if";
 import { service } from "../globals";
 import PluginService from "../services/PluginService";
@@ -200,8 +201,10 @@ export default class InvertIfCodeActionProvider implements CodeActionProvider<In
     range: Range | Selection,
     token: CancellationToken
   ): Promise<RefSyntaxNode<any> | null> {
+    const { languageId } = document;
+    const context: DocumentContext = { document, languageId };
     const provider = service.plugins.getInvertConditionProvider(document)!;
-    const conditions = await provider.provideConditions(document, range);
+    const conditions = await provider.provideConditions(context, range);
 
     return (conditions && service.condition.sortConditionsByRangeMatch(conditions, range).shift()) ?? null;
   }
@@ -211,8 +214,10 @@ export default class InvertIfCodeActionProvider implements CodeActionProvider<In
     range: Range | Selection,
     token: CancellationToken
   ): Promise<IfStatementRefNode<any>[] | null> {
+    const { languageId } = document;
+    const context: DocumentContext = { document, languageId };
     const provider = service.plugins.getInvertIfElseProvider(document)!;
-    const statements = await provider.provideIfStatements(document, range);
+    const statements = await provider.provideIfStatements(context, range);
 
     return statements?.sort((a, b) => a.range.start.compareTo(b.range.start)) ?? null;
   }
@@ -230,19 +235,21 @@ export default class InvertIfCodeActionProvider implements CodeActionProvider<In
     token: CancellationToken
   ): Promise<InvertIfCodeAction> {
     const { document, range } = codeAction;
+    const { languageId } = document;
+    const context: DocumentContext = { document, languageId };
 
     const provider = service.plugins.getInvertConditionProvider(document)!;
-    const conditions = await provider.provideConditions(document, range);
+    const conditions = await provider.provideConditions(context, range);
     const condition = conditions && service.condition.sortConditionsByRangeMatch(conditions, range).shift();
 
     if (!condition || token.isCancellationRequested) return codeAction;
 
     const resolvedCondition = {
       ...condition,
-      ...(await provider.resolveCondition?.(condition)),
+      ...(await provider.resolveCondition?.(context, condition)),
     };
 
-    service.condition.inverseCondition(document, edit, provider, resolvedCondition);
+    service.condition.inverseCondition(context, edit, provider, resolvedCondition);
 
     return codeAction;
   }
@@ -253,18 +260,20 @@ export default class InvertIfCodeActionProvider implements CodeActionProvider<In
     token: CancellationToken
   ): Promise<InvertIfCodeAction> {
     const { document, range } = codeAction;
+    const { languageId } = document;
+    const context: DocumentContext = { document, languageId };
     const provider = service.plugins.getInvertIfElseProvider(document)!;
-    const statements = await provider.provideIfStatements(document, range);
+    const statements = await provider.provideIfStatements(context, range);
     const statement = statements && service.ifElse.sortIfStatementsByRangeMatch(statements, range).shift();
 
     if (!statement || token.isCancellationRequested) return codeAction;
 
     const resolvedStatement = {
       ...statement,
-      ...(await provider.resolveIfStatement?.(statement)),
+      ...(await provider.resolveIfStatement?.(context, statement)),
     };
 
-    service.ifElse.inverseIfElse(document, edit, provider, resolvedStatement);
+    service.ifElse.inverseIfElse(context, edit, provider, resolvedStatement);
 
     return codeAction;
   }
@@ -275,14 +284,16 @@ export default class InvertIfCodeActionProvider implements CodeActionProvider<In
     token: CancellationToken
   ): Promise<InvertIfCodeAction> {
     const { document, range } = codeAction;
+    const { languageId } = document;
+    const context: DocumentContext = { document, languageId };
     const provider = service.plugins.getInvertIfElseProvider(document)!;
-    const statements = (await provider.provideIfStatements(document, range))?.sort((a, b) =>
+    const statements = (await provider.provideIfStatements(context, range))?.sort((a, b) =>
       a.range.start.compareTo(b.range.start)
     );
     const parent = statements?.shift();
 
     if (parent && !token.isCancellationRequested)
-      service.ifElse.mergeNestedIfs(document, edit, provider, parent, ...statements!);
+      service.ifElse.mergeNestedIfs(context, edit, provider, parent, ...statements!);
 
     return codeAction;
   }
@@ -293,19 +304,21 @@ export default class InvertIfCodeActionProvider implements CodeActionProvider<In
     token: CancellationToken
   ): Promise<InvertIfCodeAction> {
     const { document, range } = codeAction;
+    const { languageId } = document;
+    const context: DocumentContext = { document, languageId };
     const provider = service.plugins.getGuardClauseProvider(document)!;
-    const conditions = await provider.provideConditions(document, range);
+    const conditions = await provider.provideConditions(context, range);
     const condition = conditions && service.condition.sortConditionsByRangeMatch(conditions, range).shift();
 
     if (!condition || token.isCancellationRequested) return codeAction;
 
     const resolvedCondition = {
       ...condition,
-      ...(await provider.resolveCondition?.(condition)),
+      ...(await provider.resolveCondition?.(context, condition)),
     };
 
     service.guardClause.moveToGuardClause(
-      document,
+      context,
       edit,
       provider,
       resolvedCondition,

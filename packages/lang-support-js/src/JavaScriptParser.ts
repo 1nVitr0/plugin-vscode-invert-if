@@ -13,11 +13,12 @@ import {
 } from "ast-types/lib/gen/kinds";
 import { NodePath } from "ast-types/lib/node-path";
 import { parse, print, types } from "recast";
-import { Range, TextDocument } from "vscode";
+import { Range } from "vscode";
 import {
   BinaryExpressionRefNode,
   BinaryExpressionUpdatedNode,
   BinaryOperator,
+  DocumentContext,
   DoWhileStatementRefNode,
   ExpressionContext,
   ForStatementRefNode,
@@ -29,6 +30,7 @@ import {
   LogicalExpressionRefNode,
   LogicalExpressionUpdatedNode,
   LogicalOperator,
+  rangeToGlobal,
   RefSyntaxNode,
   SyntaxNodeType,
   UnaryExpressionRefNode,
@@ -51,11 +53,6 @@ export default class JavaScriptParser {
     "FunctionDeclaration",
     "ArrowFunctionExpression",
   ];
-  protected static replaceTrueParentStatement: NodeKind["type"][] = [
-    "WhileStatement",
-    "DoWhileStatement",
-    "ForStatement",
-  ];
   private static binaryExpressionOperators: Partial<Record<BinaryExpressionKind["operator"], BinaryOperator>> = {
     "==": BinaryOperator.Equal,
     "!=": BinaryOperator.NotEqual,
@@ -77,18 +74,18 @@ export default class JavaScriptParser {
     "-": UnaryOperator.Negative,
   };
 
-  public static getBlockCode(document: TextDocument, path: NodePath, indent?: string): string {
-    if (indent === undefined) indent = this.getNodeIndentation(path.node, document);
+  public static getBlockCode(path: NodePath, context: DocumentContext, indent?: string): string {
+    if (indent === undefined) indent = this.getNodeIndentation(path.node, context);
     const body = this.getBody(path)?.node.body;
 
-    return body?.map((node) => this.getCode(document, node, indent)).join("\n") ?? "";
+    return body?.map((node) => this.getCode(node, context, indent)).join("\n") ?? "";
   }
 
-  public static getBlockIndentation(node: NodePath, document: TextDocument): string {
+  public static getBlockIndentation(node: NodePath, context: DocumentContext): string {
     const body = this.getBody(node);
     const firstStatement = body?.node.body[0];
 
-    return firstStatement ? this.getNodeIndentation(firstStatement, document) : "";
+    return firstStatement ? this.getNodeIndentation(firstStatement, context) : "";
   }
 
   public static getBlockRange(node: NodePath): Range {
@@ -132,9 +129,9 @@ export default class JavaScriptParser {
     return body;
   }
 
-  public static getCode(document: TextDocument, node: NodeKind, indent?: string): string {
+  public static getCode(node: NodeKind, context: DocumentContext, indent?: string): string {
     let code = print(node).code;
-    if (indent === undefined) indent = this.getNodeIndentation(node, document);
+    if (indent === undefined) indent = this.getNodeIndentation(node, context);
 
     return code.replace(/^/gm, `${indent}`); // Try to keep original indentation
   }
@@ -162,9 +159,11 @@ export default class JavaScriptParser {
     };
   }
 
-  public static getNodeIndentation(node: NodeKind, document: TextDocument): string {
+  public static getNodeIndentation(node: NodeKind, context: DocumentContext): string {
     const range = this.getNodeRange(node);
-    const line = document.getText(new Range(range.start.line, 0, range.start.line, Infinity));
+    const line = context.document.getText(
+      rangeToGlobal(new Range(range.start.line, 0, range.start.line, Infinity), context)
+    );
 
     return /^\s*/.exec(line)?.[0] ?? "";
   }
@@ -429,16 +428,15 @@ export default class JavaScriptParser {
     }
   }
 
-  public static removeInitialIndent(document: TextDocument, range: Range, code: string): string {
-    const initialIndent =
-      document.getText(new Range(range.start.line, 0, range.start.line, range.start.character)).match(/^\s*/)?.[0] ??
-      "";
+  public static removeInitialIndent(range: Range, context: DocumentContext, code: string): string {
+    const globalRange = rangeToGlobal(new Range(range.start.line, 0, range.start.line, range.start.character), context);
+    const initialIndent = context.document.getText(rangeToGlobal(globalRange, context)).match(/^\s*/)?.[0] ?? "";
 
     if (initialIndent) return code.replace(new RegExp(`^${initialIndent}`), "");
     else return code;
   }
 
-  private parser: { parse: () => NodeKind };
+  protected parser: { parse: () => NodeKind };
 
   public constructor(language: string) {
     switch (language) {
@@ -456,16 +454,16 @@ export default class JavaScriptParser {
       case "javascript":
       case "js":
       default:
-        this.parser = require("recast/parsers/esprima");
+        this.parser = require("recast/parsers/acorn");
         break;
     }
   }
 
-  public parseDocument(document: TextDocument): ProgramEntry {
+  public parseDocumentContext({ document, embeddedRange }: DocumentContext): ProgramEntry {
     const { version, getText } = document;
     const program: Partial<ProgramEntry> = {
       version,
-      programNode: this.parseText(getText()),
+      programNode: this.parseText(getText(embeddedRange)),
     };
 
     visit(program.programNode!, {

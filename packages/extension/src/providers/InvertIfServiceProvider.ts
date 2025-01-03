@@ -6,6 +6,7 @@ import IfElseService from "../services/IfElseService";
 import LanguageService from "../services/LanguageService";
 import PluginService from "../services/PluginService";
 import ValidationService from "../services/ValidationService";
+import EmbeddedLanguageService from "../services/EmbeddedLanguageService";
 
 export default class InvertIfServiceProvider implements Disposable {
   public readonly config: ConfigurationService;
@@ -14,6 +15,7 @@ export default class InvertIfServiceProvider implements Disposable {
   public readonly ifElse: IfElseService;
   public readonly guardClause: GuardClauseService;
   public readonly validation: ValidationService;
+  public readonly embedded: EmbeddedLanguageService;
   public readonly plugins: PluginService;
 
   public constructor() {
@@ -23,6 +25,7 @@ export default class InvertIfServiceProvider implements Disposable {
     this.ifElse = new IfElseService(this.config, this.condition);
     this.guardClause = new GuardClauseService(this.config, this.condition);
     this.validation = new ValidationService(this.config, this.condition);
+    this.embedded = new EmbeddedLanguageService(this.config);
     this.plugins = new PluginService(this.config);
   }
 
