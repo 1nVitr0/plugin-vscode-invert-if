@@ -4,6 +4,7 @@
   "preview": true,
   "displayName": "Invert If Vue Support",
   "description": "Vue SFC support for Invert If extension",
+  "icon": "resources/icon.png",
   "author": "1nVitr0",
   "publisher": "1nVitr0",
   "repository": {
@@ -24,11 +25,11 @@
     "Other"
   ],
   "keywords": [
-    "refactor",
-    "invert if condition",
-    "negate condition",
-    "swap if else",
-    "guard clause"
+    "vue",
+    "invert if",
+    "sfc",
+    "embedding",
+    "script"
   ],
   "extensionDependencies": [
     "1nVitr0.invert-if"
@@ -37,8 +38,20 @@
     "*"
   ],
   "scripts": {
+    "vscode:prepublish": "npm run build && npm run build:production",
     "build": "tsc --build",
+    "build:webpack": "webpack --mode development",
+    "build:production": "webpack --mode production",
     "watch": "tsc --build --watch",
-    "lint": "eslint src --ext ts"
+    "watch:webpack": "webpack --mode development --watch",
+    "pretest": "npm run build && npm run lint",
+    "lint": "eslint src --ext ts",
+    "test": "node ./out/test/runTest.js",
+    "test:coverage": "export COVERAGE=true && node ./out/test/runTest.js",
+    "coverage": "npm run test:coverage && nyc report --reporter=text",
+    "contributions": "node scripts/contributions.js"
+  },
+  "vsce": {
+    "dependencies": false
   }
 }
