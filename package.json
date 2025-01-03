@@ -19,6 +19,7 @@
     "packages/api",
     "packages/extension",
     "packages/lang-support-js",
+    "packages/lang-support-md",
     "packages/lang-support-php"
   ],
   "devDependencies": {
