@@ -20,7 +20,8 @@
     "packages/extension",
     "packages/lang-support-js",
     "packages/lang-support-md",
-    "packages/lang-support-php"
+    "packages/lang-support-php",
+    "packages/lang-support-vue"
   ],
   "devDependencies": {
     "@istanbuljs/nyc-config-typescript": "^1.0.2",
