@@ -11,7 +11,7 @@
     "type": "git",
     "url": "https://github.com/1nVitr0/plugin-vscode-invert-if.git"
   },
-  "main": "./out/extension.js",
+  "main": "./dist/extension.js",
   "engines": {
     "vscode": "^1.60.0"
   },
@@ -38,18 +38,17 @@
     "*"
   ],
   "scripts": {
-    "vscode:prepublish": "npm run build && npm run build:production",
-    "build": "tsc --build",
-    "build:webpack": "webpack --mode development",
-    "build:production": "webpack --mode production",
-    "watch": "tsc --build --watch",
-    "watch:webpack": "webpack --mode development --watch",
-    "pretest": "npm run build && npm run lint",
+    "vscode:prepublish": "npm run build",
+    "build": "webpack --mode production",
+    "build:dev": "webpack --mode development",
+    "build:test": "tsc --build",
+    "watch": "webpack --mode development --watch",
+    "watch:test": "tsc --build --watch",
+    "pretest": "npm run lint && npm run build",
     "lint": "eslint src --ext ts",
     "test": "node ./out/test/runTest.js",
     "test:coverage": "export COVERAGE=true && node ./out/test/runTest.js",
-    "coverage": "npm run test:coverage && nyc report --reporter=text",
-    "contributions": "node scripts/contributions.js"
+    "coverage": "npm run test:coverage && nyc report --reporter=text"
   },
   "vsce": {
     "dependencies": false
