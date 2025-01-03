@@ -28,7 +28,7 @@ jobs:
         run: npm run docs
 
       - name: Create pages artifact
-        id: api_docs
+        id: deployment
         uses: actions/upload-artifact@v3
         with:
           name: github-pages
@@ -43,7 +43,7 @@ jobs:
       id-token: write
     environment:
       name: github-pages
-      url: ${{ steps.api_docs.outputs.page_url }}
+      url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - name: Deploy to GitHub Pages
         id: deployment
