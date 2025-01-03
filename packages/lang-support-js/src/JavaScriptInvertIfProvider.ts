@@ -21,6 +21,7 @@ import {
   isUnaryExpressionNode,
   LogicalExpressionRefNode,
   LoopRefNode,
+  rangeToGlobal,
   RefSyntaxNode,
   SyntaxNodeType,
   UnaryExpressionRefNode,
@@ -28,6 +29,7 @@ import {
 } from "vscode-invert-if";
 import JavaScriptParser from "./JavaScriptParser";
 import { ProgramEntry } from "./ProgramEntry";
+import { positionToGlobal } from "../../api/src/helpers/position";
 
 export default class JavaScriptInvertIfProvider
   implements
@@ -103,110 +105,114 @@ export default class JavaScriptInvertIfProvider
   }
 
   public replaceCondition(
-    { document }: DocumentContext,
+    context: DocumentContext,
     edit: TextEditorEdit,
     original: RefSyntaxNode<NodePath<NodeKind>>,
     replace: UpdatedSyntaxNode<NodePath<NodeKind>>
   ): void {
     const code = print(JavaScriptParser.getNodeKindFromSyntaxNode(replace)).code;
-    edit.replace(original.range, code);
+    edit.replace(rangeToGlobal(original.range, context), code);
   }
 
   public replaceIfStatement(
-    { document }: DocumentContext,
+    context: DocumentContext,
     edit: TextEditorEdit,
     original: IfStatementRefNode<NodePath<NodeKind>>,
     replace: IfStatementRefNode<NodePath<NodeKind>>
   ): void {
     const code = print(JavaScriptParser.getNodeKindFromSyntaxNode(replace)).code;
-    edit.replace(original.range, code);
+    edit.replace(rangeToGlobal(original.range, context), code);
   }
 
   public removeCondition(
-    { document }: DocumentContext,
+    context: DocumentContext,
     edit: TextEditorEdit,
     condition: RefSyntaxNode<NodePath<NodeKind>> & ExpressionContext<NodePath<NodeKind>>
   ): void {
+    const { document } = context;
     const { range, ref, parent } = condition;
 
     if (JavaScriptInvertIfProvider.replaceTrueParentStatement.includes(parent.ref.node.type)) {
       // Replace empty loop conditions with true
-      edit.replace(range, "true");
+      edit.replace(rangeToGlobal(range, context), "true");
     } else if (parent.type == SyntaxNodeType.IfStatement) {
       // Remove empty if statements, but keep else if
       const { alternate, consequent } = parent as IfStatementRefNode<NodePath<NodeKind>>;
-      const indent = JavaScriptParser.getNodeIndentation(parent.ref.node, document);
-      let code = JavaScriptParser.getBlockCode(document, consequent.ref, indent);
-      if (alternate) code += `\n${JavaScriptParser.getCode(document, alternate.ref.node, indent)}`;
-      code = JavaScriptParser.removeInitialIndent(document, parent.range, code);
+      const indent = JavaScriptParser.getNodeIndentation(parent.ref.node, context);
+      let code = JavaScriptParser.getBlockCode(consequent.ref, context, indent);
+      if (alternate) code += `\n${JavaScriptParser.getCode(alternate.ref.node, context, indent)}`;
+      code = JavaScriptParser.removeInitialIndent(parent.range, context, code);
 
-      edit.replace(parent.range, code);
+      edit.replace(rangeToGlobal(parent.range, context), code);
     } else if (ref.name == "left") {
       // Remove empty binary expressions (left)
       const { right } = parent as BinaryExpressionRefNode<NodePath<NodeKind>>;
-      edit.replace(range.with(range.start, right.range.start), "");
+      edit.replace(rangeToGlobal(range.with(range.start, right.range.start), context), "");
     } else if (ref.name == "right") {
       // Remove empty binary expressions (right)
       const { left } = parent as BinaryExpressionRefNode<NodePath<NodeKind>>;
-      edit.replace(range.with(left.range.end, range.end), "");
+      edit.replace(rangeToGlobal(range.with(left.range.end, range.end), context), "");
     } else if (ref.name == "argument") {
       // Remove empty unary expressions
-      edit.replace(parent.range, "");
+      edit.replace(rangeToGlobal(parent.range, context), "");
     } else {
       // Delete condition used as guard clause
-      edit.replace(range, "");
+      edit.replace(rangeToGlobal(range, context), "");
     }
   }
 
   public prependSyntaxNode(
-    { document }: DocumentContext,
+    context: DocumentContext,
     edit: TextEditorEdit,
     node: UpdatedSyntaxNode<NodePath<NodeKind>>,
     root: RefSyntaxNode<NodePath<NodeKind>>
   ): void {
-    const indent = JavaScriptParser.getBlockIndentation(root.ref, document);
-    const code = JavaScriptParser.getCode(document, JavaScriptParser.getNodeKindFromSyntaxNode(node), indent);
+    const indent = JavaScriptParser.getBlockIndentation(root.ref, context);
+    const code = JavaScriptParser.getCode(JavaScriptParser.getNodeKindFromSyntaxNode(node), context, indent);
     const range = JavaScriptParser.getBlockRange(root.ref);
 
-    edit.insert(range.start, `${JavaScriptParser.removeInitialIndent(document, range, code)}\n\n${indent}`);
+    edit.insert(
+      positionToGlobal(range.start, context),
+      `${JavaScriptParser.removeInitialIndent(range, context, code)}\n\n${indent}`
+    );
   }
 
   public appendSyntaxNode(
-    { document }: DocumentContext,
+    context: DocumentContext,
     edit: TextEditorEdit,
     node: UpdatedSyntaxNode<NodePath<NodeKind>>,
     root: RefSyntaxNode<NodePath<NodeKind>>
   ): void {
-    const indent = JavaScriptParser.getBlockIndentation(root.ref, document);
-    const code = JavaScriptParser.getCode(document, JavaScriptParser.getNodeKindFromSyntaxNode(node), indent);
+    const indent = JavaScriptParser.getBlockIndentation(root.ref, context);
+    const code = JavaScriptParser.getCode(JavaScriptParser.getNodeKindFromSyntaxNode(node), context, indent);
     const range = JavaScriptParser.getBlockRange(root.ref);
 
-    edit.insert(range.end, `\n\n${code}`);
+    edit.insert(positionToGlobal(range.end, context), `\n\n${code}`);
   }
 
   public insertSyntaxNodeBefore(
-    { document }: DocumentContext,
+    context: DocumentContext,
     edit: TextEditorEdit,
     node: UpdatedSyntaxNode<NodePath<NodeKind>>,
     before: RefSyntaxNode<NodePath<NodeKind>>
   ): void {
-    const indent = JavaScriptParser.getNodeIndentation(before.ref.node, document);
-    const code = JavaScriptParser.getCode(document, JavaScriptParser.getNodeKindFromSyntaxNode(node), indent);
+    const indent = JavaScriptParser.getNodeIndentation(before.ref.node, context);
+    const code = JavaScriptParser.getCode(JavaScriptParser.getNodeKindFromSyntaxNode(node), context, indent);
     edit.insert(
-      before.range.start,
-      `${JavaScriptParser.removeInitialIndent(document, before.range, code)}\n\n${indent}`
+      positionToGlobal(before.range.start, context),
+      `${JavaScriptParser.removeInitialIndent(before.range, context, code)}\n\n${indent}`
     );
   }
 
   public insertSyntaxNodeAfter(
-    { document }: DocumentContext,
+    context: DocumentContext,
     edit: TextEditorEdit,
     node: UpdatedSyntaxNode<NodePath<NodeKind>>,
     after: RefSyntaxNode<NodePath<NodeKind>>
   ): void {
-    const indent = JavaScriptParser.getNodeIndentation(after.ref.node, document);
-    const code = JavaScriptParser.getCode(document, JavaScriptParser.getNodeKindFromSyntaxNode(node), indent);
-    edit.insert(after.range.end, `\n\n${code}`);
+    const indent = JavaScriptParser.getNodeIndentation(after.ref.node, context);
+    const code = JavaScriptParser.getCode(JavaScriptParser.getNodeKindFromSyntaxNode(node), context, indent);
+    edit.insert(positionToGlobal(after.range.end, context), `\n\n${code}`);
   }
 
   private getParser(languageId: string): JavaScriptParser {
