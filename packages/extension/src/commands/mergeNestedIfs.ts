@@ -2,12 +2,6 @@ import { Range, TextEditor, TextEditorEdit, window } from "vscode";
 import { service } from "../globals";
 import { DocumentContext, IfStatementRefNode, rangeToLocal } from "vscode-invert-if";
 
-const {
-  plugins: { getEmbeddedLanguageProvider, getInvertIfElseProvider },
-  embedded: { getPrimaryEmbeddedSection },
-  ifElse: { groupIfStatementsByParent, mergeNestedIfs: mergeNestedIfElse },
-} = service;
-
 /**
  * @title Invert If: Merge selected if blocks
  * @shortTitle Merge if blocks
@@ -19,15 +13,15 @@ export default async function mergeNestedIfs(editor: TextEditor, _: TextEditorEd
   const selections = selection ? [selection] : [...editor.selections];
   const context: DocumentContext = { document, languageId, originalLanguageId: languageId };
 
-  const embedProvider = getEmbeddedLanguageProvider(editor.document);
+  const embedProvider = service.plugins.getEmbeddedLanguageProvider(editor.document);
 
   if (embedProvider) {
-    const embeddedSection = await getPrimaryEmbeddedSection(context, embedProvider, selection);
+    const embeddedSection = await service.embedded.getPrimaryEmbeddedSection(context, embedProvider, selection);
     context.embeddedRange = embeddedSection?.range;
     context.languageId = embeddedSection?.languageId ?? languageId;
   }
 
-  const provider = getInvertIfElseProvider(context);
+  const provider = service.plugins.getInvertIfElseProvider(context);
 
   if (!provider) {
     window.showErrorMessage("No invert if/else provider found for this file type");
@@ -40,12 +34,12 @@ export default async function mergeNestedIfs(editor: TextEditor, _: TextEditorEd
     )
   ).reduce((acc: IfStatementRefNode<any>[], statements) => (statements ? acc.concat(statements) : acc), []);
 
-  const groups = groupIfStatementsByParent(selectionStatements);
+  const groups = service.ifElse.groupIfStatementsByParent(selectionStatements);
 
   editor.edit((edit) => {
     for (const group of groups) {
       const parent = group.shift();
-      if (parent) mergeNestedIfElse(context, edit, provider, parent, ...group);
+      if (parent) service.ifElse.mergeNestedIfs(context, edit, provider, parent, ...group);
     }
   });
 }

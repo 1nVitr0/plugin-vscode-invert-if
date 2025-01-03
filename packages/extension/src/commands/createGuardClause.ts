@@ -2,13 +2,6 @@ import { commands, Range, TextEditor, TextEditorEdit, window } from "vscode";
 import { DocumentContext, GuardClausePosition, GuardClauseType, rangeToLocal } from "vscode-invert-if";
 import { service } from "../globals";
 
-const {
-  plugins: { getEmbeddedLanguageProvider, getGuardClauseProvider },
-  embedded: { getPrimaryEmbeddedSection },
-  condition: { sortConditionsByRangeMatch },
-  guardClause: { moveToGuardClause },
-} = service;
-
 /**
  * @title Invert If: Create Guard Clause from Condition
  * @shortTitle Create Guard Clause
@@ -26,15 +19,15 @@ export default async function createGuardClause(
   const selections = selection ? [selection] : [...editor.selections];
   const context: DocumentContext = { document, languageId, originalLanguageId: languageId };
 
-  const embedProvider = getEmbeddedLanguageProvider(editor.document);
+  const embedProvider = service.plugins.getEmbeddedLanguageProvider(editor.document);
 
   if (embedProvider) {
-    const embeddedSection = await getPrimaryEmbeddedSection(context, embedProvider, selection);
+    const embeddedSection = await service.embedded.getPrimaryEmbeddedSection(context, embedProvider, selection);
     context.embeddedRange = embeddedSection?.range;
     context.languageId = embeddedSection?.languageId ?? languageId;
   }
 
-  const provider = getGuardClauseProvider(context);
+  const provider = service.plugins.getGuardClauseProvider(context);
 
   if (!provider) {
     window.showErrorMessage("No guard clause provider found for this file type");
@@ -49,9 +42,9 @@ export default async function createGuardClause(
     for (let i = 0; i < selections.length; i++) {
       const range = selections[i];
       const conditions = selectionConditions[i] ?? [];
-      const condition = sortConditionsByRangeMatch(conditions, range).shift();
+      const condition = service.condition.sortConditionsByRangeMatch(conditions, range).shift();
 
-      if (condition) moveToGuardClause(context, edit, provider, condition, position, type);
+      if (condition) service.guardClause.moveToGuardClause(context, edit, provider, condition, position, type);
     }
   });
 }

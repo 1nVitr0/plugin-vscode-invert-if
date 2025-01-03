@@ -89,36 +89,6 @@ export default class PluginService implements InvertIfBaseProvider, Disposable {
     throw new Error("Method not implemented.");
   }
 
-  public rangeToGlobal(range: Range, context: DocumentContext): Range {
-    if (!isEmbeddedDocumentContext(context)) return range;
-
-    const { document, embeddedRange } = context;
-    const { line: lineOffset, character: characterOffset } = embeddedRange.start;
-    const { start, end } = range;
-
-    return document.validateRange(
-      new Range(
-        start.with(start.line + lineOffset, start.character + characterOffset),
-        end.with(end.line + lineOffset, start.line === end.line ? end.character + characterOffset : end.character)
-      )
-    );
-  }
-
-  public rangeToLocal(range: Range, context: DocumentContext): Range {
-    if (!isEmbeddedDocumentContext(context)) return range;
-
-    const { document, embeddedRange } = context;
-    const { line: lineOffset, character: characterOffset } = embeddedRange.start;
-    const { start, end } = range;
-
-    return document.validateRange(
-      new Range(
-        start.with(start.line - lineOffset, start.character - characterOffset),
-        end.with(end.line - lineOffset, start.line === end.line ? end.character - characterOffset : end.character)
-      )
-    );
-  }
-
   public getAvailableCapabilities(document: TextDocument): Plugin<any>["capabilities"] {
     const plugins = this.plugins.filter((plugin) => languages.match(plugin.documentSelector, document));
     const capabilities = plugins.reduce(
@@ -219,10 +189,10 @@ export default class PluginService implements InvertIfBaseProvider, Disposable {
 
   private init() {
     this.onRegisterProvider((plugin) => {
-      console.info("Registered plugin", this.describePlugin(plugin));
+      console.info("Invert If: Registered plugin", this.describePlugin(plugin));
     });
     this.onUnregisterProvider((plugin) => {
-      console.info("Unregistered plugin", this.describePlugin(plugin));
+      console.info("Invert If: Unregistered plugin", this.describePlugin(plugin));
     });
   }
 

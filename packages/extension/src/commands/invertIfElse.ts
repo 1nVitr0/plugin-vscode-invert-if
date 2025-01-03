@@ -2,12 +2,6 @@ import { Range, TextEditor, TextEditorEdit, window } from "vscode";
 import { service } from "../globals";
 import { DocumentContext, rangeToLocal } from "vscode-invert-if";
 
-const {
-  plugins: { getEmbeddedLanguageProvider, getInvertIfElseProvider },
-  embedded: { getPrimaryEmbeddedSection },
-  ifElse: { inverseIfElse, sortIfStatementsByRangeMatch },
-} = service;
-
 /**
  * @title Invert If: Invert If / Else Block
  * @shortTitle Invert If / Else Block
@@ -19,15 +13,15 @@ export default async function invertIfElse(editor: TextEditor, editBuilder: Text
   const selections = selection ? [selection] : [...editor.selections];
   const context: DocumentContext = { document, languageId, originalLanguageId: languageId };
 
-  const embedProvider = getEmbeddedLanguageProvider(editor.document);
+  const embedProvider = service.plugins.getEmbeddedLanguageProvider(editor.document);
 
   if (embedProvider) {
-    const embeddedSection = await getPrimaryEmbeddedSection(context, embedProvider, selection);
+    const embeddedSection = await service.embedded.getPrimaryEmbeddedSection(context, embedProvider, selection);
     context.embeddedRange = embeddedSection?.range;
     context.languageId = embeddedSection?.languageId ?? languageId;
   }
 
-  const provider = getInvertIfElseProvider(context);
+  const provider = service.plugins.getInvertIfElseProvider(context);
 
   if (!provider) {
     window.showErrorMessage("No invert if/else provider found for this file type");
@@ -41,9 +35,9 @@ export default async function invertIfElse(editor: TextEditor, editBuilder: Text
     for (let i = 0; i < selections.length; i++) {
       const range = selections[i];
       const statements = selectionStatements[i] ?? [];
-      const statement = sortIfStatementsByRangeMatch(statements, range).shift();
+      const statement = service.ifElse.sortIfStatementsByRangeMatch(statements, range).shift();
 
-      if (statement) inverseIfElse(context, edit, provider, statement);
+      if (statement) service.ifElse.inverseIfElse(context, edit, provider, statement);
     }
   });
 }

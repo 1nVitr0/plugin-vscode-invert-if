@@ -1,13 +1,6 @@
-import { Range, TextDocument, TextEditor, TextEditorEdit, window } from "vscode";
+import { Range, TextEditor, TextEditorEdit, window } from "vscode";
 import { service } from "../globals";
-import { DocumentContext } from "../../../api/dist/context/DocumentContext";
-import { rangeToLocal } from "vscode-invert-if";
-
-const {
-  plugins: { getEmbeddedLanguageProvider, getInvertConditionProvider },
-  embedded: { getPrimaryEmbeddedSection },
-  condition: { sortConditionsByRangeMatch, inverseCondition },
-} = service;
+import { DocumentContext, rangeToLocal } from "vscode-invert-if";
 
 /**
  * @title Invert If: Invert Condition
@@ -20,15 +13,15 @@ export default async function invertCondition(editor: TextEditor, editBuilder: T
   const selections = selection ? [selection] : [...editor.selections];
   const context: DocumentContext = { document, languageId, originalLanguageId: languageId };
 
-  const embedProvider = getEmbeddedLanguageProvider(editor.document);
+  const embedProvider = service.plugins.getEmbeddedLanguageProvider(editor.document);
 
   if (embedProvider) {
-    const embeddedSection = await getPrimaryEmbeddedSection(context, embedProvider, selection);
+    const embeddedSection = await service.embedded.getPrimaryEmbeddedSection(context, embedProvider, selection);
     context.embeddedRange = embeddedSection?.range;
     context.languageId = embeddedSection?.languageId ?? languageId;
   }
 
-  const provider = getInvertConditionProvider(context);
+  const provider = service.plugins.getInvertConditionProvider(context);
 
   if (!provider) {
     window.showErrorMessage("No invert condition provider found for this file type");
@@ -43,9 +36,9 @@ export default async function invertCondition(editor: TextEditor, editBuilder: T
     for (let i = 0; i < selections.length; i++) {
       const range = selections[i];
       const conditions = selectionConditions[i] ?? [];
-      const condition = sortConditionsByRangeMatch(conditions, range).shift();
+      const condition = service.condition.sortConditionsByRangeMatch(conditions, range).shift();
 
-      if (condition) inverseCondition(context, edit, provider, condition);
+      if (condition) service.condition.inverseCondition(context, edit, provider, condition);
     }
   });
 }
