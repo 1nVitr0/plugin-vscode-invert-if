@@ -18,9 +18,6 @@ jobs:
     runs-on: ubuntu-latest
     needs: setup
     steps:
-      - name: Build ${{ matrix.package }}
-        working-directory: packages/${{ matrix.package }}
-        run: npm run build
       - name: Run tests for ${{ matrix.package }}
         working-directory: packages/${{ matrix.package }}
         run: xvfb-run -a npm test
