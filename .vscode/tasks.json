@@ -9,7 +9,7 @@
       "command": "npm",
       "args": [
         "run",
-        "watch:webpack",
+        "watch",
         "--workspace=packages/extension"
       ],
       "problemMatcher": [
@@ -32,6 +32,26 @@
         "run",
         "watch:webpack",
         "--workspace=packages/lang-support-php"
+      ],
+      "problemMatcher": [
+        "$ts-webpack-watch"
+      ],
+      "isBackground": true,
+      "presentation": {
+        "reveal": "never"
+      },
+      "group": {
+        "kind": "build"
+      }
+    },
+    {
+      "label": "npm(lang-vue): watch",
+      "type": "shell",
+      "command": "npm",
+      "args": [
+        "run",
+        "watch",
+        "--workspace=packages/lang-support-vue"
       ],
       "problemMatcher": [
         "$ts-webpack-watch"

@@ -60,6 +60,34 @@
         "${workspaceFolder}/packages/lang-support-php/out/**/*.js"
       ],
       "preLaunchTask": "npm(lang-php): watch"
+    },
+    {
+      "name": "Run Language Support for Vue Extension",
+      "type": "extensionHost",
+      "request": "launch",
+      "args": [
+        "--extensionDevelopmentPath=${workspaceFolder}/packages/lang-support-vue"
+      ],
+      "outFiles": [
+        "${workspaceFolder}/packages/lang-support-vue/dist/**/*.js"
+      ],
+      "preLaunchTask": "npm(lang-vue): watch"
+    },
+    {
+      "name": "Language Support for Vue Extension Tests",
+      "type": "extensionHost",
+      "request": "launch",
+      "args": [
+        "--extensionDevelopmentPath=${workspaceFolder}/packages/lang-support-vue",
+        "--extensionTestsPath=${workspaceFolder}/packages/lang-support-vue/out/test/suite/index"
+      ],
+      "env": {
+        "COVERAGE": "true"
+      },
+      "outFiles": [
+        "${workspaceFolder}/packages/lang-support-vue/out/**/*.js"
+      ],
+      "preLaunchTask": "npm(lang-vue): watch"
     }
   ]
 }
