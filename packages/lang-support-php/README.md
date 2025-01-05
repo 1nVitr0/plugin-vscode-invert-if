@@ -1,4 +1,4 @@
-# `Invert If` Language support for `PHP`
+# `Invert If` Language support for language `PHP`
 
 This extension includes `PHP` for the (Invert If)[https://marketplace.visualstudio.com/items?itemName=1nVitr0.invert-if] Visual Studio Code extension.
 
