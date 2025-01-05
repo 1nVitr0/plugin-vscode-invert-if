@@ -1,3 +1,10 @@
+## invert-if [3.0.4](https://github.com/1nVitr0/plugin-vscode-invert-if/compare/invert-if@3.0.3...invert-if@3.0.4) (2025-01-05)
+
+
+### Bug Fixes
+
+* update API version to v2.0.3 ([f0a6d31](https://github.com/1nVitr0/plugin-vscode-invert-if/commit/f0a6d31456e87f3b811d85a921386cf285593f14))
+
 ## invert-if [3.0.3](https://github.com/1nVitr0/plugin-vscode-invert-if/compare/invert-if@3.0.2...invert-if@3.0.3) (2025-01-03)
 
 
