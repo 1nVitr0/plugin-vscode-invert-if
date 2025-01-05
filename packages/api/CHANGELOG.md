@@ -1,3 +1,10 @@
+## vscode-invert-if [2.0.3](https://github.com/1nVitr0/plugin-vscode-invert-if/compare/vscode-invert-if@2.0.2...vscode-invert-if@2.0.3) (2025-01-05)
+
+
+### Bug Fixes
+
+* **extension:** convert local and global range character correctly ([7db0578](https://github.com/1nVitr0/plugin-vscode-invert-if/commit/7db0578ee31732c911e4ead7dad8869427a5c8b7))
+
 ## vscode-invert-if [2.0.2](https://github.com/1nVitr0/plugin-vscode-invert-if/compare/vscode-invert-if@2.0.1...vscode-invert-if@2.0.2) (2025-01-03)
 
 
