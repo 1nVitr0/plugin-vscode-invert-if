@@ -37,11 +37,11 @@ While still in active development, the following features are already available:
 | `Invert If: Generate truth table`                      | Generate truth tables for the selected conditions                                                |
 | `Invert If: Invert Condition and compare truth tables` | Invert selected editions and show their truth tables                                             |
 
-The selection is currently only the condition under the active cursors, but more fine grained control will be available. The commands take into account **all** cursors, so **multiple selections** are possible.
+The selection is the condition under the active cursors. The commands take into account **all** cursors, so **multiple selections** are possible.
 
 #### Truth Tables
 
-Truth tables can be used to compare or analyze if conditions as well as verify the inversion process of the extension. They are currently provided using a temporary `markdown` document:
+Truth tables can be used to compare or analyze if conditions as well as verify the inversion process of the extension. They are provided using a temporary `markdown` document:
 
 ```markdown
 (1) `a > b || c == d && e !== f`
@@ -63,10 +63,13 @@ To make it possible for tables to be compared, some operators are flipped to the
 
 ## Language Support
 
-Currently only the following languages are supported. I plan to add more but I need to find a way without bloating the extension with too many AST parsers / generators:
+Currently only the following languages are supported:
 
 - `javascript`
 - `typescript`
+- `markdown` (embedded code sections in supported languages)
+- `php` through the [Invert Of PHP](https://marketplace.visualstudio.com/items?itemName=1nVitr0.invert-if-php) extension
+- `vue` through the [Invert Of Vue SFC](https://marketplace.visualstudio.com/items?itemName=1nVitr0.invert-if-vue) extension 
 
 You can add additional language support by providing an [extension](packages/extension/CONTRIBUTING.md) that registers itself with `Invert If`.
 
