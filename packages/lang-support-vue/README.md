@@ -1,4 +1,4 @@
-# `Invert If` Language support for `Vue` SFC
+# `Invert If` Language support for `Vue` SFC files
 
 This package includes `Vue` support for the [Invert If](https://marketplace.visualstudio.com/items?itemName=1nVitr0.invert-if) Visual Studio Code extension.
 
