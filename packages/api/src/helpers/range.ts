@@ -19,8 +19,8 @@ export function rangeToGlobal(range: Range, context: DocumentContext): Range {
 
   return document.validateRange(
     new Range(
-      start.with(start.line + lineOffset, start.character + characterOffset),
-      end.with(end.line + lineOffset, start.line === end.line ? end.character + characterOffset : end.character)
+      start.with(start.line + lineOffset, start.line === 0 ? start.character + characterOffset : start.character),
+      end.with(end.line + lineOffset, end.line === 0 ? end.character + characterOffset : end.character)
     )
   );
 }
@@ -43,8 +43,11 @@ export function rangeToLocal(range: Range, context: DocumentContext): Range {
 
   return document.validateRange(
     new Range(
-      start.with(start.line - lineOffset, start.character - characterOffset),
-      end.with(end.line - lineOffset, start.line === end.line ? end.character - characterOffset : end.character)
+      start.with(
+        start.line - lineOffset,
+        start.line === lineOffset ? start.character - characterOffset : start.character
+      ),
+      end.with(end.line - lineOffset, end.line === lineOffset ? end.character - characterOffset : end.character)
     )
   );
 }
