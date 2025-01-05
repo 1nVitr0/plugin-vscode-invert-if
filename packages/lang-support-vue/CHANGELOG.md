@@ -1,3 +1,10 @@
+## invert-if-vue [1.0.3](https://github.com/1nVitr0/plugin-vscode-invert-if/compare/invert-if-vue@1.0.2...invert-if-vue@1.0.3) (2025-01-05)
+
+
+### Bug Fixes
+
+* **Lang-vue:** update to API v2.0.3 ([2960067](https://github.com/1nVitr0/plugin-vscode-invert-if/commit/296006748de9afc266339f171e3333998fd286c6))
+
 ## invert-if-vue [1.0.2](https://github.com/1nVitr0/plugin-vscode-invert-if/compare/invert-if-vue@1.0.1...invert-if-vue@1.0.2) (2025-01-03)
 
 
