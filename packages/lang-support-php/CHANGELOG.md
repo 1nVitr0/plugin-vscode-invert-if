@@ -1,3 +1,10 @@
+## invert-if-php [2.0.1](https://github.com/1nVitr0/plugin-vscode-invert-if/compare/invert-if-php@2.0.0...invert-if-php@2.0.1) (2025-01-05)
+
+
+### Bug Fixes
+
+* **lang-php:** update to API v2.0.3 ([5e2eb29](https://github.com/1nVitr0/plugin-vscode-invert-if/commit/5e2eb293715d99a09e2a196adfc8abfd595c4184))
+
 # invert-if-php [2.0.0](https://github.com/1nVitr0/plugin-vscode-invert-if/compare/invert-if-php@1.0.0...invert-if-php@2.0.0) (2025-01-03)
 
 
