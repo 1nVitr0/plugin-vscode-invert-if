@@ -1,0 +1,74 @@
+{
+  "name": "invert-if-pack",
+  "version": "1.0.0",
+  "displayName": "Invert If Extension Pack",
+  "description": "Invert If and all supported language supports",
+  "author": "1nVitr0",
+  "publisher": "1nVitr0",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/1nVitr0/plugin-vscode-invert-if.git"
+  },
+  "bugs": {
+    "url": "https://github.com/1nVitr0/plugin-vscode-invert-if/issues"
+  },
+  "homepage": "https://github.com/1nVitr0/plugin-vscode-invert-if#readme",
+  "engines": {
+    "vscode": "^1.60.0"
+  },
+  "categories": [
+    "Formatters",
+    "Programming Languages",
+    "Other"
+  ],
+  "keywords": [
+    "refactor",
+    "invert if condition",
+    "negate condition",
+    "swap if else",
+    "guard clause"
+  ],
+  "icon": "resources/icon.png",
+  "badges": [
+    {
+      "url": "https://img.shields.io/badge/%20%20%F0%9F%93%A6%F0%9F%9A%80-semantic--release-e10079.svg",
+      "href": "https://github.com/semantic-release/semantic-release",
+      "description": "Powered by Semantic Release"
+    },
+    {
+      "url": "https://img.shields.io/npm/v/vscode-invert-if?logo=npm",
+      "href": "https://www.npmjs.com/package/vscode-invert-if",
+      "description": "npm-version"
+    },
+    {
+      "url": "https://img.shields.io/visual-studio-marketplace/v/1nVitr0.invert-if?logo=visualstudiocode",
+      "href": "https://marketplace.visualstudio.com/items?itemName=1nVitr0.invert-if",
+      "description": "Visual Studio Code extension 1nVitr0.invert-if"
+    },
+    {
+      "url": "https://img.shields.io/open-vsx/v/1nVitr0/invert-if",
+      "href": "https://open-vsx.org/extension/1nVitr0/invert-if",
+      "description": "Open VSX extension 1nVitr0.invert-if"
+    },
+    {
+      "url": "https://img.shields.io/visual-studio-marketplace/v/1nVitr0.invert-if-php?label=php-support&logo=php",
+      "href": "https://marketplace.visualstudio.com/items?itemName=1nVitr0.invert-if-php",
+      "description": "Visual Studio Code extension 1nVitr0.invert-if-php"
+    },
+    {
+      "url": "https://img.shields.io/visual-studio-marketplace/v/1nVitr0.invert-if-vue?label=vue-support&logo=vuedotjs",
+      "href": "https://marketplace.visualstudio.com/items?itemName=1nVitr0.invert-if-vue",
+      "description": "Visual Studio Code extension 1nVitr0.invert-if-vue"
+    }
+  ],
+  "galleryBanner": {
+    "color": "#06362d",
+    "theme": "dark"
+  },
+  "extensionPack": [
+    "1nVitr0.invert-if",
+    "1nVitr0.invert-if-php",
+    "1nVitr0.invert-if-vue"
+  ]
+}

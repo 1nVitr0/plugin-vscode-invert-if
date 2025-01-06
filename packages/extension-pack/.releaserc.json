@@ -1,0 +1,25 @@
+{
+  "tagFormat": "invert-if-pack@v${version}",
+  "plugins": [
+    "@semantic-release/commit-analyzer",
+    "@semantic-release/release-notes-generator",
+    "@semantic-release/changelog",
+    [
+      "@semantic-release/git",
+      {
+        "message": "release(pack): ${nextRelease.version}\n\n${nextRelease.notes}"
+      }
+    ],
+    [
+      "semantic-release-vsce",
+      {
+        "packageVsix": true,
+        "args": [
+          "--no-dependencies",
+          "--allow-star-activation"
+        ]
+      }
+    ],
+    "@semantic-release/github"
+  ]
+}
