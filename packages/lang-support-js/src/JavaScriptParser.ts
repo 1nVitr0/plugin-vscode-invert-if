@@ -40,6 +40,7 @@ import {
   WhileStatementRefNode,
 } from "vscode-invert-if";
 import { ProgramEntry } from "./ProgramEntry";
+import * as acornParse from "./parsers/acorn-js";
 
 export default class JavaScriptParser {
   private static guardClauseParentTypes: NodeKind["type"][] = [
@@ -452,9 +453,10 @@ export default class JavaScriptParser {
         this.parser = require("recast/parsers/babylon");
         break;
       case "javascript":
+      case "javascriptreact":
       case "js":
       default:
-        this.parser = require("recast/parsers/acorn");
+        this.parser = acornParse;
         break;
     }
   }
