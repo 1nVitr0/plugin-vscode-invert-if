@@ -22,20 +22,17 @@ import {
   InvertIfBaseProvider,
   DocumentContext,
   Plugin,
+  rangeToLocal,
 } from "vscode-invert-if";
 import { service } from "../globals";
 import PluginService from "../services/PluginService";
 import debounce = require("debounce");
 
 export class InvertIfCodeActionKind {
-  private static Condition = CodeActionKind.Refactor.append("condition");
-  private static IfElse = CodeActionKind.Refactor.append("ifElse");
-  private static GuardClause = CodeActionKind.Refactor.append("guardClause");
-
-  public static InvertCondition = InvertIfCodeActionKind.Condition.append("invert");
-  public static InvertIfElse = InvertIfCodeActionKind.IfElse.append("invert");
-  public static MergeIfElse = InvertIfCodeActionKind.IfElse.append("merge");
-  public static MoveToGuardClause = InvertIfCodeActionKind.GuardClause.append("fromContition");
+  public static InvertCondition = CodeActionKind.RefactorRewrite.append("invertCondition");
+  public static InvertIfElse = CodeActionKind.RefactorRewrite.append("invertIfElse");
+  public static MergeIfElse = CodeActionKind.RefactorRewrite.append("mergeIfElse");
+  public static MoveToGuardClause = CodeActionKind.RefactorMove.append("moveToGuardClause");
 }
 
 export class InvertIfCodeAction<N extends SyntaxNode<any> | SyntaxNode<any>[] = SyntaxNode<any>> extends CodeAction {
@@ -55,7 +52,7 @@ export default class InvertIfCodeActionProvider implements CodeActionProvider<In
   private registered: Disposable | null = null;
   private disposables: Disposable[] = [];
 
-  private static activeCapabilities: (keyof Plugin<any>["capabilities"])[] = [
+  private static actionablePluginCapabilities: (keyof Plugin<any>["capabilities"])[] = [
     "invertCondition",
     "invertIfElse",
     "guardClause",
@@ -64,11 +61,11 @@ export default class InvertIfCodeActionProvider implements CodeActionProvider<In
 
   public constructor(plugins: InvertIfBaseProvider) {
     // Debounce the registration of the code action provider to avoid unnecessary cycles
-    const register = debounce(() => this.register(), 100);
+    const register = debounce(() => this.register(), 500);
 
     this.disposables.push(
       plugins.onRegisterProvider((plugin) => {
-        if (!InvertIfCodeActionProvider.activeCapabilities.some((key) => plugin.capabilities[key])) return;
+        if (!InvertIfCodeActionProvider.actionablePluginCapabilities.some((key) => plugin.capabilities[key])) return;
 
         this.registerPlugin(plugin);
 
@@ -76,7 +73,7 @@ export default class InvertIfCodeActionProvider implements CodeActionProvider<In
         if (this.registered) register();
       }),
       plugins.onUnregisterProvider((plugin) => {
-        if (!InvertIfCodeActionProvider.activeCapabilities.some((key) => plugin.capabilities[key])) return;
+        if (!InvertIfCodeActionProvider.actionablePluginCapabilities.some((key) => plugin.capabilities[key])) return;
 
         this.unregisterPlugin(plugin);
 
@@ -101,7 +98,7 @@ export default class InvertIfCodeActionProvider implements CodeActionProvider<In
     const { languageId } = document;
 
     const documentContext = { document, languageId };
-    const sections: DocumentContext[] = [{ document, languageId }];
+    const sections: DocumentContext[] = [documentContext];
     const embedProvider = service.plugins.getEmbeddedLanguageProvider(document);
 
     if (embedProvider) {
@@ -195,60 +192,64 @@ export default class InvertIfCodeActionProvider implements CodeActionProvider<In
     token: CancellationToken
   ) {
     const { only } = context;
+    const localRange = rangeToLocal(range, documentContext);
     const capabilities = service.plugins.getAvailableCapabilities(documentContext);
     const codeActions: InvertIfCodeAction[] = [];
-    const condition =
-      capabilities.invertCondition || capabilities.guardClause
-        ? await this.getFirstCondition(documentContext, range, token)
-        : null;
-    const ifStatements = capabilities.invertIfElse
-      ? await this.getIfElseIfStatements(documentContext, range, token)
-      : null;
-    const ifElseStatement = ifStatements && this.getFirstIfStatement(ifStatements, range);
 
-    if (capabilities.invertCondition) {
+    const mainCondition =
+      capabilities.invertCondition || capabilities.guardClause
+        ? await this.getFirstCondition(documentContext, localRange, token)
+        : null;
+    const mainIfStatements = capabilities.invertIfElse
+      ? await this.getIfElseIfStatements(documentContext, localRange, token)
+      : null;
+    const mainIfElseStatement = mainIfStatements && this.getFirstIfStatement(mainIfStatements, localRange);
+    const mainConditionInRange = mainCondition?.range.contains(localRange);
+    const mainIfElseInRange = mainIfElseStatement?.range.contains(localRange);
+
+    if (capabilities.invertCondition && mainConditionInRange) {
       if (!only || only.contains(InvertIfCodeActionKind.InvertCondition)) {
         const codeAction = new InvertIfCodeAction(
           "Invert Condition",
           InvertIfCodeActionKind.InvertCondition,
           documentContext,
-          range
+          localRange
         );
-        if (condition) codeAction.node = condition;
+        if (mainCondition) codeAction.node = mainCondition;
         codeActions.push(codeAction);
       }
     }
-    if (capabilities.invertIfElse) {
+    if (capabilities.invertIfElse && mainIfElseInRange) {
       if (!only || only.contains(InvertIfCodeActionKind.InvertIfElse)) {
         const codeAction = new InvertIfCodeAction(
           "Invert If Else",
           InvertIfCodeActionKind.InvertIfElse,
           documentContext,
-          range
+          localRange
         );
-        if (ifElseStatement) codeAction.node = ifElseStatement;
+        if (mainIfElseStatement) codeAction.node = mainIfElseStatement;
         codeActions.push(codeAction);
       }
-      if (!only || only.contains(InvertIfCodeActionKind.MergeIfElse)) {
+      if ((!only || only.contains(InvertIfCodeActionKind.MergeIfElse)) && (mainIfStatements?.length || 0) > 1) {
         const codeAction = new InvertIfCodeAction<IfStatementRefNode<any>[]>(
           "Merge If Else",
           InvertIfCodeActionKind.MergeIfElse,
           documentContext,
-          range
+          localRange
         );
-        if (ifStatements) codeAction.node = ifStatements;
+        if (mainIfStatements) codeAction.node = mainIfStatements;
         codeActions.push();
       }
     }
-    if (capabilities.guardClause) {
+    if (capabilities.guardClause && mainConditionInRange) {
       if (!only || only.contains(InvertIfCodeActionKind.MoveToGuardClause)) {
         const codeAction = new InvertIfCodeAction(
           "Move to Guard",
           InvertIfCodeActionKind.MoveToGuardClause,
           documentContext,
-          range
+          localRange
         );
-        if (condition) codeAction.node = condition;
+        if (mainCondition) codeAction.node = mainCondition;
         codeActions.push(codeAction);
       }
     }
