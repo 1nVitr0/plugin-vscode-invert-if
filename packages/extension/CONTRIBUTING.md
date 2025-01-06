@@ -165,3 +165,16 @@ if (invertIfExtension) {
 ```
 
 For a practical example, see the [provider](https://github.com/1nVitr0/plugin-vscode-invert-if/tree/main/packages/lang-support-js) for `JavaScript` and `TypeScript` language support, that is shipped with the extension.
+
+### Activation Event
+
+In order to minimize the impact on VS Codes loading time, the Invert If extension runs a dummy command when it's ready to accept plugin registrations `invertIf.loadPlugins`.
+Instead of using `*` as an activation event, consider using `onCommand:invertIf.loadPlugins`:
+
+```json
+{
+  "activationEvents": [
+    "onCommand:invertIf.loadPlugins"
+  ]
+}
+```
