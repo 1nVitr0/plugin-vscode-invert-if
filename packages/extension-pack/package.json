@@ -70,5 +70,8 @@
     "1nVitr0.invert-if",
     "1nVitr0.invert-if-php",
     "1nVitr0.invert-if-vue"
-  ]
+  ],
+  "vsce": {
+    "dependencies": false
+  }
 }
