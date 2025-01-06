@@ -1,3 +1,10 @@
+# invert-if-vue [1.1.0](https://github.com/1nVitr0/plugin-vscode-invert-if/compare/invert-if-vue@1.0.3...invert-if-vue@1.1.0) (2025-01-06)
+
+
+### Features
+
+* **extension:** change activation to onStartupFinished ([e901987](https://github.com/1nVitr0/plugin-vscode-invert-if/commit/e901987f9a6c1c699024098709eb3f6b2c22815b))
+
 ## invert-if-vue [1.0.3](https://github.com/1nVitr0/plugin-vscode-invert-if/compare/invert-if-vue@1.0.2...invert-if-vue@1.0.3) (2025-01-05)
 
 
