@@ -36,7 +36,7 @@
     "1nVitr0.invert-if"
   ],
   "activationEvents": [
-    "*"
+    "onCommand:invertIf.loadPlugins"
   ],
   "scripts": {
     "vscode:prepublish": "npm run build",

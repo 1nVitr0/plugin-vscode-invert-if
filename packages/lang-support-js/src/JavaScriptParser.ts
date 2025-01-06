@@ -30,6 +30,7 @@ import {
   LogicalExpressionRefNode,
   LogicalExpressionUpdatedNode,
   LogicalOperator,
+  positionToGlobal,
   rangeToGlobal,
   RefSyntaxNode,
   SyntaxNodeType,
@@ -40,6 +41,7 @@ import {
   WhileStatementRefNode,
 } from "vscode-invert-if";
 import { ProgramEntry } from "./ProgramEntry";
+import * as acornParse from "./parsers/acorn-js";
 
 export default class JavaScriptParser {
   private static guardClauseParentTypes: NodeKind["type"][] = [
@@ -160,12 +162,10 @@ export default class JavaScriptParser {
   }
 
   public static getNodeIndentation(node: NodeKind, context: DocumentContext): string {
-    const range = this.getNodeRange(node);
-    const line = context.document.getText(
-      rangeToGlobal(new Range(range.start.line, 0, range.start.line, Infinity), context)
-    );
+    const range = rangeToGlobal(this.getNodeRange(node), context);
+    const { text, firstNonWhitespaceCharacterIndex } = context.document.lineAt(range.start.line);
 
-    return /^\s*/.exec(line)?.[0] ?? "";
+    return text.slice(0, firstNonWhitespaceCharacterIndex);
   }
 
   public static getNodeRange(node: NodeKind | CommentKind): Range {
@@ -391,7 +391,7 @@ export default class JavaScriptParser {
           ...base,
           ...context,
           type: SyntaxNodeType.ForStatement,
-          test: path.get("test")
+          test: node.test
             ? this.getSyntaxNodeFromPath(path.get("test"), program)
             : { type: SyntaxNodeType.Empty, ...base },
         };
@@ -401,7 +401,7 @@ export default class JavaScriptParser {
           ...base,
           ...context,
           type: SyntaxNodeType.ReturnStatement,
-          argument: path.get("argument") ? this.getSyntaxNodeFromPath(path.get("argument"), program) : undefined,
+          argument: node.argument ? this.getSyntaxNodeFromPath(path.get("argument"), program) : undefined,
         };
         return returnNode;
       case "BreakStatement":
@@ -429,8 +429,8 @@ export default class JavaScriptParser {
   }
 
   public static removeInitialIndent(range: Range, context: DocumentContext, code: string): string {
-    const globalRange = rangeToGlobal(new Range(range.start.line, 0, range.start.line, range.start.character), context);
-    const initialIndent = context.document.getText(rangeToGlobal(globalRange, context)).match(/^\s*/)?.[0] ?? "";
+    const { line } = positionToGlobal(range.start, context);
+    const initialIndent = context.document.lineAt(line).text.match(/^\s*/)?.[0] ?? "";
 
     if (initialIndent) return code.replace(new RegExp(`^${initialIndent}`), "");
     else return code;
@@ -452,9 +452,10 @@ export default class JavaScriptParser {
         this.parser = require("recast/parsers/babylon");
         break;
       case "javascript":
+      case "javascriptreact":
       case "js":
       default:
-        this.parser = require("recast/parsers/acorn");
+        this.parser = acornParse;
         break;
     }
   }

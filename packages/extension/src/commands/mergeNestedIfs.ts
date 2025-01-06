@@ -8,10 +8,14 @@ import { DocumentContext, IfStatementRefNode, rangeToLocal } from "vscode-invert
  * @command invertIf.mergeNestedIfs
  */
 export default async function mergeNestedIfs(editor: TextEditor, _: TextEditorEdit, selection?: Range) {
-  const { document } = editor;
+  const { document, selections } = editor;
   const { languageId } = document;
-  const selections = selection ? [selection] : [...editor.selections];
   const context: DocumentContext = { document, languageId, originalLanguageId: languageId };
+
+  if (selections.length <= 1) {
+    window.showErrorMessage("Select multiple if statements to merge");
+    return;
+  }
 
   const embedProvider = service.plugins.getEmbeddedLanguageProvider(editor.document);
 
