@@ -1,3 +1,10 @@
+# invert-if-php [2.1.0](https://github.com/1nVitr0/plugin-vscode-invert-if/compare/invert-if-php@2.0.1...invert-if-php@2.1.0) (2025-01-06)
+
+
+### Features
+
+* **extension:** change activation to onStartupFinished ([e901987](https://github.com/1nVitr0/plugin-vscode-invert-if/commit/e901987f9a6c1c699024098709eb3f6b2c22815b))
+
 ## invert-if-php [2.0.1](https://github.com/1nVitr0/plugin-vscode-invert-if/compare/invert-if-php@2.0.0...invert-if-php@2.0.1) (2025-01-05)
 
 
