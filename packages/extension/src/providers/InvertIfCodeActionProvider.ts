@@ -1,8 +1,6 @@
 import {
   CancellationToken,
-  CodeAction,
   CodeActionContext,
-  CodeActionKind,
   CodeActionProvider,
   Disposable,
   DocumentFilter,
@@ -18,8 +16,6 @@ import {
   GuardClauseType,
   IfStatementRefNode,
   RefSyntaxNode,
-  SyntaxNode,
-  InvertIfBaseProvider,
   DocumentContext,
   Plugin,
   rangeToLocal,
@@ -27,25 +23,8 @@ import {
 import { service } from "../globals";
 import PluginService from "../services/PluginService";
 import debounce = require("debounce");
-
-export class InvertIfCodeActionKind {
-  public static InvertCondition = CodeActionKind.RefactorRewrite.append("invertCondition");
-  public static InvertIfElse = CodeActionKind.RefactorRewrite.append("invertIfElse");
-  public static MergeIfElse = CodeActionKind.RefactorRewrite.append("mergeIfElse");
-  public static MoveToGuardClause = CodeActionKind.RefactorMove.append("moveToGuardClause");
-}
-
-export class InvertIfCodeAction<N extends SyntaxNode<any> | SyntaxNode<any>[] = SyntaxNode<any>> extends CodeAction {
-  public range: Range | Selection;
-  public context: DocumentContext;
-  public node?: N;
-
-  public constructor(title: string, kind: CodeActionKind, context: DocumentContext, range: Range | Selection) {
-    super(title, kind);
-    this.context = context;
-    this.range = range;
-  }
-}
+import { InvertIfCodeAction } from "../types/InvertIfCodeAction";
+import { InvertIfCodeActionKind } from "../types/InvertIfCodeActionKind";
 
 export default class InvertIfCodeActionProvider implements CodeActionProvider<InvertIfCodeAction>, Disposable {
   public documentSelector: ReadonlyArray<DocumentFilter | string> = [];
@@ -59,7 +38,7 @@ export default class InvertIfCodeActionProvider implements CodeActionProvider<In
     "embeddedLanguages",
   ];
 
-  public constructor(plugins: InvertIfBaseProvider) {
+  public constructor(plugins: PluginService) {
     // Debounce the registration of the code action provider to avoid unnecessary cycles
     const register = debounce(() => this.register(), 500);
 
@@ -67,16 +46,14 @@ export default class InvertIfCodeActionProvider implements CodeActionProvider<In
       plugins.onRegisterProvider((plugin) => {
         if (!InvertIfCodeActionProvider.actionablePluginCapabilities.some((key) => plugin.capabilities[key])) return;
 
-        this.registerPlugin(plugin);
-
+        this.updateDocumentSelector(plugins);
         // Only re-register if we have already registered
         if (this.registered) register();
       }),
       plugins.onUnregisterProvider((plugin) => {
         if (!InvertIfCodeActionProvider.actionablePluginCapabilities.some((key) => plugin.capabilities[key])) return;
 
-        this.unregisterPlugin(plugin);
-
+        this.updateDocumentSelector(plugins);
         // Only re-register if we have already registered
         if (this.registered) register();
       })
@@ -84,9 +61,13 @@ export default class InvertIfCodeActionProvider implements CodeActionProvider<In
   }
 
   public register(provider?: PluginService) {
+    if (provider) this.updateDocumentSelector(provider);
     if (this.registered) this.registered.dispose();
-    if (provider) this.documentSelector = [...provider.getAvailableDocumentSelector()];
-    this.registered = languages.registerCodeActionsProvider(this.documentSelector, this);
+    this.registered = this.documentSelector.length
+      ? languages.registerCodeActionsProvider(this.documentSelector, this)
+      : new Disposable(() => {
+          /* Register dummy when no plugins are active  */
+        });
   }
 
   public async provideCodeActions(
@@ -165,24 +146,10 @@ export default class InvertIfCodeActionProvider implements CodeActionProvider<In
     this.disposables = [];
   }
 
-  private registerPlugin({ documentSelector }: Plugin<any>) {
-    const documentSelectors = documentSelector instanceof Array ? documentSelector : [documentSelector];
-
-    for (const selector of documentSelectors) {
-      if (!this.documentSelector.some((compare) => PluginService.compareDocumentSelectors(selector, compare))) {
-        this.documentSelector = this.documentSelector.concat(selector);
-      }
-    }
-  }
-
-  private unregisterPlugin({ documentSelector }: Plugin<any>) {
-    const documentSelectors = documentSelector instanceof Array ? documentSelector : [documentSelector];
-
-    for (const selector of documentSelectors) {
-      this.documentSelector = this.documentSelector.filter((compare) =>
-        PluginService.compareDocumentSelectors(selector, compare)
-      );
-    }
+  private updateDocumentSelector(plugins: PluginService) {
+    this.documentSelector = plugins.getAvailableDocumentSelector(
+      InvertIfCodeActionProvider.actionablePluginCapabilities
+    );
   }
 
   private async getCodeActions(

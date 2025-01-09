@@ -20,6 +20,7 @@ import {
   Plugin,
 } from "vscode-invert-if";
 import { EmbeddedLanguageProvider } from "vscode-invert-if/dist/providers/EmbeddedLanguageProvider";
+import { logger } from "../globals";
 
 export default class PluginService implements InvertIfBaseProvider, Disposable {
   private plugins: Plugin<any, any>[] = [];
@@ -178,14 +179,17 @@ export default class PluginService implements InvertIfBaseProvider, Disposable {
     return capabilities;
   }
 
-  public getAvailableDocumentSelector(): ReadonlyArray<DocumentFilter | string> {
+  public getAvailableDocumentSelector(
+    withCapabilities?: (keyof Plugin<any>["capabilities"])[]
+  ): ReadonlyArray<DocumentFilter | string> {
     const selectors: (DocumentFilter | string)[] = [];
-    for (const { documentSelector } of this.plugins) {
+    for (const { documentSelector, capabilities } of this.plugins) {
       const documentSelectors = documentSelector instanceof Array ? documentSelector : [documentSelector];
+      if (withCapabilities && !withCapabilities.some((key) => capabilities[key])) continue;
 
       for (const selector of documentSelectors) {
         if (!selectors.some((compare) => PluginService.compareDocumentSelectors(selector, compare))) {
-          selectors.push;
+          selectors.push(selector);
         }
       }
     }
@@ -264,10 +268,10 @@ export default class PluginService implements InvertIfBaseProvider, Disposable {
 
   private init() {
     this.onRegisterProvider((plugin) => {
-      console.info("Invert If: Registered plugin", PluginService.describePlugin(plugin));
+      logger.info(`Registered plugin ${PluginService.describePlugin(plugin)}`);
     });
     this.onUnregisterProvider((plugin) => {
-      console.info("Invert If: Unregistered plugin", PluginService.describePlugin(plugin));
+      logger.info(`Unregistered plugin ${PluginService.describePlugin(plugin)}`);
     });
   }
 
@@ -310,7 +314,6 @@ export default class PluginService implements InvertIfBaseProvider, Disposable {
       for (const key of Object.keys(capabilities) as (keyof Plugin<T>["capabilities"])[]) {
         if (capabilities[key] === true) existingPlugin.capabilities[key] = false;
       }
-      this.unregisterProviderEvent.fire(existingPlugin);
 
       if (
         !existingPlugin.capabilities.invertCondition &&
@@ -321,6 +324,7 @@ export default class PluginService implements InvertIfBaseProvider, Disposable {
         this.plugins.splice(index, 1);
       }
 
+      this.unregisterProviderEvent.fire(existingPlugin);
       return existingPlugin;
     } else {
       throw new Error("Plugin could not be unregistered because it was not registered.");
