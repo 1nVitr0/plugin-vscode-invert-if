@@ -9,6 +9,7 @@ const documentFilter: DocumentFilter[] = [
   { language: "typescript" },
   { language: "typescriptreact" },
   { language: "javascript" },
+  { language: "javascriptreact" },
   { language: "flow" },
   { language: "babylon" },
 ];
