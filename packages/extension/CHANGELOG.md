@@ -1,3 +1,15 @@
+## invert-if [3.1.1](https://github.com/1nVitr0/plugin-vscode-invert-if/compare/invert-if@3.1.0...invert-if@3.1.1) (2025-01-09)
+
+
+### Bug Fixes
+
+* **extension:** register code action provider for in-built languages ([ad64623](https://github.com/1nVitr0/plugin-vscode-invert-if/commit/ad64623113be3c44f49f8357ded71aa41eb9a675))
+
+
+### Performance Improvements
+
+* skip registering for empty code action provider ([ecf73ce](https://github.com/1nVitr0/plugin-vscode-invert-if/commit/ecf73cef8b3ed8836b0d995cc6d912b49552b892))
+
 # invert-if [3.1.0](https://github.com/1nVitr0/plugin-vscode-invert-if/compare/invert-if@3.0.4...invert-if@3.1.0) (2025-01-06)
 
 
