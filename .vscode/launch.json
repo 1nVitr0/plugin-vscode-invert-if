@@ -12,8 +12,15 @@
       "args": [
         "--extensionDevelopmentPath=${workspaceFolder}/packages/extension"
       ],
+      "localRoot": "${workspaceFolder}/packages/extension",
       "outFiles": [
-        "${workspaceFolder}/packages/extension/dist/**/*.js"
+        "${workspaceFolder}/packages/**/*.js"
+      ],
+      "sourceMaps": true,
+      "resolveSourceMapLocations": [
+        "!**/node_modules/**",
+        "!**/.vscode*/**",
+        "!/usr/share/code*/**"
       ],
       "preLaunchTask": "${defaultBuildTask}"
     },
@@ -28,8 +35,15 @@
       "env": {
         "COVERAGE": "true"
       },
+      "localRoot": "${workspaceFolder}/packages/extension",
       "outFiles": [
-        "${workspaceFolder}/packages/extension/out/**/*.js"
+        "${workspaceFolder}/packages/**/*.js"
+      ],
+      "sourceMaps": true,
+      "resolveSourceMapLocations": [
+        "!**/node_modules/**",
+        "!**/.vscode*/**",
+        "!/usr/share/code*/**"
       ],
       "preLaunchTask": "${defaultBuildTask}"
     },
@@ -40,8 +54,15 @@
       "args": [
         "--extensionDevelopmentPath=${workspaceFolder}/packages/lang-support-php"
       ],
+      "localRoot": "${workspaceFolder}/packages/lang-support-php",
       "outFiles": [
-        "${workspaceFolder}/packages/lang-support-php/dist/**/*.js"
+        "${workspaceFolder}/packages/**/*.js"
+      ],
+      "sourceMaps": true,
+      "resolveSourceMapLocations": [
+        "!**/node_modules/**",
+        "!**/.vscode*/**",
+        "!/usr/share/code*/**"
       ],
       "preLaunchTask": "npm(lang-php): watch"
     },
@@ -56,8 +77,15 @@
       "env": {
         "COVERAGE": "true"
       },
+      "localRoot": "${workspaceFolder}/packages/lang-support-php",
       "outFiles": [
-        "${workspaceFolder}/packages/lang-support-php/out/**/*.js"
+        "${workspaceFolder}/packages/**/*.js"
+      ],
+      "sourceMaps": true,
+      "resolveSourceMapLocations": [
+        "!**/node_modules/**",
+        "!**/.vscode*/**",
+        "!/usr/share/code*/**"
       ],
       "preLaunchTask": "npm(lang-php): watch"
     },
@@ -68,8 +96,15 @@
       "args": [
         "--extensionDevelopmentPath=${workspaceFolder}/packages/lang-support-vue"
       ],
+      "localRoot": "${workspaceFolder}/packages/lang-support-vue",
       "outFiles": [
-        "${workspaceFolder}/packages/lang-support-vue/dist/**/*.js"
+        "${workspaceFolder}/packages/**/*.js"
+      ],
+      "sourceMaps": true,
+      "resolveSourceMapLocations": [
+        "!**/node_modules/**",
+        "!**/.vscode*/**",
+        "!/usr/share/code*/**"
       ],
       "preLaunchTask": "npm(lang-vue): watch"
     },
@@ -84,8 +119,15 @@
       "env": {
         "COVERAGE": "true"
       },
+      "localRoot": "${workspaceFolder}/packages/lang-support-vue",
       "outFiles": [
-        "${workspaceFolder}/packages/lang-support-vue/out/**/*.js"
+        "${workspaceFolder}/packages/**/*.js"
+      ],
+      "sourceMaps": true,
+      "resolveSourceMapLocations": [
+        "!**/node_modules/**",
+        "!**/.vscode*/**",
+        "!/usr/share/code*/**"
       ],
       "preLaunchTask": "npm(lang-vue): watch"
     }
