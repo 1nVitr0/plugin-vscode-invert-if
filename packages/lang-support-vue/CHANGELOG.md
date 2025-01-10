@@ -1,3 +1,10 @@
+## invert-if-vue [1.2.1](https://github.com/1nVitr0/plugin-vscode-invert-if/compare/invert-if-vue@1.2.0...invert-if-vue@1.2.1) (2025-01-10)
+
+
+### Bug Fixes
+
+* **lang-vue:** use disposables instead of unregister functions ([ae4f1e0](https://github.com/1nVitr0/plugin-vscode-invert-if/commit/ae4f1e0b64b9172b0ff5eb56cedda89d5481892b))
+
 # invert-if-vue [1.2.0](https://github.com/1nVitr0/plugin-vscode-invert-if/compare/invert-if-vue@1.1.0...invert-if-vue@1.2.0) (2025-01-10)
 
 
