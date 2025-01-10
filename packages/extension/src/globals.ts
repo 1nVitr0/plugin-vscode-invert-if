@@ -11,4 +11,5 @@ export const logger = {
   error: (message: string, ...args: any[]) => console.error(...prefixLog(message, ...args)),
   warn: (message: string, ...args: any[]) => console.warn(...prefixLog(message, ...args)),
   info: (message: string, ...args: any[]) => console.info(...prefixLog(message, ...args)),
+  debug: (message: string, ...args: any[]) => console.debug(...prefixLog(message, ...args)),
 };

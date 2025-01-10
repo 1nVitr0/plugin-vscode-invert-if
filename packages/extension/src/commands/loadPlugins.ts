@@ -9,5 +9,5 @@ import { logger } from "../globals";
  * @command invertIf.loadPlugins
  */
 export default async function loadPlugins() {
-  logger.info("Loading plugins...");
+  logger.debug("Loading plugins...");
 }

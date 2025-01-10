@@ -98,6 +98,8 @@ export default class PluginService implements InvertIfBaseProvider, Disposable {
       documentSelector,
       capabilities: { invertCondition: true },
     });
+
+    return new Disposable(() => this.unregisterConditionProvider(provider));
   }
 
   public registerIfElseProvider<T>(provider: InvertIfElseProvider<T>, documentSelector: DocumentSelector) {
@@ -106,6 +108,8 @@ export default class PluginService implements InvertIfBaseProvider, Disposable {
       documentSelector,
       capabilities: { invertIfElse: true },
     });
+
+    return new Disposable(() => this.unregisterIfElseProvider(provider));
   }
 
   public registerGuardClauseProvider<T>(provider: GuardClauseProvider<T>, documentSelector: DocumentSelector) {
@@ -114,17 +118,18 @@ export default class PluginService implements InvertIfBaseProvider, Disposable {
       documentSelector,
       capabilities: { guardClause: true },
     });
+
+    return new Disposable(() => this.unregisterGuardClauseProvider(provider));
   }
 
-  public registerEmbeddedLanguageProvider(
-    provider: EmbeddedLanguageProvider,
-    documentSelector: DocumentSelector
-  ): void {
+  public registerEmbeddedLanguageProvider(provider: EmbeddedLanguageProvider, documentSelector: DocumentSelector) {
     this.registerPlugin({
       provider,
       documentSelector,
       capabilities: { embeddedLanguages: true },
     });
+
+    return new Disposable(() => this.unregisterEmbeddedLanguageProvider(provider));
   }
 
   public unregisterConditionProvider<T>(provider: InvertConditionProvider<T>): void {
@@ -268,10 +273,10 @@ export default class PluginService implements InvertIfBaseProvider, Disposable {
 
   private init() {
     this.onRegisterProvider((plugin) => {
-      logger.info(`Registered plugin ${PluginService.describePlugin(plugin)}`);
+      logger.debug(`Registered plugin ${PluginService.describePlugin(plugin)}`);
     });
     this.onUnregisterProvider((plugin) => {
-      logger.info(`Unregistered plugin ${PluginService.describePlugin(plugin)}`);
+      logger.debug(`Unregistered plugin ${PluginService.describePlugin(plugin)}`);
     });
   }
 

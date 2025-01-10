@@ -5,10 +5,14 @@ import { registerTypescriptInvertIfProvider } from "invert-if-js";
 import { service } from "./globals";
 
 export function activate(context: ExtensionContext) {
-  context.subscriptions.push(service, ...contributeCommands(), ...contributeCodeActions(context));
+  context.subscriptions.push(
+    service,
+    ...contributeCommands(),
+    ...contributeCodeActions(context),
+    ...registerTypescriptInvertIfProvider(service.plugins)
+  );
 
   // Trigger plugins with activation event `onCommand:invertIf.loadPlugins`
-  registerTypescriptInvertIfProvider(service.plugins);
   commands.executeCommand("invertIf.loadPlugins");
 
   return service.plugins;
