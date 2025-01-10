@@ -36,6 +36,7 @@
     "1nVitr0.invert-if"
   ],
   "activationEvents": [
+    "onLanguage:php",
     "onCommand:invertIf.loadPlugins"
   ],
   "scripts": {
