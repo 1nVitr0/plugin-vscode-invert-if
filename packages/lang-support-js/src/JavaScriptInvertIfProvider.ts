@@ -110,8 +110,9 @@ export default class JavaScriptInvertIfProvider
     original: RefSyntaxNode<NodePath<NodeKind>>,
     replace: UpdatedSyntaxNode<NodePath<NodeKind>>
   ): void {
-    const code = print(JavaScriptParser.getNodeKindFromSyntaxNode(replace)).code;
-    edit.replace(rangeToGlobal(original.range, context), code);
+    const indentation = JavaScriptParser.getNodeIndentation(original.ref.node, context);
+    const code = JavaScriptParser.getCode(JavaScriptParser.getNodeKindFromSyntaxNode(replace), context, indentation);
+    edit.replace(rangeToGlobal(original.range, context), code.trim());
   }
 
   public replaceIfStatement(
@@ -120,8 +121,9 @@ export default class JavaScriptInvertIfProvider
     original: IfStatementRefNode<NodePath<NodeKind>>,
     replace: IfStatementRefNode<NodePath<NodeKind>>
   ): void {
-    const code = print(JavaScriptParser.getNodeKindFromSyntaxNode(replace)).code;
-    edit.replace(rangeToGlobal(original.range, context), code);
+    const indentation = JavaScriptParser.getNodeIndentation(original.ref.node, context);
+    const code = JavaScriptParser.getCode(JavaScriptParser.getNodeKindFromSyntaxNode(replace), context, indentation);
+    edit.replace(rangeToGlobal(original.range, context), code.trim());
   }
 
   public removeCondition(
