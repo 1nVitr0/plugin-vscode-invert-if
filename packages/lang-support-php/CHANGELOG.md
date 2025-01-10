@@ -1,3 +1,10 @@
+## invert-if-php [2.2.1](https://github.com/1nVitr0/plugin-vscode-invert-if/compare/invert-if-php@2.2.0...invert-if-php@2.2.1) (2025-01-10)
+
+
+### Bug Fixes
+
+* **lang-php:** use disposables instead of unregister functions ([fa29b8d](https://github.com/1nVitr0/plugin-vscode-invert-if/commit/fa29b8d86dd36be48108b874fe9d124506bde52f))
+
 # invert-if-php [2.2.0](https://github.com/1nVitr0/plugin-vscode-invert-if/compare/invert-if-php@2.1.0...invert-if-php@2.2.0) (2025-01-10)
 
 
