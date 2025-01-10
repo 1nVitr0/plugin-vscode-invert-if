@@ -31,8 +31,6 @@ export async function activate(context: ExtensionContext) {
 
     context.subscriptions.push(
       invertIf.registerConditionProvider(provider, documentFilter),
-      invertIf.registerIfElseProvider(provider, documentFilter),
-      invertIf.registerGuardClauseProvider(provider, documentFilter)
     );
   }
 }
