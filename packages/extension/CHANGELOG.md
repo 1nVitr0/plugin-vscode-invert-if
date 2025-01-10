@@ -1,3 +1,15 @@
+# invert-if [3.2.0](https://github.com/1nVitr0/plugin-vscode-invert-if/compare/invert-if@3.1.1...invert-if@3.2.0) (2025-01-10)
+
+
+### Bug Fixes
+
+* **extension:** activate on markdown ([512f576](https://github.com/1nVitr0/plugin-vscode-invert-if/commit/512f57616908667c41ee141b3981c5c4ed7a89b8))
+
+
+### Features
+
+* **extension:** load extension only if needed ([ff28e16](https://github.com/1nVitr0/plugin-vscode-invert-if/commit/ff28e16589658c4178886fbe19e3ae898fd6ed26))
+
 ## invert-if [3.1.1](https://github.com/1nVitr0/plugin-vscode-invert-if/compare/invert-if@3.1.0...invert-if@3.1.1) (2025-01-09)
 
 
