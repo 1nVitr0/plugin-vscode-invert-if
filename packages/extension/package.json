@@ -72,7 +72,20 @@
     "theme": "dark"
   },
   "activationEvents": [
-    "onStartupFinished"
+    "onLanguage:typescript",
+    "onLanguage:javascript",
+    "onLanguage:javascriptreact",
+    "onLanguage:typescriptreact",
+    "onLanguage:flow",
+    "onLanguage:babylon",
+    "onCommand:invertIf.mergeNestedIfs",
+    "onCommand:invertIf.loadPlugins",
+    "onCommand:invertIf.invertIfElse",
+    "onCommand:invertIf.invertCondition",
+    "onCommand:invertIf.generateTruthTable",
+    "onCommand:invertIf.compareWithInvertedCondition",
+    "onCommand:invertIf.createGuardClause",
+    "onCommand:invertIf.createCustomGuardClause"
   ],
   "contributes": {
     "configuration": {
@@ -100,14 +113,19 @@
     },
     "commands": [
       {
-        "title": "Invert If: Create Guard Clause from Condition",
-        "shortTitle": "Create Guard Clause",
-        "command": "invertIf.createGuardClause"
+        "title": "Invert If: Merge selected if blocks",
+        "shortTitle": "Merge if blocks",
+        "command": "invertIf.mergeNestedIfs"
       },
       {
-        "title": "Invert If: Create Custom Guard Clause",
-        "shortTitle": "Custom Guard Clause",
-        "command": "invertIf.createCustomGuardClause"
+        "title": "Invert If: Invert If / Else Block",
+        "shortTitle": "Invert If / Else Block",
+        "command": "invertIf.invertIfElse"
+      },
+      {
+        "title": "Invert If: Invert Condition",
+        "shortTitle": "Invert Condition",
+        "command": "invertIf.invertCondition"
       },
       {
         "title": "Invert If: Generate truth table",
@@ -120,19 +138,14 @@
         "command": "invertIf.compareWithInvertedCondition"
       },
       {
-        "title": "Invert If: Invert Condition",
-        "shortTitle": "Invert Condition",
-        "command": "invertIf.invertCondition"
+        "title": "Invert If: Create Guard Clause from Condition",
+        "shortTitle": "Create Guard Clause",
+        "command": "invertIf.createGuardClause"
       },
       {
-        "title": "Invert If: Invert If / Else Block",
-        "shortTitle": "Invert If / Else Block",
-        "command": "invertIf.invertIfElse"
-      },
-      {
-        "title": "Invert If: Merge selected if blocks",
-        "shortTitle": "Merge if blocks",
-        "command": "invertIf.mergeNestedIfs"
+        "title": "Invert If: Create Custom Guard Clause",
+        "shortTitle": "Custom Guard Clause",
+        "command": "invertIf.createCustomGuardClause"
       }
     ]
   },
