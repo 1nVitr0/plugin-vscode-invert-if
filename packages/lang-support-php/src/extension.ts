@@ -29,21 +29,19 @@ export async function activate(context: ExtensionContext) {
     // Register the JavaScript provider
     provider = new PHPInvertIfProvider();
 
-    invertIf.registerConditionProvider(provider, documentFilter);
-    invertIf.registerIfElseProvider(provider, documentFilter);
-    invertIf.registerGuardClauseProvider(provider, documentFilter);
+    context.subscriptions.push(
+      invertIf.registerConditionProvider(provider, documentFilter),
+      invertIf.registerIfElseProvider(provider, documentFilter),
+      invertIf.registerGuardClauseProvider(provider, documentFilter)
+    );
   }
 }
 
 /**
  * This method is called when your extension is deactivated.
  * It should be used to clean up any resources that your extension has created.
+ *
+ * Registered Invert If providers are automatically unregistered, if their
+ * Disposable is added to the context subscriptions.
  */
-export function deactivate() {
-  if (invertIf && provider) {
-    // Unregister the JavaScript provider
-    invertIf.unregisterConditionProvider(provider);
-    invertIf.unregisterIfElseProvider(provider);
-    invertIf.unregisterGuardClauseProvider(provider);
-  }
-}
+export function deactivate() {}
