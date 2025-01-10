@@ -166,10 +166,28 @@ if (invertIfExtension) {
 
 For a practical example, see the [provider](https://github.com/1nVitr0/plugin-vscode-invert-if/tree/main/packages/lang-support-js) for `JavaScript` and `TypeScript` language support, that is shipped with the extension.
 
-### Activation Event
+### Activation Events
 
-In order to minimize the impact on VS Codes loading time, the Invert If extension runs a dummy command when it's ready to accept plugin registrations `invertIf.loadPlugins`.
-Instead of using `*` as an activation event, consider using `onCommand:invertIf.loadPlugins`:
+In order to minimize the impact on VS Codes loading time, the Invert If extension runs a dummy command when it's ready to accept plugin registrations `invertIf.loadPlugins`. It can also be used to load the extension to register a new language provider.
+
+```js
+export async function activate(context: ExtensionContext) {
+  // Load the Invert If extension to register the providers
+  await commands.executeCommand("invertIf.loadPlugins");
+
+  // Get the Invert If extension instance
+  const invertIfExtension = extensions.getExtension<InvertIfBaseProvider>("1nVitr0.invert-if");
+
+  if (invertIfExtension) {
+    // Get the API from the Invert If extension
+    const invertIf = invertIfExtension.exports;
+
+    // Register your providers
+  }
+}
+```
+
+If you want your extension to always load when Invert If is active (e.g. to support embedded ranges in unknown languages), you can listen to `onCommand:invertIf.loadPlugins` in your `activationEvents`:
 
 ```json
 {
