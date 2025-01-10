@@ -29,20 +29,18 @@ export async function activate(context: ExtensionContext) {
     // Register the JavaScript provider
     provider = new MarkdownEmbeddedLanguageProvider();
 
-    invertIf.registerEmbeddedLanguageProvider(provider, documentFilter);
+    context.subscriptions.push(invertIf.registerEmbeddedLanguageProvider(provider, documentFilter));
   }
 }
 
 /**
  * This method is called when your extension is deactivated.
  * It should be used to clean up any resources that your extension has created.
+ *
+ * Registered Invert If providers are automatically unregistered, if their
+ * Disposable is added to the context subscriptions.
  */
-export function deactivate() {
-  if (invertIf && provider) {
-    // Unregister the JavaScript provider
-    invertIf.unregisterEmbeddedLanguageProvider(provider);
-  }
-}
+export function deactivate() {}
 
 /**
  * This method is NOT part of this language extension.
