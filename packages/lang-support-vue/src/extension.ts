@@ -1,4 +1,4 @@
-import { DocumentFilter, ExtensionContext, extensions } from "vscode";
+import { commands, DocumentFilter, ExtensionContext, extensions } from "vscode";
 import { InvertIfBaseProvider } from "vscode-invert-if";
 import VueEmbeddedLanguageProvider from "./VueEmbeddedLanguageProvider";
 
@@ -15,11 +15,18 @@ let provider: VueEmbeddedLanguageProvider | undefined;
  *
  * @param context The extension context provided by VS Code.
  */
-export function activate(context: ExtensionContext) {
+export async function activate(context: ExtensionContext) {
+  // Load the Invert If extension to register the providers
+  await commands.executeCommand("invertIf.loadPlugins");
+
+  // Get the Invert If extension instance
   const invertIfExtension = extensions.getExtension<InvertIfBaseProvider>("1nVitr0.invert-if");
 
   if (invertIfExtension) {
+    // Get the API from the Invert If extension
     invertIf = invertIfExtension.exports;
+
+    // Register the JavaScript provider
     provider = new VueEmbeddedLanguageProvider();
 
     invertIf.registerEmbeddedLanguageProvider(provider, documentFilter);
@@ -32,6 +39,7 @@ export function activate(context: ExtensionContext) {
  */
 export function deactivate() {
   if (invertIf && provider) {
+    // Unregister the JavaScript provider
     invertIf.unregisterEmbeddedLanguageProvider(provider);
   }
 }
