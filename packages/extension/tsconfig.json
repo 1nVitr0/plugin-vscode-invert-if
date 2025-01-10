@@ -20,6 +20,9 @@
     },
     {
       "path": "../lang-support-js"
+    },
+    {
+      "path": "../lang-support-md"
     }
   ],
   "exclude": [

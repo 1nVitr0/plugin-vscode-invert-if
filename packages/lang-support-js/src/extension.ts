@@ -1,4 +1,4 @@
-import { commands, DocumentFilter, ExtensionContext, extensions } from "vscode";
+import { commands, Disposable, DocumentFilter, ExtensionContext, extensions } from "vscode";
 import { InvertIfBaseProvider } from "vscode-invert-if";
 import JavaScriptInvertIfProvider from "./JavaScriptInvertIfProvider";
 
@@ -64,10 +64,12 @@ export function deactivate() {
  * @internal
  * @param invertIf Extension instance of Invert If
  */
-export function registerTypescriptInvertIfProvider(invertIf: InvertIfBaseProvider) {
+export function registerTypescriptInvertIfProvider(invertIf: InvertIfBaseProvider): Disposable[] {
   provider = new JavaScriptInvertIfProvider();
 
-  invertIf.registerConditionProvider(provider, documentFilter);
-  invertIf.registerIfElseProvider(provider, documentFilter);
-  invertIf.registerGuardClauseProvider(provider, documentFilter);
+  return [
+    invertIf.registerConditionProvider(provider, documentFilter),
+    invertIf.registerIfElseProvider(provider, documentFilter),
+    invertIf.registerGuardClauseProvider(provider, documentFilter),
+  ];
 }
