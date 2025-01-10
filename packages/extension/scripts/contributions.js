@@ -13,6 +13,7 @@ const defaultActivationEvents = [
   'onLanguage:typescriptreact',
   'onLanguage:flow',
   'onLanguage:babylon',
+  'onLanguage:markdown',
 ];
 const contributions = [
   { type: 'commands', files: 'commands/**/**.ts', activation: { type: 'onCommand', key: 'command' } }

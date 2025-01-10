@@ -78,6 +78,7 @@
     "onLanguage:typescriptreact",
     "onLanguage:flow",
     "onLanguage:babylon",
+    "onLanguage:markdown",
     "onCommand:invertIf.mergeNestedIfs",
     "onCommand:invertIf.loadPlugins",
     "onCommand:invertIf.invertIfElse",
