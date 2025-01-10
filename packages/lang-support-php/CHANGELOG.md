@@ -1,3 +1,10 @@
+# invert-if-php [2.2.0](https://github.com/1nVitr0/plugin-vscode-invert-if/compare/invert-if-php@2.1.0...invert-if-php@2.2.0) (2025-01-10)
+
+
+### Features
+
+* **lang-php:** use new activation events ([9e90b96](https://github.com/1nVitr0/plugin-vscode-invert-if/commit/9e90b964545b952861f47a903cd5e37e18aedbf0))
+
 # invert-if-php [2.1.0](https://github.com/1nVitr0/plugin-vscode-invert-if/compare/invert-if-php@2.0.1...invert-if-php@2.1.0) (2025-01-06)
 
 
