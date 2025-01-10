@@ -1,3 +1,11 @@
+## invert-if [3.2.1](https://github.com/1nVitr0/plugin-vscode-invert-if/compare/invert-if@3.2.0...invert-if@3.2.1) (2025-01-10)
+
+
+### Bug Fixes
+
+* **extension:** enable markdown support ([bf6e9ff](https://github.com/1nVitr0/plugin-vscode-invert-if/commit/bf6e9ff8af9ac8b6574f73a85c198822bf72bf83))
+* **extension:** use disposables instead of unregister functions ([8ec46b5](https://github.com/1nVitr0/plugin-vscode-invert-if/commit/8ec46b5cd298b574f9c91cb427def82bbb689c75))
+
 # invert-if [3.2.0](https://github.com/1nVitr0/plugin-vscode-invert-if/compare/invert-if@3.1.1...invert-if@3.2.0) (2025-01-10)
 
 
