@@ -1,3 +1,10 @@
+## invert-if-php [2.2.2](https://github.com/1nVitr0/plugin-vscode-invert-if/compare/invert-if-php@2.2.1...invert-if-php@2.2.2) (2025-01-10)
+
+
+### Bug Fixes
+
+* **lan-php:** only register supported providers ([0e09132](https://github.com/1nVitr0/plugin-vscode-invert-if/commit/0e0913212b27a5daa216d90b28ebb711947b99a3))
+
 ## invert-if-php [2.2.1](https://github.com/1nVitr0/plugin-vscode-invert-if/compare/invert-if-php@2.2.0...invert-if-php@2.2.1) (2025-01-10)
 
 
