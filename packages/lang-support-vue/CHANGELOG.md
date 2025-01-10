@@ -1,3 +1,10 @@
+# invert-if-vue [1.2.0](https://github.com/1nVitr0/plugin-vscode-invert-if/compare/invert-if-vue@1.1.0...invert-if-vue@1.2.0) (2025-01-10)
+
+
+### Features
+
+* **lang-vue:** use new activation events ([dbb20c7](https://github.com/1nVitr0/plugin-vscode-invert-if/commit/dbb20c7aa35b400f51e7d1a6047cdcf3b1a24252))
+
 # invert-if-vue [1.1.0](https://github.com/1nVitr0/plugin-vscode-invert-if/compare/invert-if-vue@1.0.3...invert-if-vue@1.1.0) (2025-01-06)
 
 
