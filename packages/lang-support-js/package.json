@@ -34,6 +34,12 @@
     "1nVitr0.invert-if"
   ],
   "activationEvents": [
+    "onLanguage:typescript",
+    "onLanguage:javascript",
+    "onLanguage:javascriptreact",
+    "onLanguage:typescriptreact",
+    "onLanguage:flow",
+    "onLanguage:babylon",
     "onCommand:invertIf.loadPlugins"
   ],
   "scripts": {

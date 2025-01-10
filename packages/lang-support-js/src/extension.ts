@@ -1,4 +1,4 @@
-import { DocumentFilter, ExtensionContext, extensions } from "vscode";
+import { commands, DocumentFilter, ExtensionContext, extensions } from "vscode";
 import { InvertIfBaseProvider } from "vscode-invert-if";
 import JavaScriptInvertIfProvider from "./JavaScriptInvertIfProvider";
 
@@ -22,11 +22,18 @@ let provider: JavaScriptInvertIfProvider | undefined;
  *
  * @param context The extension context provided by VS Code.
  */
-export function activate(context: ExtensionContext) {
+export async function activate(context: ExtensionContext) {
+  // Load the Invert If extension to register the providers
+  await commands.executeCommand("invertIf.loadPlugins");
+
+  // Get the Invert If extension instance
   const invertIfExtension = extensions.getExtension<InvertIfBaseProvider>("1nVitr0.invert-if");
 
   if (invertIfExtension) {
+    // Get the API from the Invert If extension
     invertIf = invertIfExtension.exports;
+
+    // Register the JavaScript provider
     provider = new JavaScriptInvertIfProvider();
 
     invertIf.registerConditionProvider(provider, documentFilter);
@@ -41,6 +48,7 @@ export function activate(context: ExtensionContext) {
  */
 export function deactivate() {
   if (invertIf && provider) {
+    // Unregister the JavaScript provider
     invertIf.unregisterConditionProvider(provider);
     invertIf.unregisterIfElseProvider(provider);
     invertIf.unregisterGuardClauseProvider(provider);
@@ -53,6 +61,7 @@ export function deactivate() {
  * together in the same extension.
  * When writing your own language extension, you can safely ignore this method.
  *
+ * @internal
  * @param invertIf Extension instance of Invert If
  */
 export function registerTypescriptInvertIfProvider(invertIf: InvertIfBaseProvider) {
