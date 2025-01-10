@@ -1,3 +1,10 @@
+## vscode-invert-if [2.0.4](https://github.com/1nVitr0/plugin-vscode-invert-if/compare/vscode-invert-if@2.0.3...vscode-invert-if@2.0.4) (2025-01-10)
+
+
+### Bug Fixes
+
+* **api:** use disposables instead of unregister functions ([fb796c9](https://github.com/1nVitr0/plugin-vscode-invert-if/commit/fb796c94c454bdb5ca514e67f59f396cfa3ad314))
+
 ## vscode-invert-if [2.0.3](https://github.com/1nVitr0/plugin-vscode-invert-if/compare/vscode-invert-if@2.0.2...vscode-invert-if@2.0.3) (2025-01-05)
 
 
