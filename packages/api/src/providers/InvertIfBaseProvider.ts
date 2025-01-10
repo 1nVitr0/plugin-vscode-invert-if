@@ -1,10 +1,9 @@
-import { DocumentSelector, Event, Range } from "vscode";
+import { Disposable, DocumentSelector, Event, Range } from "vscode";
 import { Plugin } from "../context/Plugin";
 import { GuardClauseProvider } from "./GuardClauseProvider";
 import { InvertConditionProvider } from "./InvertConditionProvider";
 import { InvertIfElseProvider } from "./InvertIfElseProvider";
 import { EmbeddedLanguageProvider } from "./EmbeddedLanguageProvider";
-import { DocumentContext } from "../context/DocumentContext";
 
 /**
  * The interface that is provided by the `1nVitr0.invert-if` extension.
@@ -38,7 +37,7 @@ export interface InvertIfBaseProvider {
    * @param provider The provider that will be used to invert conditions.
    * @param documentSelector The document selector that selects for languages supported by your extension.
    */
-  registerConditionProvider<T>(provider: InvertConditionProvider<T>, documentSelector: DocumentSelector): void;
+  registerConditionProvider<T>(provider: InvertConditionProvider<T>, documentSelector: DocumentSelector): Disposable;
   /**
    * Register a new provider, which can handles the inversion of if-else statements.
    * It is recommended to register your provider for each type,
@@ -49,7 +48,7 @@ export interface InvertIfBaseProvider {
    * @param provider The provider that will be used to invert if-else statements.
    * @param documentSelector The document selector that selects for languages supported by your extension.
    */
-  registerIfElseProvider<T>(provider: InvertIfElseProvider<T>, documentSelector: DocumentSelector): void;
+  registerIfElseProvider<T>(provider: InvertIfElseProvider<T>, documentSelector: DocumentSelector): Disposable;
   /**
    * Register a new provider, which can handles the creation of guard clauses.
    * It is recommended to register your provider for each type,
@@ -60,7 +59,7 @@ export interface InvertIfBaseProvider {
    * @param provider The provider that will be used to create guard clauses.
    * @param documentSelector The document selector that selects for languages supported by your extension.
    */
-  registerGuardClauseProvider<T>(provider: GuardClauseProvider<T>, documentSelector: DocumentSelector): void;
+  registerGuardClauseProvider<T>(provider: GuardClauseProvider<T>, documentSelector: DocumentSelector): Disposable;
   /**
    * Register a new provider, which can handles the resolving of embedded language sections.
    * Your provider will be called based on the document selector and the sections will then be
@@ -71,30 +70,34 @@ export interface InvertIfBaseProvider {
    * @param provider The provider that will be used to resolve embedded language sections.
    * @param documentSelector The document selector that selects for languages supported by your extension.
    */
-  registerEmbeddedLanguageProvider(provider: EmbeddedLanguageProvider, documentSelector: DocumentSelector): void;
+  registerEmbeddedLanguageProvider(provider: EmbeddedLanguageProvider, documentSelector: DocumentSelector): Disposable;
 
   /**
    * Unregister a provider, which can handles the inversion of conditions.
    *
    * @param provider The provider that will be unregistered.
+   * @deprecated Use the return value of `registerConditionProvider` instead.
    */
   unregisterGuardClauseProvider<T>(provider: GuardClauseProvider<T>): void;
   /**
    * Unregister a provider, which can handles the inversion of if-else statements.
    *
    * @param provider The provider that will be unregistered.
+   * @deprecated Use the return value of `registerConditionProvider` instead.
    */
   unregisterConditionProvider<T>(provider: InvertConditionProvider<T>): void;
   /**
    * Unregister a provider, which can handles the creation of guard clauses.
    *
    * @param provider The provider that will be unregistered.
+   * @deprecated Use the return value of `registerConditionProvider` instead.
    */
   unregisterIfElseProvider<T>(provider: InvertIfElseProvider<T>): void;
   /**
    * Unregister a provider, which can handles the resolving of embedded language sections.
    *
    * @param provider The provider that will be unregistered.
+   * @deprecated Use the return value of `registerConditionProvider` instead.
    */
   unregisterEmbeddedLanguageProvider(provider: EmbeddedLanguageProvider): void;
 
