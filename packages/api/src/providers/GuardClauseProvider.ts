@@ -21,7 +21,7 @@ export interface GuardClauseProvider<T> extends InvertConditionProvider<T> {
    * }
    *
    * // The following conditions should be returned:
-   * (a && b || c9
+   * (a && b) || c
    * e
    * ```
    *

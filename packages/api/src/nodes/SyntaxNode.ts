@@ -5,20 +5,20 @@ import { Range } from "vscode";
  * The type of a given syntax node.
  */
 export enum SyntaxNodeType {
-  Group,
-  UnaryExpression,
-  BinaryExpression,
-  LogicalExpression,
-  FunctionDeclaration,
-  DoWhileStatement,
-  ForStatement,
-  IfStatement,
-  WhileStatement,
-  ReturnStatement,
-  BreakStatement,
-  ContinueStatement,
-  Empty,
-  Generic,
+  Group = 0,
+  UnaryExpression = 1,
+  BinaryExpression = 2,
+  LogicalExpression = 3,
+  FunctionDeclaration = 4,
+  DoWhileStatement = 5,
+  ForStatement = 6,
+  IfStatement = 7,
+  WhileStatement = 8,
+  ReturnStatement = 9,
+  BreakStatement = 10,
+  ContinueStatement = 11,
+  Empty = 12,
+  Generic = 13,
 }
 
 /**
