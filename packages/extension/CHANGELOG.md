@@ -1,3 +1,10 @@
+## invert-if [3.2.2](https://github.com/1nVitr0/plugin-vscode-invert-if/compare/invert-if@3.2.1...invert-if@3.2.2) (2025-02-17)
+
+
+### Bug Fixes
+
+* add inversion depth in configuration ([5ba9a05](https://github.com/1nVitr0/plugin-vscode-invert-if/commit/5ba9a05b9c33f4069deedc647bb31f3d56380ed7))
+
 ## invert-if [3.2.1](https://github.com/1nVitr0/plugin-vscode-invert-if/compare/invert-if@3.2.0...invert-if@3.2.1) (2025-01-10)
 
 
