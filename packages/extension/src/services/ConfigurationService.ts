@@ -5,7 +5,6 @@ export interface LanguageOptions {}
 
 export interface Configuration {
   inversionDepth: number;
-  languageOptions: Record<string, LanguageOptions> & { default: LanguageOptions };
   truthTableBooleanText: { true: string; false: string };
   truthTableConditionIndex: `${string}${"#1" | "#a" | "#I"}${string}`;
 }
@@ -13,11 +12,6 @@ export interface Configuration {
 export default class ConfigurationService implements Configuration {
   public static defaultConfiguration: Configuration = {
     inversionDepth: Infinity,
-    languageOptions: {
-      default: {},
-      js: {},
-      ts: {},
-    },
     truthTableBooleanText: {
       true: "true",
       false: "false",
@@ -43,11 +37,12 @@ export default class ConfigurationService implements Configuration {
   }
 
   public get inversionDepth(): number {
-    return this.get("inversionDepth");
+    const value = this.get("inversionDepth");
+    return value === -1 ? Infinity : value;
   }
 
   public set inversionDepth(value: number) {
-    this.update("inversionDepth", value);
+    this.update("inversionDepth", value === Infinity ? -1 : value);
   }
 
   public get truthTableBooleanText() {
@@ -64,10 +59,6 @@ export default class ConfigurationService implements Configuration {
 
   public set truthTableConditionIndex(value: `${string}${"#1" | "#a" | "#I"}${string}`) {
     this.update("truthTableConditionIndex", value);
-  }
-
-  public get languageOptions(): Record<string, LanguageOptions> & { default: LanguageOptions } {
-    return this.get("languageOptions");
   }
 
   private get configuration(): WorkspaceConfiguration {

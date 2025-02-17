@@ -12,7 +12,6 @@ suite('Unit tests for ConfigurationService', () => {
     expect(configurationService.inversionDepth).to.not.be.undefined;
     expect(configurationService.configurationTarget).to.not.be.undefined;
     expect(configurationService.guardClauseParentTypes).to.not.be.undefined;
-    expect(configurationService.languageOptions).to.not.be.undefined;
   });
 
   test('updating properties without error', () => {

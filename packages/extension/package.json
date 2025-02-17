@@ -91,6 +91,11 @@
   "contributes": {
     "configuration": {
       "properties": {
+        "invertIf.inversionDepth": {
+          "type": "number",
+          "default": -1,
+          "description": "The maximum depth of nested if blocks to invert"
+        },
         "invertIf.truthTableBooleanText": {
           "type": "object",
           "default": {
