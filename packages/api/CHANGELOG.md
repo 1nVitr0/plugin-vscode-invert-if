@@ -1,3 +1,10 @@
+## vscode-invert-if [2.0.5](https://github.com/1nVitr0/plugin-vscode-invert-if/compare/vscode-invert-if@2.0.4...vscode-invert-if@2.0.5) (2025-02-17)
+
+
+### Bug Fixes
+
+* **api:** use fixed enum entries for node types ([8c6746e](https://github.com/1nVitr0/plugin-vscode-invert-if/commit/8c6746e8213b69e43075a86dc4775825076cdef9))
+
 ## vscode-invert-if [2.0.4](https://github.com/1nVitr0/plugin-vscode-invert-if/compare/vscode-invert-if@2.0.3...vscode-invert-if@2.0.4) (2025-01-10)
 
 
